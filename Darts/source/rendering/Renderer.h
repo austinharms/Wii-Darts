@@ -25,8 +25,6 @@ public:
 	}
 
 	void updateFrame() {
-		//Draw3D();
-		//DrawUI();
 		GRRLIB_Render();
 	}
 
@@ -42,6 +40,7 @@ private:
 
 	void drawMesh(const RenderMesh3D* renderMesh, const uint32_t color) const {
 		renderMesh->getTexture()->bind();
+		Draw3D();
 		uint32_t vertCount = renderMesh->getMesh()->getVertCount();
 		const float* verts = renderMesh->getMesh()->getVertexBuffer();
 		uint32_t bufferIndex = 0;
@@ -58,48 +57,43 @@ private:
 
 	~Renderer() {}
 
-	//void Draw3D() {
-	//	GRRLIB_3dMode(0.1, 100, 60, true, false);
-	//	for (int i = 0; i < 2; ++i) {
-	//		GRRLIB_ObjectViewBegin();
-	//		GRRLIB_ObjectViewTrans(i, i, i);
-	//		GRRLIB_ObjectViewEnd();
-	//		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
+	void Draw3D() const {
+		GRRLIB_3dMode(0.1, 100, 60, true, false);
+		for (int i = 1; i <= 1; ++i) {
+			GRRLIB_ObjectViewBegin();
+			GRRLIB_ObjectViewTrans(i, i, i);
+			GRRLIB_ObjectViewEnd();
+			GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
 
-	//		GX_Position3f32(0, 0, 0);
-	//		GX_Color1u32(0xffffffff);
-	//		GX_TexCoord2f32(0.0f, 0.0f);
+			GX_Position3f32(0, 0, 0);
+			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(0.0f, 0.0f);
 
-	//		GX_Position3f32(1, 1, 0);
-	//		GX_Color1u32(0xffffffff);
-	//		GX_TexCoord2f32(1.0f, 1.0f);
+			GX_Position3f32(1, 1, 0);
+			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(1.0f, 1.0f);
 
-	//		GX_Position3f32(0, 1, 0);
-	//		GX_Color1u32(0xffffffff);
-	//		GX_TexCoord2f32(0.0f, 1.0f);
+			GX_Position3f32(0, 1, 0);
+			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(0.0f, 1.0f);
 
-	//		GX_Position3f32(0, 0, 0);
-	//		GX_Color1u32(0xffffffff);
-	//		GX_TexCoord2f32(0.0f, 0.0f);
+			GX_Position3f32(0, 0, 0);
+			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(0.0f, 0.0f);
 
-	//		GX_Position3f32(1, 0, 0);
-	//		GX_Color1u32(0xffffffff);
-	//		GX_TexCoord2f32(1.0f, 0.0f);
+			GX_Position3f32(1, 0, 0);
+			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(1.0f, 0.0f);
 
-	//		GX_Position3f32(1, 1, 0);
-	//		GX_Color1u32(0xffffffff);
-	//		GX_TexCoord2f32(1.0f, 1.0f);
+			GX_Position3f32(1, 1, 0);
+			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(1.0f, 1.0f);
 
-	//		GX_End();
-	//	}
-	//}
-
-	//void DrawUI() {
-	//	GRRLIB_2dMode();
-	//}
+			GX_End();
+		}
+	}
 
 	Renderer(Renderer const&);
 	void operator=(Renderer const&);
-
 };
 #endif // !RENDERER_H_
