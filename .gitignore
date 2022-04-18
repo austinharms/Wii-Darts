@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /Dolphin-x64
 /Darts/build
+*.dol
+*.elf
