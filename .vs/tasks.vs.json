@@ -1,0 +1,55 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "Makefile-build",
+      "appliesTo": "*/Makefile",
+      "type": "launch",
+      "contextType": "build",
+      "command": "make",
+      "args": [
+        "--directory=${fileDirname}",
+        "build"
+      ]
+    },
+    {
+      "taskLabel": "Makefile-clean",
+      "appliesTo": "*/Makefile",
+      "type": "launch",
+      "contextType": "clean",
+      "command": "make",
+      "args": [
+        "--directory=${fileDirname}",
+        "clean"
+      ]
+    },
+    {
+      "taskLabel": "Clean, Build, Play",
+      "appliesTo": "*.dol",
+      "type": "default",
+      "commands": [
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "clean"
+          ]
+        },
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "build"
+          ]
+        },
+        {
+          "command": "${workspaceRoot}\\Dolphin-x64\\Dolphin.exe",
+          "args": [
+            "--exec=\"${file}\"",
+            "--batch"
+          ]
+        }
+      ]
+    }
+  ]
+}
