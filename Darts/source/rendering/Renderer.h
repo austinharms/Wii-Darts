@@ -18,7 +18,7 @@ public:
 		return instance;
 	}
 
-	void drawRenderMesh(RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) {
+	void drawRenderMesh(const RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) const {
 		GRRLIB_ObjectViewBegin();
 		GRRLIB_ObjectViewEnd();
 		drawMesh(renderMesh, color);
@@ -40,7 +40,7 @@ private:
 		//GRRLIB_3dMode(0.1, 100, 60, true, false);
 	}
 
-	void drawMesh(const RenderMesh3D* renderMesh, const uint32_t color) {
+	void drawMesh(const RenderMesh3D* renderMesh, const uint32_t color) const {
 		renderMesh->getTexture()->bind();
 		uint32_t vertCount = renderMesh->getMesh()->getVertCount();
 		const float* verts = renderMesh->getMesh()->getVertexBuffer();
