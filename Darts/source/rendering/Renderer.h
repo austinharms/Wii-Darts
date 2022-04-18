@@ -18,6 +18,13 @@ public:
 		return instance;
 	}
 
+	void drawRenderMesh(const RenderMesh3D* renderMesh, Vector3f position, uint32_t color = 0xffffffff) const {
+		GRRLIB_ObjectViewBegin();
+		GRRLIB_ObjectViewTrans(position.x, position.y, position.z);
+		GRRLIB_ObjectViewEnd();
+		drawMesh(renderMesh, color);
+	}
+
 	void drawRenderMesh(const RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) const {
 		GRRLIB_ObjectViewBegin();
 		GRRLIB_ObjectViewEnd();

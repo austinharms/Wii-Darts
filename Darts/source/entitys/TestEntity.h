@@ -10,8 +10,8 @@ class TestEntity : Entity
 public:
 	TestEntity() : _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_TEST)) {}
 
-	void update() {
-		Renderer::getInstance().drawRenderMesh(_renderMesh);
+	void onUpdate() override {
+		Renderer::getInstance().drawRenderMesh(_renderMesh, Pos);
 	}
 
 private:
