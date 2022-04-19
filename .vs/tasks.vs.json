@@ -24,7 +24,7 @@
       ]
     },
     {
-      "taskLabel": "Clean, Build, Play",
+      "taskLabel": "Rebuild & Play",
       "appliesTo": "*.dol",
       "type": "default",
       "commands": [
@@ -49,6 +49,37 @@
             "--batch"
           ]
         }
+      ]
+    },
+    {
+      "taskLabel": "Rebuild",
+      "appliesTo": "*.dol",
+      "type": "default",
+      "commands": [
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "clean"
+          ]
+        },
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "build"
+          ]
+        }
+      ]
+    },
+    {
+      "taskLabel": "Play",
+      "appliesTo": "*.dol",
+      "type": "default",
+      "command": "${workspaceRoot}\\Dolphin-x64\\Dolphin.exe",
+      "args": [
+        "--exec=\"${file}\"",
+        "--batch"
       ]
     }
   ]
