@@ -8,6 +8,7 @@
 #include "entitys/TestEntity.h"
 
 int main(void){
+    Renderer::getInstance();
     WPAD_Init();
     TestEntity en;
     while(true) {

@@ -3,12 +3,16 @@
 //#include <grrlib.h>
 #include <stdint.h>
 #include <malloc.h>
+#include <ogc/conf.h>
+#include <ogc/machine/processor.h>
 
 #include "Mesh.h"
 #include "Texture.h"
 #include "../Vector3f.h"
 #include "RenderMesh3D.h"
 #include "font_png.h"
+
+#define DEFAULT_FIFO_SIZE (256 * 1024)
 
 class Renderer
 {
@@ -44,9 +48,49 @@ public:
 	}
 
 private:
+	void* _frameBuffers[2];
+	void* _fifoBuffer;
 	//GRRLIB_texImg* font_texture;
 
 	Renderer() {
+		VIDEO_Init();
+		VIDEO_SetBlack(true);
+		GXRModeObj* vmode = VIDEO_GetPreferredMode(nullptr);
+		VIDEO_Configure(vmode);
+		_frameBuffers[0] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(vmode));
+		_frameBuffers[1] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(vmode));
+		VIDEO_SetNextFramebuffer(_frameBuffers[0]);
+		VIDEO_Flush();
+		VIDEO_WaitVSync();
+		if (vmode->viTVMode & VI_NON_INTERLACE)
+			VIDEO_WaitVSync();
+
+		// setup & clear fifo buffer
+		_fifoBuffer = memalign(32, DEFAULT_FIFO_SIZE);
+		memset(_fifoBuffer, 0, DEFAULT_FIFO_SIZE);
+		GX_Init(_fifoBuffer, DEFAULT_FIFO_SIZE);
+
+		// Clear the background to opaque black and clears the z-buffer
+		GX_SetCopyClear((GXColor) { 0, 0, 0, 0 }, GX_MAX_Z24);
+
+		if (vmode->aa) {
+			GX_SetPixelFmt(GX_PF_RGB565_Z16, GX_ZC_LINEAR);  // Set 16 bit RGB565
+		}
+		else {
+			GX_SetPixelFmt(GX_PF_RGB8_Z24, GX_ZC_LINEAR);  // Set 24 bit Z24
+		}
+		float fbWidth = GX_GetYScaleFactor(vmode->efbHeight, vmode->xfbHeight);
+		float fbHeight = GX_SetDispCopyYScale(fbWidth);
+		GX_SetDispCopySrc(0, 0, vmode->fbWidth, vmode->efbHeight);
+		GX_SetDispCopyDst(vmode->fbWidth, fbHeight);
+		GX_SetCopyFilter(vmode->aa, vmode->sample_pattern, GX_TRUE, vmode->vfilter);
+		GX_SetFieldMode(vmode->field_rendering, ((vmode->viHeight == 2 * vmode->xfbHeight) ? GX_ENABLE : GX_DISABLE));
+
+		GX_SetDispCopyGamma(GX_GM_1_0);
+		GX_ClearVtxDesc();
+		GX_InvVtxCache();
+		GX_InvalidateTexAll();
+
 		//GRRLIB_Settings.antialias = false;
 		//GRRLIB_SetBackgroundColour(0x00, 0x00, 0x00, 0xFF);
 		//GRRLIB_SetLightAmbient(0xffffffff);
