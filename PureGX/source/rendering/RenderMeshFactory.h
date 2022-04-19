@@ -28,7 +28,7 @@ private:
 	RenderMesh3D* _renderMeshArray;
 	RenderMeshFactory() {
 		_renderMeshArray = (RenderMesh3D*)malloc(RM3D_RENDERMESH_COUNT * sizeof(RenderMesh3D));
-		_renderMeshArray[RM3D_TEST] = RenderMesh3D(test_mesh, test_mesh_size, test_png, RM3D_TEST);
+		_renderMeshArray[RM3D_TEST] = RenderMesh3D(RM3D_TEST, test_mesh, test_mesh_size, test_png);
 	}
 
 	RenderMeshFactory(RenderMeshFactory const&);
