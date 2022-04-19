@@ -5,13 +5,14 @@
 #include "../rendering/RenderMesh3D.h"
 #include "../rendering/Renderer.h"
 
-class TestEntity : Entity
+class TestEntity : public Entity
 {
 public:
 	TestEntity() : _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_TEST)) {}
 
 	void onUpdate() override {
-		Renderer::getInstance().drawRenderMesh(_renderMesh, Pos);
+		Renderer::getInstance().drawText(100, 100, "hi");
+		Renderer::getInstance().drawRenderMesh(_renderMesh, getWorldPosition());
 	}
 
 private:

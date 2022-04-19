@@ -18,5 +18,19 @@ public:
 	float x;
 	float y;
 	float z;
+
+	void operator=(Vector3f const& other) {
+		x = other.x;
+		y = other.y;
+		z = other.z;
+	}
+
+	Vector3f operator+(Vector3f const& other) {
+		return Vector3f(x + other.x, y + other.y, z + other.z);
+	}
+
+	Vector3f operator-(Vector3f const& other) {
+		return Vector3f(x - other.x, y - other.y, z - other.z);
+	}
 };
 #endif // !VECTOR3FLOAT_H_

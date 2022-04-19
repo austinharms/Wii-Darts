@@ -6,7 +6,7 @@ class Entity
 {
 public:
 	Entity(Vector3f pos) : localPos(pos), _parent(nullptr), _children(nullptr) { }
-	Entity() : localPos(0) { }
+	Entity() : localPos(0), _parent(nullptr), _children(nullptr) { }
 	void update() {
 		onUpdate();
 		EntityNode* curNode = _children;
@@ -26,7 +26,7 @@ public:
 		Entity* p = _parent;
 		while (p != nullptr)
 		{
-			pos + p->localPos;
+			pos = pos + p->localPos;
 			p = p->_parent;
 		}
 
@@ -59,6 +59,35 @@ public:
 			lastNode = curNode;
 			curNode = curNode->next;
 		}
+
+		return nullptr;
+	}
+
+	Entity* getParent() const { return _parent; }
+
+	uint32_t getChildCount() const { 
+		uint32_t count = 0;
+		EntityNode* curNode = _children;
+		while (curNode != nullptr)
+		{
+			++count;
+			curNode->next;
+		}
+
+		return count;
+	}
+
+	Entity* getChild(uint32_t index) {
+		uint32_t count = 0;
+		EntityNode* curNode = _children;
+		while (curNode != nullptr)
+		{
+			if (count++ == index)
+				return curNode->value;
+			curNode->next;
+		}
+
+		return nullptr;
 	}
 
 protected:
