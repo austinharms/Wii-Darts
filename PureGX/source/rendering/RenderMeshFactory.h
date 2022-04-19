@@ -19,7 +19,7 @@ public:
 		return instance;
 	}
 
-	const RenderMesh3D* getRenderMesh(uint32_t id) const {
+	RenderMesh3D* getRenderMesh(uint32_t id) const {
 		if (id >= RM3D_RENDERMESH_COUNT) return nullptr;
 		return &_renderMeshArray[id];
 	}

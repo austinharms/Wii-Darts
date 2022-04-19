@@ -24,22 +24,20 @@ public:
 		return instance;
 	}
 
-	void drawRenderMesh(const RenderMesh3D* renderMesh, Vector3f position, uint32_t color = 0xffffffff) const {
+	void drawRenderMesh(RenderMesh3D* renderMesh, Vector3f position, uint32_t color = 0xffffffff) {
 		//GRRLIB_ObjectViewBegin();
 		//GRRLIB_ObjectViewTrans(position.x, position.y, position.z);
 		//GRRLIB_ObjectViewEnd();
 		drawMesh(renderMesh, color);
 	}
 
-	void drawRenderMesh(const RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) const {
+	void drawRenderMesh(RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) {
 		//GRRLIB_ObjectViewBegin();
 		//GRRLIB_ObjectViewEnd();
 		drawMesh(renderMesh, color);
 	}
 
 	void swapFrameBuffer() {
-		Draw3D();
-
 		GX_DrawDone();
 		//GX_InvalidateTexAll();
 		//_activeFramebuffer = !_activeFramebuffer;
@@ -61,6 +59,10 @@ public:
 		//GRRLIB_SetTexture(font_texture, 0);
 		//GRRLIB_Printf(x, y, font_texture, color, size, text);
 		//GRRLIB_PrintfTTF(x, y, font, text, size, color);
+	}
+
+	const GXRModeObj* getVideoMode() const {
+		return _vmode;
 	}
 
 private:
@@ -172,13 +174,13 @@ private:
 
 		GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
 		GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
-		// GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+		GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
 
 		GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 		GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
-		GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-		//GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
-		//GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+		//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+		GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
+		GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
 
 		// setup position/projection matrix
 		guVector camPos = (guVector){ 0, 0, 5 };
@@ -206,8 +208,9 @@ private:
 		free(_fifoBuffer);
 	}
 
-	void drawMesh(const RenderMesh3D* renderMesh, const uint32_t color) const {
+	void drawMesh(RenderMesh3D* renderMesh, const uint32_t color) {
 		renderMesh->getTexture()->bind();
+		DrawTestRect();
 		//uint32_t vertCount = renderMesh->getMesh()->getVertCount();
 		//const float* verts = renderMesh->getMesh()->getVertexBuffer();
 		//uint32_t bufferIndex = 0;
@@ -222,36 +225,34 @@ private:
 		//GX_End();
 	}
 
-	void Draw3D() const {
-		for (int i = 1; i <= 1; ++i) {
-			GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
+	void DrawTestRect() const {
+		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
 
-			GX_Position3f32(0, 0, 0);
-			GX_Color1u32(0xffffffff);
-			//GX_TexCoord2f32(0.0f, 0.0f);
+		GX_Position3f32(0, 0, 0);
+		GX_Color1u32(0xffffffff);
+		//GX_TexCoord2f32(0.0f, 0.0f);
 
-			GX_Position3f32(1, 1, 0);
-			GX_Color1u32(0xffffffff);
-			//GX_TexCoord2f32(1.0f, 1.0f);
+		GX_Position3f32(1, 1, 0);
+		GX_Color1u32(0xffffffff);
+		//GX_TexCoord2f32(1.0f, 1.0f);
 
-			GX_Position3f32(0, 1, 0);
-			GX_Color1u32(0xffffffff);
-			//GX_TexCoord2f32(0.0f, 1.0f);
+		GX_Position3f32(0, 1, 0);
+		GX_Color1u32(0xffffffff);
+		//GX_TexCoord2f32(0.0f, 1.0f);
 
-			GX_Position3f32(0, 0, 0);
-			GX_Color1u32(0xffffffff);
-			//GX_TexCoord2f32(0.0f, 0.0f);
+		GX_Position3f32(0, 0, 0);
+		GX_Color1u32(0xffffffff);
+		//GX_TexCoord2f32(0.0f, 0.0f);
 
-			GX_Position3f32(1, 0, 0);
-			GX_Color1u32(0xffffffff);
-			//GX_TexCoord2f32(1.0f, 0.0f);
+		GX_Position3f32(1, 0, 0);
+		GX_Color1u32(0xffffffff);
+		//GX_TexCoord2f32(1.0f, 0.0f);
 
-			GX_Position3f32(1, 1, 0);
-			GX_Color1u32(0xffffffff);
-			//GX_TexCoord2f32(1.0f, 1.0f);
+		GX_Position3f32(1, 1, 0);
+		GX_Color1u32(0xffffffff);
+		//GX_TexCoord2f32(1.0f, 1.0f);
 
-			GX_End();
-		}
+		GX_End();
 	}
 
 	Renderer(Renderer const&);
