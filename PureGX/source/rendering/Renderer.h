@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <ogc/conf.h>
 #include <ogc/machine/processor.h>
+#include <gctypes.h>
 
 #include "Mesh.h"
 #include "Texture.h"
@@ -50,6 +51,7 @@ public:
 		VIDEO_SetNextFramebuffer(_frameBuffers[_activeFramebuffer]);
 		VIDEO_Flush();
 		VIDEO_WaitVSync();
+
 		if (_vmode->viTVMode & VI_NON_INTERLACE)
 			VIDEO_WaitVSync();
 	}
@@ -78,7 +80,7 @@ private:
 		VIDEO_SetBlack(true);
 
 		// setup frame buffers
-		GXRModeObj* _vmode = VIDEO_GetPreferredMode(nullptr);
+		_vmode = VIDEO_GetPreferredMode(NULL);
 
 		// Video Mode Correction Taken from: https://github.com/GRRLIB/GRRLIB/blob/master/GRRLIB/GRRLIB/GRRLIB_core.c
 		switch (_vmode->viTVMode) {
