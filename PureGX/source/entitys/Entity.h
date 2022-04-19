@@ -13,7 +13,7 @@ public:
 		while (curNode != nullptr)
 		{
 			curNode->value->update();
-			curNode->next;
+			curNode = curNode->next;
 		}
 	}
 

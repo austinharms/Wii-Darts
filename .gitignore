@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /Darts/build
 *.dol
 *.elf
+/PureGX/build
