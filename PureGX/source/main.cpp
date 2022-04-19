@@ -15,7 +15,7 @@ int main(void){
         WPAD_ScanPads();
         if(WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) break;
         en.update();
-        Renderer::getInstance().updateFrame();
+        Renderer::getInstance().swapFrameBuffer();
     }
 
     return 0;
