@@ -2,6 +2,7 @@
 #define TEXTURE_H_
 #include <stdint.h>
 #include <malloc.h>
+#include <cstring>
 
 #include "RenderGlobal.h"
 
@@ -10,7 +11,7 @@ class Texture
 public:
 	Texture(const void* data, bool repeat = false, bool antialias = false) {
 		_pixels = nullptr;
-		loadTexture((const uint8_t*)data);
+		loadTexture((const uint32_t*)data);
 		updateTexture(repeat, antialias);
 	}
 
@@ -30,18 +31,28 @@ public:
 		GX_LoadTexObj(&_texture, GX_TEXMAP0);
 	}
 
-	void loadTexture(const uint8_t* data) {
-		free(_pixels);
-		// should be powers of 2
-		_width = (data[0] << 2) + data[1];
-		_height = (data[2] << 2) + data[3];
-		uint32_t size = ((uint32_t)_width * (uint32_t)_height) * 4;
+	void loadTexture(const uint32_t* data) {
+		if (_pixels != nullptr)
+			free(_pixels);
+		_width = 100;// data[0] >> 16;
+		_height = 100;//(uint16_t)data[0];
+		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;
 		_pixels = (uint8_t*)memalign(32, size);
-		memcpy(_pixels, data + 4, size);
+		memset(_pixels, 0x00, size);
+		uint32_t index = 0;
+		for (uint16_t w = 0; w < _width; ++w) {
+			for (uint16_t h = 0; h < _height; ++h) {
+				setPixel(w, h, data[++index]);
+			}
+		}
 	}
 
-	uint8_t* getPixels() {
-		return _pixels;
+	void  setPixel(const int x, const int y, const uint32_t color) {
+		uint32_t  offs;
+		offs = (((y & (~3)) << 2) * _width) + ((x & (~3)) << 4) + ((((y & 3) << 2) + (x & 3)) << 1);
+
+		*((u16*)(_pixels + offs)) = (u16)((color << 8) | (color >> 24));
+		*((u16*)(_pixels + offs + 32)) = (u16)(color >> 8);
 	}
 
 	void updateTexture(bool repeat = false, bool antialias = false) {

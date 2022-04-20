@@ -7,8 +7,8 @@
 #include <ogc/machine/processor.h>
 #include <gctypes.h>
 
-#include "Texture.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "../Vector3f.h"
 #include "RenderMesh3D.h"
 #include "font_png.h"
@@ -40,12 +40,6 @@ public:
 		VIDEO_SetNextFramebuffer(_frameBuffers[_activeFramebuffer]);
 		VIDEO_Flush();
 		VIDEO_WaitVSync();
-		if (_vmode->viTVMode & VI_NON_INTERLACE)
-			VIDEO_WaitVSync();
-	}
-
-		VIDEO_WaitVSync();
-
 		if (_vmode->viTVMode & VI_NON_INTERLACE)
 			VIDEO_WaitVSync();
 	}
@@ -89,6 +83,33 @@ private:
 	void* _frameBuffers[2];
 	void* _fifoBuffer;
 	Mtx _view;
+	uint8_t _activeFramebuffer;
+
+	Renderer() {
+		// https://github.com/GRRLIB/GRRLIB/blob/master/GRRLIB/GRRLIB/GRRLIB_core.c
+		// https://github.com/devkitPro/libogc/blob/master/libogc/video.c
+		// https://devkitpro.org/wiki/libogc/GX
+
+		VIDEO_Init();
+		// disable display output
+		VIDEO_SetBlack(true);
+
+		// setup frame buffers
+		_vmode = VIDEO_GetPreferredMode(NULL);
+
+		// Video Mode Correction Taken from: https://github.com/GRRLIB/GRRLIB/blob/master/GRRLIB/GRRLIB/GRRLIB_core.c
+		switch (_vmode->viTVMode) {
+		case VI_DEBUG_PAL:  // PAL 50hz 576i
+			_vmode = &TVPal528IntDf;
+			break;
+		default:
+#ifdef HW_DOL
+			if (VIDEO_HaveComponentCable())
+				_vmode = &TVNtsc480Prog;
+#endif
+			break;
+		}
+
 #if defined(HW_RVL)
 		if (CONF_GetAspectRatio() == CONF_ASPECT_16_9) {
 			_vmode->viWidth = 678;
@@ -106,7 +127,7 @@ private:
 		{
 			write32(0xd8006a0, 0x30000004);
 			mask32(0xd8006a8, 0, 2);
-	}
+		}
 #endif
 		VIDEO_Configure(_vmode);
 		RenderGlobal::mode = _vmode;
@@ -190,18 +211,12 @@ private:
 
 		// enable display output
 		VIDEO_SetBlack(false);
-}
+	}
 
 	~Renderer() {
 		GX_SetClipMode(GX_CLIP_DISABLE);
 		GX_SetScissor(0, 0, _vmode->fbWidth, _vmode->efbHeight);
 		GX_DrawDone();
-		GX_AbortFrame();
-		free(MEM_K1_TO_K0(_frameBuffers[0]));
-		free(MEM_K1_TO_K0(_frameBuffers[1]));
-		free(_fifoBuffer);
-	}
-
 		GX_AbortFrame();
 		free(MEM_K1_TO_K0(_frameBuffers[0]));
 		free(MEM_K1_TO_K0(_frameBuffers[1]));
@@ -219,6 +234,12 @@ private:
 		//for (uint32_t i = 0; i < vertCount; ++i) {
 		//	GX_Position3f32(verts[bufferIndex++], verts[bufferIndex++], verts[bufferIndex++]);
 		//	GX_Color1u32(color);
+		//	GX_TexCoord2f32(verts[bufferIndex++], verts[bufferIndex++]);
+		//}
+
+		//GX_End();
+	}
+
 	void DrawTestRect() const {
 		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
 
@@ -245,12 +266,6 @@ private:
 		GX_Position3f32(1, 1, 0);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(1.0f, 1.0f);
-
-		GX_End();
-	}
-		GX_Position3f32(1, 1, 0);
-		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(1.0f, 1.0f);
 
 		GX_End();
 	}
