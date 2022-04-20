@@ -10,7 +10,7 @@ class Texture
 public:
 	Texture(const void* data, bool repeat = false, bool antialias = false) {
 		_pixels = nullptr;
-		loadTexture((const uint8_t)data);
+		loadTexture((const uint8_t*)data);
 		updateTexture(repeat, antialias);
 	}
 
@@ -37,7 +37,7 @@ public:
 		_height = (data[2] << 2) + data[3];
 		uint32_t size = ((uint32_t)_width * (uint32_t)_height) * 4;
 		_pixels = (uint8_t*)memalign(32, size);
-		memcpy(_pixels, data + 4);
+		memcpy(_pixels, data + 4, size);
 	}
 
 	uint8_t* getPixels() {
