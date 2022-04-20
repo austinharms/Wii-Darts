@@ -12,6 +12,7 @@
 #include "../Vector3f.h"
 #include "RenderMesh3D.h"
 #include "font_png.h"
+#include "RenderGlobal.h"
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
@@ -25,44 +26,56 @@ public:
 	}
 
 	void drawRenderMesh(RenderMesh3D* renderMesh, Vector3f position, uint32_t color = 0xffffffff) {
-		//GRRLIB_ObjectViewBegin();
-		//GRRLIB_ObjectViewTrans(position.x, position.y, position.z);
-		//GRRLIB_ObjectViewEnd();
 		drawMesh(renderMesh, color);
 	}
 
 	void drawRenderMesh(RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) {
-		//GRRLIB_ObjectViewBegin();
-		//GRRLIB_ObjectViewEnd();
 		drawMesh(renderMesh, color);
 	}
 
 	void swapFrameBuffer() {
 		GX_DrawDone();
-		//GX_InvalidateTexAll();
-		//_activeFramebuffer = !_activeFramebuffer;
 		_activeFramebuffer ^= 1;
-
-		//GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-		//GX_SetColorUpdate(GX_TRUE);
 		GX_CopyDisp(_frameBuffers[_activeFramebuffer], GX_TRUE);
 		VIDEO_SetNextFramebuffer(_frameBuffers[_activeFramebuffer]);
 		VIDEO_Flush();
 		VIDEO_WaitVSync();
-
 		if (_vmode->viTVMode & VI_NON_INTERLACE)
 			VIDEO_WaitVSync();
 	}
 
 	void drawText(uint32_t x, uint32_t y, const char* text, float size = 1, uint32_t color = 0x000000FF) {
-		//GRRLIB_2dMode();
-		//GRRLIB_SetTexture(font_texture, 0);
-		//GRRLIB_Printf(x, y, font_texture, color, size, text);
-		//GRRLIB_PrintfTTF(x, y, font, text, size, color);
+
 	}
 
 	const GXRModeObj* getVideoMode() const {
 		return _vmode;
+	}
+
+	void disableLights() {
+		GX_SetNumTevStages(1);
+		GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+		GX_SetNumChans(1);
+		GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_VTX, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+		GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+		RenderGlobal::activeLights = 0;
+	}
+
+	void setAmbientLightColor(uint8_t r, uint8_t g, uint8_t b) {
+		GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { r, g, b, 0xFF });
+	}
+
+	void setDiffuseLight(uint8_t num, Vector3f pos, float distance, float brightness, uint8_t r, uint8_t g, uint8_t b) {
+		GXLightObj light;
+		guVector lightPos = (guVector){ pos.x, pos.y, pos.z };
+		guVecMultiply(_view, &lightPos, &lightPos);
+		GX_InitLightPos(&light, lightPos.x, lightPos.y, lightPos.z);
+		GX_InitLightColor(&light, (GXColor) { r, g, b, 0xFF });
+		GX_InitLightSpot(&light, 0.0f, GX_SP_OFF);
+		GX_InitLightDistAttn(&light, distance, brightness, GX_DA_MEDIUM);
+		GX_LoadLightObj(&light, (1 << num));
+		RenderGlobal::activeLights |= (1 << num);
+		GX_SetChanCtrl(GX_COLOR0A0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, RenderGlobal::activeLights, GX_DF_CLAMP, GX_AF_SPOT);
 	}
 
 private:
@@ -114,9 +127,10 @@ private:
 		{
 			write32(0xd8006a0, 0x30000004);
 			mask32(0xd8006a8, 0, 2);
-		}
+	}
 #endif
 		VIDEO_Configure(_vmode);
+		RenderGlobal::mode = _vmode;
 		_frameBuffers[0] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(_vmode));
 		_frameBuffers[1] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(_vmode));
 		_activeFramebuffer = 0;
@@ -166,6 +180,7 @@ private:
 		GX_SetClipMode(GX_CLIP_ENABLE);
 		GX_SetScissor(0, 0, _vmode->fbWidth, _vmode->efbHeight);
 		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+		GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 
 		// setup vertex attribs
 		GX_ClearVtxDesc();
@@ -196,7 +211,7 @@ private:
 
 		// enable display output
 		VIDEO_SetBlack(false);
-	}
+}
 
 	~Renderer() {
 		GX_SetClipMode(GX_CLIP_DISABLE);
@@ -230,27 +245,27 @@ private:
 
 		GX_Position3f32(0, 0, 0);
 		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(0.0f, 0.0f);
+		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(1, 1, 0);
 		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(1.0f, 1.0f);
+		GX_TexCoord2f32(1.0f, 1.0f);
 
 		GX_Position3f32(0, 1, 0);
 		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(0.0f, 1.0f);
+		GX_TexCoord2f32(0.0f, 1.0f);
 
 		GX_Position3f32(0, 0, 0);
 		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(0.0f, 0.0f);
+		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(1, 0, 0);
 		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(1.0f, 0.0f);
+		GX_TexCoord2f32(1.0f, 0.0f);
 
 		GX_Position3f32(1, 1, 0);
 		GX_Color1u32(0xffffffff);
-		//GX_TexCoord2f32(1.0f, 1.0f);
+		GX_TexCoord2f32(1.0f, 1.0f);
 
 		GX_End();
 	}

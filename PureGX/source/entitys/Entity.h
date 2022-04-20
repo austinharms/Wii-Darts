@@ -71,7 +71,7 @@ public:
 		while (curNode != nullptr)
 		{
 			++count;
-			curNode->next;
+			curNode = curNode->next;
 		}
 
 		return count;
@@ -84,7 +84,7 @@ public:
 		{
 			if (count++ == index)
 				return curNode->value;
-			curNode->next;
+			curNode = curNode->next;
 		}
 
 		return nullptr;

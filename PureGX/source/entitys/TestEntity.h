@@ -1,5 +1,7 @@
 #ifndef ENTITY_TEST_ENTITY_H_
 #define ENTITY_TEST_ENTITY_H_
+#include <cstring>
+
 #include "Entity.h"
 #include "../rendering/RenderMeshFactory.h"
 #include "../rendering/RenderMesh3D.h"
