@@ -24,6 +24,28 @@
       ]
     },
     {
+      "taskLabel": "Makefile-build",
+      "appliesTo": "*/Makefile",
+      "type": "launch",
+      "contextType": "rebuild",
+      "commands": [
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "clean"
+          ]
+        },
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "build"
+          ]
+        }
+      ]
+    },
+    {
       "taskLabel": "Rebuild & Play",
       "appliesTo": "*.dol",
       "type": "default",
