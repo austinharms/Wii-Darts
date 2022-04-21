@@ -42,7 +42,7 @@ int main(int argc, char** argv, char** envp)
 					}
 				}
 
-				std::ofstream wf((std::filesystem::current_path().string() + "\\" + p.path().stem().string() + ".img").c_str(), std::ios::out | std::ios::binary);
+				std::ofstream wf((std::filesystem::current_path().string() + "\\data\\" + p.path().stem().string() + ".img").c_str(), std::ios::out | std::ios::binary);
 				wf.write((const char*)rawImg, (w * h * 4) + 4);
 				wf.close();
 				free(rawImg);
