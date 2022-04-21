@@ -11,7 +11,7 @@
 #include "Texture.h"
 #include "../Vector3f.h"
 #include "RenderMesh3D.h"
-#include "font_png.h"
+//#include "font_png.h"
 #include "RenderGlobal.h"
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)

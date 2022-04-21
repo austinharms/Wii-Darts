@@ -34,6 +34,16 @@ public:
 	void loadTexture(const uint32_t* data) {
 		if (_pixels != nullptr)
 			free(_pixels);
+		_width = 100;//data[0] >> 16;
+		_height = 100;// (uint16_t)data[0];
+		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;
+		_pixels = (uint8_t*)memalign(32, size);
+		memcpy(_pixels, data + 1, size);
+	}
+
+	void loadTextureRGBA(const uint32_t* data) {
+		if (_pixels != nullptr)
+			free(_pixels);
 		_width = 100;// data[0] >> 16;
 		_height = 100;//(uint16_t)data[0];
 		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;

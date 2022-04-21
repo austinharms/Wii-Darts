@@ -366,3 +366,4 @@ FodyWeavers.xsd
 *.dol
 *.elf
 /PureGX/build
+*.img
