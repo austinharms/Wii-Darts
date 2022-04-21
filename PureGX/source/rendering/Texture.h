@@ -42,7 +42,7 @@ public:
 		uint32_t index = 0;
 		for (uint16_t w = 0; w < _width; ++w) {
 			for (uint16_t h = 0; h < _height; ++h) {
-				setPixel(w, h, data[++index]);
+				setPixel(h, _width - 1 - w, data[++index]);
 			}
 		}
 	}
