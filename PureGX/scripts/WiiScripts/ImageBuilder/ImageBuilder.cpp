@@ -28,7 +28,13 @@ int main(int argc, char** argv, char** envp)
 			uint32_t* image = (uint32_t*)stbi_load((std::filesystem::current_path().string() + "\\textures\\" + p.path().stem().string() + ".png").c_str(), &w, &h, &comp, 4);
 			if (image != nullptr) {
 				uint8_t* rawImg = (uint8_t*)malloc((w * h * 4) + 4);
-				((uint32_t*)rawImg)[0] = (uint32_t)((w << 16) + (uint16_t)h);
+				uint32_t uW = w;
+				uint32_t uH = h;
+				rawImg[0] = ((uint8_t*)&uW)[1];
+				rawImg[1] = ((uint8_t*)&uW)[0];
+				rawImg[2] = ((uint8_t*)&uH)[1];
+				rawImg[3] = ((uint8_t*)&uH)[0];
+				//((uint32_t*)rawImg)[0] = (uint32_t)((w << 16) + (uint16_t)h);
 				uint32_t index = 0;
 				for (int y = 0; y < h; ++y) {
 					for (int x = 0; x < w; ++x) {
