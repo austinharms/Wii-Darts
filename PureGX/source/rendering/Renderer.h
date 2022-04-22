@@ -225,47 +225,86 @@ private:
 
 	void drawMesh(RenderMesh3D* renderMesh, const uint32_t color) {
 		renderMesh->getTexture()->bind();
-		DrawTestRect();
-		//uint32_t vertCount = renderMesh->getMesh()->getVertCount();
-		//const float* verts = renderMesh->getMesh()->getVertexBuffer();
-		//uint32_t bufferIndex = 0;
-		//GRRLIB_3dMode(0.1, 100, 60, true, false);
-		//GX_Begin(GX_TRIANGLES, GX_VTXFMT0, vertCount);
+		uint32_t vertCount = renderMesh->getMesh()->getVertCount();
 		//for (uint32_t i = 0; i < vertCount; ++i) {
-		//	GX_Position3f32(verts[bufferIndex++], verts[bufferIndex++], verts[bufferIndex++]);
-		//	GX_Color1u32(color);
-		//	GX_TexCoord2f32(verts[bufferIndex++], verts[bufferIndex++]);
+		//	DrawTestRect(Vector3f(-1) + Vector3f(((float)i)/10));
 		//}
+		//DrawPoint(Vector3f(1));
+		const float* verts = renderMesh->getMesh()->getVertexBuffer();
+		uint32_t bufferIndex = 0;
+		for (uint32_t i = 0; i < vertCount; ++i) {
+			DrawPoint(Vector3f(-1) + Vector3f(verts[bufferIndex], verts[bufferIndex + 1], verts[bufferIndex + 2]));
+			bufferIndex += 3;
+		}
 
-		//GX_End();
+		bufferIndex = 0;
+		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, vertCount);
+		for (uint32_t i = 0; i < vertCount; ++i) {
+			GX_Position3f32(verts[bufferIndex], verts[bufferIndex + 1], verts[bufferIndex + 2]);
+			GX_Color1u32(color);
+			GX_TexCoord2f32(verts[bufferIndex + 3], verts[bufferIndex + 4]);
+			bufferIndex += 3;
+		}
+
+		GX_End();
 	}
 
-	void DrawTestRect() const {
+	void DrawTestRect(Vector3f pos) const {
 		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
 
-		GX_Position3f32(0, 0, 0);
+		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
-		GX_Position3f32(1, 1, 0);
+		GX_Position3f32(1 + pos.x, 1 + pos.y, 0 + pos.z);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(1.0f, 1.0f);
 
-		GX_Position3f32(0, 1, 0);
+		GX_Position3f32(0 + pos.x, 1 + pos.y, 0 + pos.z);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(0.0f, 1.0f);
 
-		GX_Position3f32(0, 0, 0);
+		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
-		GX_Position3f32(1, 0, 0);
+		GX_Position3f32(1 + pos.x, 0 + pos.y, 0 + pos.z);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(1.0f, 0.0f);
 
-		GX_Position3f32(1, 1, 0);
+		GX_Position3f32(1 + pos.x, 1 + pos.y, 0 + pos.z);
 		GX_Color1u32(0xffffffff);
 		GX_TexCoord2f32(1.0f, 1.0f);
+
+		GX_End();
+	}
+
+	void DrawPoint(Vector3f pos) const {
+		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
+
+		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
+		GX_Color1u32(0x0000ffff);
+		GX_TexCoord2f32(0.0f, 0.0f);
+
+		GX_Position3f32(0.05f + pos.x, 0.05f + pos.y, 0 + pos.z);
+		GX_Color1u32(0x0000ffff);
+		GX_TexCoord2f32(0.0f, 0.0f);
+
+		GX_Position3f32(0 + pos.x, 0.05f + pos.y, 0 + pos.z);
+		GX_Color1u32(0x0000ffff);
+		GX_TexCoord2f32(0.0f, 0.0f);
+
+		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
+		GX_Color1u32(0x0000ffff);
+		GX_TexCoord2f32(0.0f, 0.0f);
+
+		GX_Position3f32(0.05f + pos.x, 0 + pos.y, 0 + pos.z);
+		GX_Color1u32(0x0000ffff);
+		GX_TexCoord2f32(0.0f, 0.0f);
+
+		GX_Position3f32(0.05f + pos.x, 0.05f + pos.y, 0 + pos.z);
+		GX_Color1u32(0x0000ffff);
+		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_End();
 	}

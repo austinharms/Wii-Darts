@@ -20,6 +20,8 @@ BUILD		:=	build
 SOURCES		:=	source source/gfx
 DATA		:=	data
 INCLUDES	:=
+$(shell ./scripts/ImageBuilder.exe)
+$(shell ./scripts/MeshBuilder.exe)
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -64,7 +66,7 @@ CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
-$(shell ./scripts/ImageBuilder.exe)
+
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
@@ -104,7 +106,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(DATA)/*.img *.mesh
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(DATA)/*.img *.mesh $(DATA)/*.mesh
 
 #---------------------------------------------------------------------------------
 run:

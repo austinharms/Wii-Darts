@@ -9,7 +9,7 @@
 class RenderMesh3D
 {
 public:
-	RenderMesh3D(const void* meshData, const uint32_t meshDataLength, const void* textureData, uint32_t i) : _id(i), _mesh(meshData, meshDataLength), _texture(textureData) {}
+	RenderMesh3D(const void* meshData, const void* textureData, uint32_t i) : _id(i), _mesh(meshData), _texture(textureData) {}
 	Texture* getTexture() { return &_texture; }
 	Mesh* getMesh() { return &_mesh; }
 	const uint32_t getId() const { return _id; }
