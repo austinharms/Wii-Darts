@@ -6,12 +6,13 @@
 #include <ogc/conf.h>
 #include <ogc/machine/processor.h>
 #include <gctypes.h>
+#include <cstring>
 
 #include "Mesh.h"
 #include "Texture.h"
 #include "../Vector3f.h"
 #include "RenderMesh3D.h"
-//#include "font_png.h"
+#include "font_img.h"
 #include "RenderGlobal.h"
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
@@ -25,11 +26,32 @@ public:
 		return instance;
 	}
 
+	void drawRenderMesh(RenderMesh3D* renderMesh, const Vector3f position, const Vector3f rotation, uint32_t color = 0xffffffff) {
+		Mtx m, mv;
+		guVector axixX{ 1, 0, 0 };
+		guVector axixY{ 0, 1, 0 };
+		guVector axixZ{ 0, 0, 1 };
+		guMtxRotAxisDeg(m, &axixX, rotation.x);
+		guMtxRotAxisDeg(mv, &axixY, rotation.y);
+		guMtxConcat(m, mv, mv);
+		guMtxRotAxisDeg(m, &axixZ, rotation.z);
+		guMtxConcat(m, mv, mv);
+		guMtxTransApply(mv, mv, position.x, position.y, position.z);
+		guMtxConcat(_view, mv, mv);
+		GX_LoadPosMtxImm(mv, GX_PNMTX0);
+		drawMesh(renderMesh, color);
+	}
+
 	void drawRenderMesh(RenderMesh3D* renderMesh, Vector3f position, uint32_t color = 0xffffffff) {
+		Mtx m;
+		memcpy(&m, &_view, sizeof(Mtx));
+		guMtxTransApply(m, m, position.x, position.y, position.z);
+		GX_LoadPosMtxImm(m, GX_PNMTX0);
 		drawMesh(renderMesh, color);
 	}
 
 	void drawRenderMesh(RenderMesh3D* renderMesh, uint32_t color = 0xffffffff) {
+		GX_LoadPosMtxImm(_view, GX_PNMTX0);
 		drawMesh(renderMesh, color);
 	}
 
@@ -42,10 +64,6 @@ public:
 		VIDEO_WaitVSync();
 		if (_vmode->viTVMode & VI_NON_INTERLACE)
 			VIDEO_WaitVSync();
-	}
-
-	void drawText(uint32_t x, uint32_t y, const char* text, float size = 1, uint32_t color = 0x000000FF) {
-
 	}
 
 	const GXRModeObj* getVideoMode() const {
@@ -78,18 +96,25 @@ public:
 		GX_SetChanCtrl(GX_COLOR0A0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, RenderGlobal::activeLights, GX_DF_CLAMP, GX_AF_SPOT);
 	}
 
+	void drawString(const char* str, Vector3f& pos, const float size, const uint32_t color = 0x000000ff) {
+		uint32_t strIndex = 0;
+		while (str[strIndex] != 0)
+		{
+			drawChar(str[strIndex], pos, size, color);
+			pos.x += size * (2.0f / 3.0f);
+			strIndex++;
+		}
+	}
+
 private:
 	GXRModeObj* _vmode;
 	void* _frameBuffers[2];
 	void* _fifoBuffer;
+	Texture* _fontTexture;
 	Mtx _view;
 	uint8_t _activeFramebuffer;
 
 	Renderer() {
-		// https://github.com/GRRLIB/GRRLIB/blob/master/GRRLIB/GRRLIB/GRRLIB_core.c
-		// https://github.com/devkitPro/libogc/blob/master/libogc/video.c
-		// https://devkitpro.org/wiki/libogc/GX
-
 		VIDEO_Init();
 		// disable display output
 		VIDEO_SetBlack(true);
@@ -198,22 +223,25 @@ private:
 		GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
 
 		// setup position/projection matrix
-		guVector camPos = (guVector){ 0, 0, 5 };
-		guVector upDir = (guVector){ 0, 1, 0 };
-		guVector lookDir = (guVector){ 0, 0, 0 };
-
 		Mtx44 m;
-		guLookAt(_view, &camPos, &upDir, &lookDir);
 		guPerspective(m, 60, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
 		GX_LoadProjectionMtx(m, GX_PERSPECTIVE);
 		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+
+		guVector camPos = (guVector){ 0, 0, 5 };
+		guVector upDir = (guVector){ 0, 1, 0 };
+		guVector lookDir = (guVector){ 0, 0, 0 };
+		guLookAt(_view, &camPos, &upDir, &lookDir);
 		GX_LoadPosMtxImm(_view, GX_PNMTX0);
 
 		// enable display output
 		VIDEO_SetBlack(false);
+
+		_fontTexture = new Texture(font_img, false, false);
 	}
 
 	~Renderer() {
+		delete _fontTexture;
 		GX_SetClipMode(GX_CLIP_DISABLE);
 		GX_SetScissor(0, 0, _vmode->fbWidth, _vmode->efbHeight);
 		GX_DrawDone();
@@ -224,27 +252,56 @@ private:
 	}
 
 	void drawMesh(RenderMesh3D* renderMesh, const uint32_t color) {
-		renderMesh->getTexture()->bind();
-		uint32_t vertCount = renderMesh->getMesh()->getVertCount();
-		//for (uint32_t i = 0; i < vertCount; ++i) {
-		//	DrawTestRect(Vector3f(-1) + Vector3f(((float)i)/10));
-		//}
-		//DrawPoint(Vector3f(1));
+
 		const float* verts = renderMesh->getMesh()->getVertexBuffer();
-		uint32_t bufferIndex = 0;
-		for (uint32_t i = 0; i < vertCount; ++i) {
-			DrawPoint(Vector3f(-1) + Vector3f(verts[bufferIndex], verts[bufferIndex + 1], verts[bufferIndex + 2]));
-			bufferIndex += 3;
+		uint32_t vertCount = renderMesh->getMesh()->getVertCount();
+		renderMesh->getTexture()->bind();
+		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, vertCount);
+		vertCount *= 5;
+		for (uint32_t i = 0; i < vertCount; i += 5) {
+			GX_Position3f32(verts[i], verts[i + 1], verts[i + 2]);
+			GX_Color1u32(color);
+			GX_TexCoord2f32(verts[i + 3], verts[i + 4]);
 		}
 
-		bufferIndex = 0;
-		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, vertCount);
-		for (uint32_t i = 0; i < vertCount; ++i) {
-			GX_Position3f32(verts[bufferIndex], verts[bufferIndex + 1], verts[bufferIndex + 2]);
-			GX_Color1u32(color);
-			GX_TexCoord2f32(verts[bufferIndex + 3], verts[bufferIndex + 4]);
-			bufferIndex += 3;
-		}
+		GX_End();
+	}
+
+	void drawChar(char letter, const Vector3f& pos, const float size, const uint32_t color) {
+		if (letter < 32 || letter > 126) return;
+		letter -= 32;
+		const float charSize = 1.0f / 10.0f;
+		float minX = (letter % 10) * charSize;
+		float maxX = minX + charSize;
+		float minY = (9 - (letter / 10)) * charSize;
+		float maxY = minY + charSize;
+
+		_fontTexture->bind();
+		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
+
+		GX_Position3f32(pos.x, pos.y, pos.z);
+		GX_Color1u32(color);
+		GX_TexCoord2f32(minX, minY);
+
+		GX_Position3f32(size + pos.x, size + pos.y, pos.z);
+		GX_Color1u32(color);
+		GX_TexCoord2f32(maxX, maxY);
+
+		GX_Position3f32(0 + pos.x, size + pos.y, 0 + pos.z);
+		GX_Color1u32(color);
+		GX_TexCoord2f32(minX, maxY);
+
+		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
+		GX_Color1u32(color);
+		GX_TexCoord2f32(minX, minY);
+
+		GX_Position3f32(size + pos.x, 0 + pos.y, 0 + pos.z);
+		GX_Color1u32(color);
+		GX_TexCoord2f32(maxX, minY);
+
+		GX_Position3f32(size + pos.x, size + pos.y, 0 + pos.z);
+		GX_Color1u32(color);
+		GX_TexCoord2f32(maxX, maxY);
 
 		GX_End();
 	}
@@ -279,31 +336,31 @@ private:
 		GX_End();
 	}
 
-	void DrawPoint(Vector3f pos) const {
+	void DrawPoint(Vector3f pos, const uint32_t color = 0x0000ffff) const {
 		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
 
 		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
-		GX_Color1u32(0x0000ffff);
+		GX_Color1u32(color);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(0.05f + pos.x, 0.05f + pos.y, 0 + pos.z);
-		GX_Color1u32(0x0000ffff);
+		GX_Color1u32(color);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(0 + pos.x, 0.05f + pos.y, 0 + pos.z);
-		GX_Color1u32(0x0000ffff);
+		GX_Color1u32(color);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(0 + pos.x, 0 + pos.y, 0 + pos.z);
-		GX_Color1u32(0x0000ffff);
+		GX_Color1u32(color);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(0.05f + pos.x, 0 + pos.y, 0 + pos.z);
-		GX_Color1u32(0x0000ffff);
+		GX_Color1u32(color);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_Position3f32(0.05f + pos.x, 0.05f + pos.y, 0 + pos.z);
-		GX_Color1u32(0x0000ffff);
+		GX_Color1u32(color);
 		GX_TexCoord2f32(0.0f, 0.0f);
 
 		GX_End();

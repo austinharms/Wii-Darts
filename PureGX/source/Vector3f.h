@@ -1,5 +1,7 @@
 #ifndef VECTOR3FLOAT_H_
 #define VECTOR3FLOAT_H_
+#include <math.h>
+
 struct Vector3f
 {
 public:
@@ -25,12 +27,24 @@ public:
 		z = other.z;
 	}
 
-	Vector3f operator+(Vector3f const& other) {
+	Vector3f operator+(Vector3f const& other) const {
 		return Vector3f(x + other.x, y + other.y, z + other.z);
 	}
 
-	Vector3f operator-(Vector3f const& other) {
+	Vector3f operator-(Vector3f const& other) const {
 		return Vector3f(x - other.x, y - other.y, z - other.z);
+	}
+
+	float magnitude() const {
+		return sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2));
+	}
+
+	Vector3f normalize() const {
+		float mag = magnitude();
+		if (mag == 1 || mag == 0)
+			return Vector3f(this->x, this->y, this->z);
+		float magInv = 1.0f / mag;
+		return Vector3f(this->x * magInv, this->y * magInv, this->z * magInv);
 	}
 };
 #endif // !VECTOR3FLOAT_H_

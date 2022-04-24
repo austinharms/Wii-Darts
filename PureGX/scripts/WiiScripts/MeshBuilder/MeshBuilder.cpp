@@ -76,11 +76,11 @@ int main(int argc, char** argv, char** envp)
 						return 1;
 
 					for (uint8_t i = 0; i < 3; ++i) {
-						temp_floats.push_back(temp_vertices.at(vertexIndex[0] - 1).x);
-						temp_floats.push_back(temp_vertices.at(vertexIndex[0] - 1).y);
-						temp_floats.push_back(temp_vertices.at(vertexIndex[0] - 1).z);
-						temp_floats.push_back(temp_uvs.at(uvIndex[0] - 1).x);
-						temp_floats.push_back(temp_uvs.at(uvIndex[0] - 1).y);
+						temp_floats.push_back(temp_vertices.at(vertexIndex[i] - 1).x);
+						temp_floats.push_back(temp_vertices.at(vertexIndex[i] - 1).y);
+						temp_floats.push_back(temp_vertices.at(vertexIndex[i] - 1).z);
+						temp_floats.push_back(temp_uvs.at(uvIndex[i] - 1).x);
+						temp_floats.push_back(temp_uvs.at(uvIndex[i] - 1).y);
 					}
 
 					//vertexIndices.push_back(vertexIndex[0]);
