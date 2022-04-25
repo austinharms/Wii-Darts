@@ -10,20 +10,22 @@
 class TestEntity : public Entity
 {
 public:
-	TestEntity() : _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_TEST)) {
+	TestEntity() : _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {
 		_rot = 0;
 		localPos.x = -4;
 		localPos.z = -5;
+		localRot.x = 90;
+		localRot.z = 90;
 	}
 
 	void onUpdate() override {
 		//Renderer::getInstance().drawText(100, 100, "hi");
-		_rot += 1;
-		if (_rot >= 360) {
-			_rot -= 360;
+		localRot.y += 1;
+		if (localRot.y >= 360) {
+			localRot.y -= 360;
 		}
 
-		Renderer::getInstance().drawRenderMesh(_renderMesh, getWorldPosition(), Vector3f(_rot,90,0));
+		Renderer::getInstance().drawRenderMesh(_renderMesh, getWorldPosition(), getWorldRotation(), getWorldScale());
 	}
 
 private:

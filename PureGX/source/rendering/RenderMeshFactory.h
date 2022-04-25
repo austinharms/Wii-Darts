@@ -3,9 +3,9 @@
 
 #define RM3D_RENDERMESH_COUNT 1
 
-#include "test_img.h"
-#include "test_mesh.h"
-#define RM3D_TEST 0
+#include "dart_img.h"
+#include "dart_mesh.h"
+#define RM3D_DART 0
 
 #include <stdint.h>
 #include "RenderMesh3D.h"
@@ -28,7 +28,7 @@ private:
 	RenderMesh3D* _renderMeshArray;
 	RenderMeshFactory() {
 		_renderMeshArray = (RenderMesh3D*)malloc(RM3D_RENDERMESH_COUNT * sizeof(RenderMesh3D));
-		_renderMeshArray[RM3D_TEST] = RenderMesh3D(test_mesh, test_img, RM3D_TEST);
+		_renderMeshArray[RM3D_DART] = RenderMesh3D(dart_mesh, dart_img, RM3D_DART);
 	}
 
 	RenderMeshFactory(RenderMeshFactory const&);

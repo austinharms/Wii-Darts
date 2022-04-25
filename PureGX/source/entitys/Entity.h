@@ -5,8 +5,8 @@
 class Entity
 {
 public:
-	Entity(Vector3f pos) : localPos(pos), _parent(nullptr), _children(nullptr) { }
-	Entity() : localPos(0), _parent(nullptr), _children(nullptr) { }
+	Entity(Vector3f pos, Vector3f rot, Vector3f scale) : localPos(pos), localRot(rot), localScale(scale), _parent(nullptr), _children(nullptr) { }
+	Entity() : localPos(0), localRot(0), localScale(1), _parent(nullptr), _children(nullptr) { }
 	void update() {
 		onUpdate();
 		EntityNode* curNode = _children;
@@ -21,6 +21,14 @@ public:
 		return localPos;
 	}
 
+	Vector3f getLocalRotation() const {
+		return localRot;
+	}
+
+	Vector3f getLocalScale() const {
+		return localScale;
+	}
+
 	Vector3f getWorldPosition() const {
 		Vector3f pos = localPos;
 		Entity* p = _parent;
@@ -31,6 +39,30 @@ public:
 		}
 
 		return pos;
+	}
+
+	Vector3f getWorldRotation() const {
+		Vector3f rot = localRot;
+		Entity* p = _parent;
+		while (p != nullptr)
+		{
+			rot = rot + p->localRot;
+			p = p->_parent;
+		}
+
+		return rot;
+	}
+
+	Vector3f getWorldScale() const {
+		Vector3f scale = localScale;
+		Entity* p = _parent;
+		while (p != nullptr)
+		{
+			scale = scale * p->localScale;
+			p = p->_parent;
+		}
+
+		return scale;
 	}
 
 	void addChild(Entity* child) {
@@ -92,6 +124,8 @@ public:
 
 protected:
 	Vector3f localPos;
+	Vector3f localRot;
+	Vector3f localScale;
 	virtual void onUpdate() {};
 
 private:

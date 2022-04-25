@@ -12,7 +12,7 @@
 #include "Texture.h"
 #include "../Vector3f.h"
 #include "RenderMesh3D.h"
-#include "font_img.h"
+#include "font_256_img.h"
 #include "RenderGlobal.h"
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
@@ -26,17 +26,34 @@ public:
 		return instance;
 	}
 
-	void drawRenderMesh(RenderMesh3D* renderMesh, const Vector3f position, const Vector3f rotation, uint32_t color = 0xffffffff) {
+	void drawRenderMesh(RenderMesh3D* renderMesh, const Vector3f& position, const Vector3f& rotation, const Vector3f& scale, uint32_t color = 0xffffffff) {
+		if (scale.isZero()) return;
 		Mtx m, mv;
-		guVector axixX{ 1, 0, 0 };
-		guVector axixY{ 0, 1, 0 };
-		guVector axixZ{ 0, 0, 1 };
-		guMtxRotAxisDeg(m, &axixX, rotation.x);
-		guMtxRotAxisDeg(mv, &axixY, rotation.y);
-		guMtxConcat(m, mv, mv);
-		guMtxRotAxisDeg(m, &axixZ, rotation.z);
-		guMtxConcat(m, mv, mv);
-		guMtxTransApply(mv, mv, position.x, position.y, position.z);
+		guMtxIdentity(mv);
+
+		if (!scale.isOne()) {
+			guMtxScaleApply(mv, mv, scale.x, scale.y, scale.z);
+		}
+
+		if (rotation.x != 0) {
+			guMtxRotAxisDeg(m, &_axixX, rotation.x);
+			guMtxConcat(m, mv, mv);
+		}
+
+		if (rotation.y != 0) {
+			guMtxRotAxisDeg(m, &_axixY, rotation.y);
+			guMtxConcat(m, mv, mv);
+		}
+
+		if (rotation.z != 0) {
+			guMtxRotAxisDeg(m, &_axixZ, rotation.z);
+			guMtxConcat(m, mv, mv);
+		}
+
+		if (!position.isZero()) {
+			guMtxTransApply(mv, mv, position.x, position.y, position.z);
+		}
+
 		guMtxConcat(_view, mv, mv);
 		GX_LoadPosMtxImm(mv, GX_PNMTX0);
 		drawMesh(renderMesh, color);
@@ -112,6 +129,9 @@ private:
 	void* _fifoBuffer;
 	Texture* _fontTexture;
 	Mtx _view;
+	guVector _axixX;
+	guVector _axixY;
+	guVector _axixZ;
 	uint8_t _activeFramebuffer;
 
 	Renderer() {
@@ -237,7 +257,10 @@ private:
 		// enable display output
 		VIDEO_SetBlack(false);
 
-		_fontTexture = new Texture(font_img, false, false);
+		_axixX = (guVector){ 1,0,0 };
+		_axixY = (guVector){ 0,1,0 };
+		_axixZ = (guVector){ 0,0,1 };
+		_fontTexture = new Texture(font_256_img, false, true);
 	}
 
 	~Renderer() {

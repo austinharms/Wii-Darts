@@ -35,6 +35,10 @@ public:
 		return Vector3f(x - other.x, y - other.y, z - other.z);
 	}
 
+	Vector3f operator*(Vector3f const& other) const {
+		return Vector3f(x * other.x, y * other.y, z * other.z);
+	}
+
 	float magnitude() const {
 		return sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2));
 	}
@@ -45,6 +49,14 @@ public:
 			return Vector3f(this->x, this->y, this->z);
 		float magInv = 1.0f / mag;
 		return Vector3f(this->x * magInv, this->y * magInv, this->z * magInv);
+	}
+
+	bool isZero() const {
+		return !x && !y && !z;
+	}
+
+	bool isOne() const {
+		return x == 1 && y == 1 && z == 1;
 	}
 };
 #endif // !VECTOR3FLOAT_H_
