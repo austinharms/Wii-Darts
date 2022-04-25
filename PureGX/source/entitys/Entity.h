@@ -34,7 +34,7 @@ public:
 		Entity* p = _parent;
 		while (p != nullptr)
 		{
-			pos = pos + p->localPos;
+			pos += (p->localPos * p->localScale);
 			p = p->_parent;
 		}
 
@@ -46,7 +46,7 @@ public:
 		Entity* p = _parent;
 		while (p != nullptr)
 		{
-			rot = rot + p->localRot;
+			rot += p->localRot;
 			p = p->_parent;
 		}
 
@@ -58,7 +58,7 @@ public:
 		Entity* p = _parent;
 		while (p != nullptr)
 		{
-			scale = scale * p->localScale;
+			scale *= p->localScale;
 			p = p->_parent;
 		}
 

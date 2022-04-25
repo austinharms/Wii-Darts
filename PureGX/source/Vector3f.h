@@ -31,12 +31,44 @@ public:
 		return Vector3f(x + other.x, y + other.y, z + other.z);
 	}
 
+	Vector3f& operator+=(Vector3f const& other) const {
+		x += other.x;
+		y += other.y;
+		z += other.z;
+		return *this;
+	}
+
+	Vector3f& operator-=(Vector3f const& other) const {
+		x -= other.x;
+		y -= other.y;
+		z -= other.z;
+		return *this;
+	}
+
+	Vector3f& operator*=(Vector3f const& other) const {
+		x *= other.x;
+		y *= other.y;
+		z *= other.z;
+		return *this;
+	}
+
+	Vector3f& operator/=(Vector3f const& other) const {
+		x /= other.x;
+		y /= other.y;
+		z /= other.z;
+		return *this;
+	}
+
 	Vector3f operator-(Vector3f const& other) const {
 		return Vector3f(x - other.x, y - other.y, z - other.z);
 	}
 
 	Vector3f operator*(Vector3f const& other) const {
 		return Vector3f(x * other.x, y * other.y, z * other.z);
+	}
+
+	Vector3f operator/(Vector3f const& other) const {
+		return Vector3f(x / other.x, y / other.y, z / other.z);
 	}
 
 	float magnitude() const {
