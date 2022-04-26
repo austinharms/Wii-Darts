@@ -10,27 +10,16 @@
 class TestEntity : public Entity
 {
 public:
-	TestEntity() : _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {
-		_rot = 0;
-		localPos.x = -4;
-		localPos.z = -5;
-		localRot.x = 90;
-		localRot.z = 90;
-	}
+	TestEntity() : Entity(Vector3f(-5, 0, -4), Vector3f(0, 90, 0), Vector3f(1)), _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {	}
 
-	void onUpdate() override {
+	void onUpdate(Mtx& matrix) override {
 		//Renderer::getInstance().drawText(100, 100, "hi");
-		localRot.y += 1;
-		if (localRot.y >= 360) {
-			localRot.y -= 360;
-		}
-
-		Renderer::getInstance().drawRenderMesh(_renderMesh, getWorldPosition(), getWorldRotation(), getWorldScale());
+		rotate(Vector3f(1, 0, 0));
+		Renderer::getInstance().drawRenderMesh(_renderMesh, matrix);
 	}
 
 private:
 	RenderMesh3D* _renderMesh;
-	float _rot;
 };
 
 #endif // !ENTITY_TEST_ENTITY_H_

@@ -31,28 +31,28 @@ public:
 		return Vector3f(x + other.x, y + other.y, z + other.z);
 	}
 
-	Vector3f& operator+=(Vector3f const& other) const {
+	Vector3f& operator+=(Vector3f const& other) {
 		x += other.x;
 		y += other.y;
 		z += other.z;
 		return *this;
 	}
 
-	Vector3f& operator-=(Vector3f const& other) const {
+	Vector3f& operator-=(Vector3f const& other) {
 		x -= other.x;
 		y -= other.y;
 		z -= other.z;
 		return *this;
 	}
 
-	Vector3f& operator*=(Vector3f const& other) const {
+	Vector3f& operator*=(Vector3f const& other) {
 		x *= other.x;
 		y *= other.y;
 		z *= other.z;
 		return *this;
 	}
 
-	Vector3f& operator/=(Vector3f const& other) const {
+	Vector3f& operator/=(Vector3f const& other) {
 		x /= other.x;
 		y /= other.y;
 		z /= other.z;

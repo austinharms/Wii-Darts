@@ -5,64 +5,81 @@
 class Entity
 {
 public:
-	Entity(Vector3f pos, Vector3f rot, Vector3f scale) : localPos(pos), localRot(rot), localScale(scale), _parent(nullptr), _children(nullptr) { }
-	Entity() : localPos(0), localRot(0), localScale(1), _parent(nullptr), _children(nullptr) { }
+	Entity(Vector3f pos, Vector3f rot, Vector3f scale) {
+		_parent = nullptr;
+		_children = nullptr;
+		guMtxIdentity(_matrix);
+		this->scale(scale);
+		rotate(rot);
+		translate(pos);
+	}
+
+	Entity() {
+		_parent = nullptr;
+		_children = nullptr;
+		guMtxIdentity(_matrix);
+	}
+
 	void update() {
-		onUpdate();
+		onUpdate(_matrix);
 		EntityNode* curNode = _children;
 		while (curNode != nullptr)
 		{
-			curNode->value->update();
+			curNode->value->update(_matrix);
 			curNode = curNode->next;
 		}
 	}
 
-	Vector3f getLocalPosition() const {
-		return localPos;
-	}
-
-	Vector3f getLocalRotation() const {
-		return localRot;
-	}
-
-	Vector3f getLocalScale() const {
-		return localScale;
-	}
-
-	Vector3f getWorldPosition() const {
-		Vector3f pos = localPos;
-		Entity* p = _parent;
-		while (p != nullptr)
+	void update(Mtx& parentMatrix) {
+		Mtx m;
+		guMtxConcat(parentMatrix, _matrix, m);
+		onUpdate(m);
+		EntityNode* curNode = _children;
+		while (curNode != nullptr)
 		{
-			pos += (p->localPos * p->localScale);
-			p = p->_parent;
+			curNode->value->update(m);
+			curNode = curNode->next;
+		}
+	}
+
+	Vector3f getPosition() const {
+		return Vector3f(_matrix[0][3], _matrix[1][3], _matrix[2][3]);
+	}
+
+	void translate(const Vector3f& pos) {
+		guMtxTransApply(_matrix, _matrix, pos.x, pos.y, pos.z);
+	}
+
+	void rotate(const Vector3f& rotation) {
+		Vector3f pos = getPosition();
+		setPosition(Vector3f(0));
+		Mtx m;
+		if (rotation.x != 0) {
+			guMtxRotAxisDeg(m, &s_axixX, rotation.x);
+			guMtxConcat(m, _matrix, _matrix);
 		}
 
-		return pos;
-	}
-
-	Vector3f getWorldRotation() const {
-		Vector3f rot = localRot;
-		Entity* p = _parent;
-		while (p != nullptr)
-		{
-			rot += p->localRot;
-			p = p->_parent;
+		if (rotation.y != 0) {
+			guMtxRotAxisDeg(m, &s_axixY, rotation.y);
+			guMtxConcat(m, _matrix, _matrix);
 		}
 
-		return rot;
-	}
-
-	Vector3f getWorldScale() const {
-		Vector3f scale = localScale;
-		Entity* p = _parent;
-		while (p != nullptr)
-		{
-			scale *= p->localScale;
-			p = p->_parent;
+		if (rotation.z != 0) {
+			guMtxRotAxisDeg(m, &s_axixZ, rotation.z);
+			guMtxConcat(m, _matrix, _matrix);
 		}
 
-		return scale;
+		setPosition(pos);
+	}
+
+	void scale(const Vector3f& scale) {
+		guMtxScaleApply(_matrix, _matrix, scale.x, scale.y, scale.z);
+	}
+
+	void setPosition(const Vector3f& pos) {
+		_matrix[0][3] = pos.x;
+		_matrix[1][3] = pos.y;
+		_matrix[2][3] = pos.z;
 	}
 
 	void addChild(Entity* child) {
@@ -123,12 +140,13 @@ public:
 	}
 
 protected:
-	Vector3f localPos;
-	Vector3f localRot;
-	Vector3f localScale;
-	virtual void onUpdate() {};
+	virtual void onUpdate(Mtx& renderMatrix) {};
 
 private:
+	static guVector s_axixX;
+	static guVector s_axixY;
+	static guVector s_axixZ;
+
 	struct EntityNode
 	{
 		EntityNode(Entity* e, EntityNode* n) {
@@ -142,5 +160,10 @@ private:
 
 	Entity* _parent = nullptr;
 	EntityNode* _children = nullptr;
+	float _matrix[3][4];
 };
+
+guVector Entity::s_axixX = (guVector){ 1,0,0 };
+guVector Entity::s_axixY = (guVector){ 0,1,0 };
+guVector Entity::s_axixZ = (guVector){ 0,0,1 };
 #endif // !ENTITY_H_

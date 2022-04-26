@@ -26,6 +26,13 @@ public:
 		return instance;
 	}
 
+	void drawRenderMesh(RenderMesh3D* renderMesh, Mtx& matrix, uint32_t color = 0xffffffff) {
+		Mtx m;
+		guMtxConcat(_view, matrix, m);
+		GX_LoadPosMtxImm(m, GX_PNMTX0);
+		drawMesh(renderMesh, color);
+	}
+
 	void drawRenderMesh(RenderMesh3D* renderMesh, const Vector3f& position, const Vector3f& rotation, const Vector3f& scale, uint32_t color = 0xffffffff) {
 		if (scale.isZero()) return;
 		Mtx m, mv;
@@ -36,17 +43,17 @@ public:
 		}
 
 		if (rotation.x != 0) {
-			guMtxRotAxisDeg(m, &_axixX, rotation.x);
+			guMtxRotAxisDeg(m, &s_axixX, rotation.x);
 			guMtxConcat(m, mv, mv);
 		}
 
 		if (rotation.y != 0) {
-			guMtxRotAxisDeg(m, &_axixY, rotation.y);
+			guMtxRotAxisDeg(m, &s_axixY, rotation.y);
 			guMtxConcat(m, mv, mv);
 		}
 
 		if (rotation.z != 0) {
-			guMtxRotAxisDeg(m, &_axixZ, rotation.z);
+			guMtxRotAxisDeg(m, &s_axixZ, rotation.z);
 			guMtxConcat(m, mv, mv);
 		}
 
@@ -124,14 +131,15 @@ public:
 	}
 
 private:
+	static guVector s_axixX;
+	static guVector s_axixY;
+	static guVector s_axixZ;
+
 	GXRModeObj* _vmode;
 	void* _frameBuffers[2];
 	void* _fifoBuffer;
 	Texture* _fontTexture;
 	Mtx _view;
-	guVector _axixX;
-	guVector _axixY;
-	guVector _axixZ;
 	uint8_t _activeFramebuffer;
 
 	Renderer() {
@@ -256,10 +264,6 @@ private:
 
 		// enable display output
 		VIDEO_SetBlack(false);
-
-		_axixX = (guVector){ 1,0,0 };
-		_axixY = (guVector){ 0,1,0 };
-		_axixZ = (guVector){ 0,0,1 };
 		_fontTexture = new Texture(font_256_img, false, true);
 	}
 
@@ -392,4 +396,8 @@ private:
 	Renderer(Renderer const&);
 	void operator=(Renderer const&);
 };
+
+guVector Renderer::s_axixX = (guVector){ 1,0,0 };
+guVector Renderer::s_axixY = (guVector){ 0,1,0 };
+guVector Renderer::s_axixZ = (guVector){ 0,0,1 };
 #endif // !RENDERER_H_
