@@ -11,12 +11,29 @@ class Texture
 public:
 	Texture(const void* data, bool repeat = false, bool antialias = false) {
 		_pixels = nullptr;
+		Initialize(data, repeat, antialias);
+	}
+
+	Texture() {
+		_pixels = nullptr;
+		Uninitialize();
+	}
+
+	~Texture() {
+		Uninitialize();
+	}
+
+	void Initialize(const void* data, bool repeat = false, bool antialias = false) {
 		loadTexture((const uint32_t*)data);
 		updateTexture(repeat, antialias);
 	}
 
-	~Texture() {
-		free(_pixels);
+	void Uninitialize() {
+		_width = 0;
+		_height = 0;
+		if (_pixels != nullptr)
+			free(_pixels);
+		_pixels = nullptr;
 	}
 
 	uint16_t getHeight() const {
@@ -28,6 +45,7 @@ public:
 	}
 
 	void bind() {
+		updateTexture(false, true);
 		GX_LoadTexObj(&_texture, GX_TEXMAP0);
 	}
 

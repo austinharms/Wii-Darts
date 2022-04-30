@@ -80,14 +80,28 @@ public:
 	}
 
 	void swapFrameBuffer() {
-		GX_DrawDone();
-		_activeFramebuffer ^= 1;
+		//GX_DrawDone();
+		//_activeFramebuffer ^= 1;
+		//GX_CopyDisp(_frameBuffers[_activeFramebuffer], GX_TRUE);
+		//VIDEO_SetNextFramebuffer(_frameBuffers[_activeFramebuffer]);
+		//VIDEO_Flush();
+		//VIDEO_WaitVSync();
+		//if (_vmode->viTVMode & VI_NON_INTERLACE)
+		//	VIDEO_WaitVSync();
+
+		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+		GX_SetColorUpdate(GX_TRUE);
 		GX_CopyDisp(_frameBuffers[_activeFramebuffer], GX_TRUE);
+		GX_DrawDone();
+
 		VIDEO_SetNextFramebuffer(_frameBuffers[_activeFramebuffer]);
 		VIDEO_Flush();
 		VIDEO_WaitVSync();
 		if (_vmode->viTVMode & VI_NON_INTERLACE)
 			VIDEO_WaitVSync();
+		_activeFramebuffer ^= 1;		// Flip framebuffer
+
+		GX_InvalidateTexAll(); // Fixes some texture garbles
 	}
 
 	const GXRModeObj* getVideoMode() const {
@@ -128,6 +142,27 @@ public:
 			pos.x += size * (2.0f / 3.0f);
 			strIndex++;
 		}
+	}
+
+	Vector3f getPosition() const {
+		return Vector3f(_view[0][3], _view[1][3], _view[2][3]);
+	}
+
+	void setPosition(Vector3f pos) {
+		_view[0][3] = pos.x;
+		_view[1][3] = pos.y;
+		_view[2][3] = pos.z;
+	}
+
+	void setLookPosition(Vector3f lookPos) {
+		Vector3f pos = getPosition();
+		guLookAt(_view, (guVector*)&pos, &s_axixY, (guVector*)&lookPos);
+		GX_LoadPosMtxImm(_view, GX_PNMTX0);
+	}
+
+	void setLookAndPosition(Vector3f pos, Vector3f lookPos) {
+		guLookAt(_view, (guVector*)&pos, &s_axixY, (guVector*)&lookPos);
+		GX_LoadPosMtxImm(_view, GX_PNMTX0);
 	}
 
 private:
@@ -256,10 +291,9 @@ private:
 		GX_LoadProjectionMtx(m, GX_PERSPECTIVE);
 		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 
-		guVector camPos = (guVector){ 0, 0, 5 };
-		guVector upDir = (guVector){ 0, 1, 0 };
-		guVector lookDir = (guVector){ 0, 0, 0 };
-		guLookAt(_view, &camPos, &upDir, &lookDir);
+		guVector camPos = (guVector){ 0, 0, 0 };
+		guVector lookDir = (guVector){ 0, 0, 1 };
+		guLookAt(_view, &camPos, &s_axixY, &lookDir);
 		GX_LoadPosMtxImm(_view, GX_PNMTX0);
 
 		// enable display output
@@ -303,6 +337,7 @@ private:
 		float minY = (9 - (letter / 10)) * charSize;
 		float maxY = minY + charSize;
 
+		GX_LoadPosMtxImm(_view, GX_PNMTX0);
 		_fontTexture->bind();
 		GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
 

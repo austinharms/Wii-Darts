@@ -13,7 +13,8 @@ public:
 	TestEntity() : Entity(Vector3f(-5, 0, -4), Vector3f(0, 90, 0), Vector3f(1)), _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {	}
 
 	void onUpdate(Mtx& matrix) override {
-		//Renderer::getInstance().drawText(100, 100, "hi");
+		//Vector3f pos(0, 0, 0);
+		//Renderer::getInstance().drawString("test", pos, 1);
 		rotate(Vector3f(1, 0, 0));
 		Renderer::getInstance().drawRenderMesh(_renderMesh, matrix);
 	}
