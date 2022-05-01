@@ -9,8 +9,8 @@
 class RenderMesh3D
 {
 public:
-	RenderMesh3D(const void* meshData, const void* textureData, uint32_t id) {
-		Initialize(meshData, textureData, id);
+	RenderMesh3D(const void* meshData, const void* textureData, uint32_t id, bool textureRepeat = false, bool textureAntialias = false) {
+		Initialize(meshData, textureData, id, textureRepeat, textureAntialias);
 	}
 
 	RenderMesh3D() {
@@ -21,10 +21,10 @@ public:
 		Uninitialize();
 	}
 
-	void Initialize(const void* meshData, const void* textureData, uint32_t id) {
+	void Initialize(const void* meshData, const void* textureData, uint32_t id, bool textureRepeat = false, bool textureAntialias = false) {
 		_id = id;
 		_mesh.Initialize(meshData);
-		_texture.Initialize(textureData);
+		_texture.Initialize(textureData, textureRepeat, textureAntialias);
 	}
 
 	void Uninitialize() {

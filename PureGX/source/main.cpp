@@ -9,18 +9,44 @@
 #include "entitys/TestEntity.h"
 #include "entitys/RenderEntity.h"
 
-int main(void){
-    Renderer::getInstance().setLookAndPosition(Vector3f(0,0,20), Vector3f(0,0,0));
-    WPAD_Init();
-    RenderEntity room(RM3D_ROOM);
-    TestEntity dart;
-    room.addChild((Entity*)&dart);
-    while(true) {
-        WPAD_ScanPads();
-        if(WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) break;
-        room.update();
-        Renderer::getInstance().swapFrameBuffer();
-    }
+Entity* masterEntity = nullptr;
 
-    return 0;
+void createRoom() {
+	Entity* en = new RenderEntity(RM3D_WALL);
+	en->setPosition(Vector3f(0, 1.72f, -2.371f));
+	masterEntity->addChild(en);
+	en->drop();
+	en = new RenderEntity(RM3D_BOARD);
+	en->scale(Vector3f(0.4572f));
+	en->setPosition(Vector3f(0, 1.72f, -2.37f));
+	en->rotate(Vector3f(-90, 0, 180));
+	masterEntity->addChild(en);
+	en->drop();
+	en = nullptr;
+}
+
+int main(void) {
+	WPAD_Init();
+	Renderer::getInstance().setLookAndPosition(Vector3f(0, 1.72f, 0), Vector3f(0, 1.72f, -2.37f));
+	masterEntity = new Entity();
+	createRoom();
+
+	{
+		TestEntity* dart = new TestEntity();
+		masterEntity->addChild((Entity*)dart);
+		dart->drop();
+		dart = nullptr;
+	}
+
+	while (true) {
+		WPAD_ScanPads();
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) break;
+		masterEntity->update();
+		Renderer* r = &Renderer::getInstance();
+		r->swapFrameBuffer();
+	}
+
+	masterEntity->drop();
+	masterEntity = nullptr;
+	return 0;
 }

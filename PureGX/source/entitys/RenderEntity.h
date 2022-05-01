@@ -12,6 +12,8 @@ class RenderEntity : public Entity
 public:
 	RenderEntity(uint32_t renderMeshId) : Entity(Vector3f(0), Vector3f(0), Vector3f(1)), _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(renderMeshId)) {	}
 
+	virtual ~RenderEntity() {}
+
 	void onUpdate(Mtx& matrix) override {
 		Renderer::getInstance().drawRenderMesh(_renderMesh, matrix);
 	}

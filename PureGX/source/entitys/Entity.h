@@ -8,6 +8,7 @@ public:
 	Entity(Vector3f pos, Vector3f rot, Vector3f scale) {
 		_parent = nullptr;
 		_children = nullptr;
+		_refCount = 1;
 		guMtxIdentity(_matrix);
 		this->scale(scale);
 		rotate(rot);
@@ -15,9 +16,36 @@ public:
 	}
 
 	Entity() {
+		_refCount = 1;
 		_parent = nullptr;
 		_children = nullptr;
 		guMtxIdentity(_matrix);
+	}
+
+	virtual ~Entity() {
+		EntityNode* curNode = _children;
+		while (curNode != nullptr)
+		{
+			EntityNode* oldNode = curNode;
+			oldNode->value->_parent = nullptr;
+			oldNode->value->drop();
+			curNode = oldNode->next;
+			delete oldNode;
+		}
+	}
+
+	void grab() {
+		++_refCount;
+	}
+
+	bool drop() {
+		--_refCount;
+		if (_refCount == 0) {
+			delete this;
+			return true;
+		}
+
+		return false;
 	}
 
 	void update() {
@@ -83,6 +111,7 @@ public:
 	}
 
 	void addChild(Entity* child) {
+		child->grab();
 		child->_parent = this;
 		_children = new EntityNode(child, _children);
 	}
@@ -102,6 +131,8 @@ public:
 				}
 
 				delete curNode;
+				child->_parent = nullptr;
+				child->drop();
 				return child;
 			}
 
@@ -161,6 +192,7 @@ private:
 	Entity* _parent = nullptr;
 	EntityNode* _children = nullptr;
 	float _matrix[3][4];
+	uint32_t _refCount;
 };
 
 guVector Entity::s_axixX = (guVector){ 1,0,0 };
