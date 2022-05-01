@@ -20,6 +20,8 @@ BUILD		:=	build
 SOURCES		:=	source source/gfx
 DATA		:=	data
 INCLUDES	:=
+$(shell ./scripts/ImageBuilder.exe)
+$(shell ./scripts/MeshBuilder.exe)
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -104,7 +106,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(DATA)/*.img *.mesh $(DATA)/*.mesh
 
 #---------------------------------------------------------------------------------
 run:
@@ -142,6 +144,13 @@ $(OFILES_SOURCES) : $(HFILES)
 # This rule links in binary data with the .mesh extension
 #---------------------------------------------------------------------------------
 %.mesh.o	:	%.mesh
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	$(bin2o)
+#---------------------------------------------------------------------------------
+# This rule links in binary data with the .img extension
+#---------------------------------------------------------------------------------
+%.img.o	:	%.img
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	$(bin2o)

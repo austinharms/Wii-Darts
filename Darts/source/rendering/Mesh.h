@@ -7,12 +7,30 @@ class Mesh
 public:
 	const static uint32_t stride = sizeof(float) * 5;
 
-	Mesh(const void* meshData, const uint32_t byteLength) : _vertexCount(byteLength/stride) {
-		_buffer = (const float*)meshData;
+	Mesh(const void* meshData) {
+		Initialize(meshData);
+	}
+
+	Mesh() {
+		Uninitialize();
+	}
+
+	~Mesh() {
+		Uninitialize();
+	}
+
+	void Initialize(const void* meshData) {
+		_vertexCount = ((const uint32_t*)meshData)[0];
+		_buffer = ((const float*)meshData) + 1;
+	}
+
+	void Uninitialize() {
+		_vertexCount = 0;
+		_buffer = nullptr;
 	}
 
 	const uint32_t getTriCount() const {
-		return _vertexCount / 15;
+		return _vertexCount / 3;
 	}
 
 	const uint32_t getVertCount() const {
@@ -24,7 +42,7 @@ public:
 	}
 
 private:
-	const uint32_t _vertexCount;
+	uint32_t _vertexCount;
 	const float* _buffer;
 };
 #endif // !RENDER_MESH_H_

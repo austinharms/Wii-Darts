@@ -5,35 +5,113 @@
 class Entity
 {
 public:
-	Entity(Vector3f pos) : localPos(pos), _parent(nullptr), _children(nullptr) { }
-	Entity() : localPos(0), _parent(nullptr), _children(nullptr) { }
-	void update() {
-		onUpdate();
+	Entity(Vector3f pos, Vector3f rot, Vector3f scale) {
+		_parent = nullptr;
+		_children = nullptr;
+		_refCount = 1;
+		guMtxIdentity(_matrix);
+		this->scale(scale);
+		rotate(rot);
+		translate(pos);
+	}
+
+	Entity() {
+		_refCount = 1;
+		_parent = nullptr;
+		_children = nullptr;
+		guMtxIdentity(_matrix);
+	}
+
+	virtual ~Entity() {
 		EntityNode* curNode = _children;
 		while (curNode != nullptr)
 		{
-			curNode->value->update();
-			curNode->next;
+			EntityNode* oldNode = curNode;
+			oldNode->value->_parent = nullptr;
+			oldNode->value->drop();
+			curNode = oldNode->next;
+			delete oldNode;
 		}
 	}
 
-	Vector3f getLocalPosition() const {
-		return localPos;
+	void grab() {
+		++_refCount;
 	}
 
-	Vector3f getWorldPosition() const {
-		Vector3f pos = localPos;
-		Entity* p = _parent;
-		while (p != nullptr)
+	bool drop() {
+		--_refCount;
+		if (_refCount == 0) {
+			delete this;
+			return true;
+		}
+
+		return false;
+	}
+
+	void update() {
+		onUpdate(_matrix);
+		EntityNode* curNode = _children;
+		while (curNode != nullptr)
 		{
-			pos = pos + p->localPos;
-			p = p->_parent;
+			curNode->value->update(_matrix);
+			curNode = curNode->next;
+		}
+	}
+
+	void update(Mtx& parentMatrix) {
+		Mtx m;
+		guMtxConcat(parentMatrix, _matrix, m);
+		onUpdate(m);
+		EntityNode* curNode = _children;
+		while (curNode != nullptr)
+		{
+			curNode->value->update(m);
+			curNode = curNode->next;
+		}
+	}
+
+	Vector3f getPosition() const {
+		return Vector3f(_matrix[0][3], _matrix[1][3], _matrix[2][3]);
+	}
+
+	void translate(const Vector3f& pos) {
+		guMtxTransApply(_matrix, _matrix, pos.x, pos.y, pos.z);
+	}
+
+	void rotate(const Vector3f& rotation) {
+		Vector3f pos = getPosition();
+		setPosition(Vector3f(0));
+		Mtx m;
+		if (rotation.x != 0) {
+			guMtxRotAxisDeg(m, &s_axixX, rotation.x);
+			guMtxConcat(m, _matrix, _matrix);
 		}
 
-		return pos;
+		if (rotation.y != 0) {
+			guMtxRotAxisDeg(m, &s_axixY, rotation.y);
+			guMtxConcat(m, _matrix, _matrix);
+		}
+
+		if (rotation.z != 0) {
+			guMtxRotAxisDeg(m, &s_axixZ, rotation.z);
+			guMtxConcat(m, _matrix, _matrix);
+		}
+
+		setPosition(pos);
+	}
+
+	void scale(const Vector3f& scale) {
+		guMtxScaleApply(_matrix, _matrix, scale.x, scale.y, scale.z);
+	}
+
+	void setPosition(const Vector3f& pos) {
+		_matrix[0][3] = pos.x;
+		_matrix[1][3] = pos.y;
+		_matrix[2][3] = pos.z;
 	}
 
 	void addChild(Entity* child) {
+		child->grab();
 		child->_parent = this;
 		_children = new EntityNode(child, _children);
 	}
@@ -53,6 +131,8 @@ public:
 				}
 
 				delete curNode;
+				child->_parent = nullptr;
+				child->drop();
 				return child;
 			}
 
@@ -71,7 +151,7 @@ public:
 		while (curNode != nullptr)
 		{
 			++count;
-			curNode->next;
+			curNode = curNode->next;
 		}
 
 		return count;
@@ -84,17 +164,20 @@ public:
 		{
 			if (count++ == index)
 				return curNode->value;
-			curNode->next;
+			curNode = curNode->next;
 		}
 
 		return nullptr;
 	}
 
 protected:
-	Vector3f localPos;
-	virtual void onUpdate() {};
+	virtual void onUpdate(Mtx& renderMatrix) {};
 
 private:
+	static guVector s_axixX;
+	static guVector s_axixY;
+	static guVector s_axixZ;
+
 	struct EntityNode
 	{
 		EntityNode(Entity* e, EntityNode* n) {
@@ -108,5 +191,11 @@ private:
 
 	Entity* _parent = nullptr;
 	EntityNode* _children = nullptr;
+	float _matrix[3][4];
+	uint32_t _refCount;
 };
+
+guVector Entity::s_axixX = (guVector){ 1,0,0 };
+guVector Entity::s_axixY = (guVector){ 0,1,0 };
+guVector Entity::s_axixZ = (guVector){ 0,0,1 };
 #endif // !ENTITY_H_

@@ -1,26 +1,47 @@
 #ifndef RENDER_MESH_3D_H_
 #define RENDER_MESH_3D_H_
 #include <stdint.h>
+#include <cstring>
 
 #include "Mesh.h"
 #include "Texture.h"
-#include <memory.h>
 
 class RenderMesh3D
 {
 public:
-	RenderMesh3D(const void* meshData, const uint32_t meshDataLength, const void* textureData, uint32_t i) : _id(i), _mesh(meshData, meshDataLength), _texture(textureData) {}
-	const Texture* getTexture() const { return &_texture; }
-	const Mesh* getMesh() const { return &_mesh; }
-	const uint32_t getId() const { return _id; }
-	void operator=(RenderMesh3D const& other) {
-		memcpy((void*)this, (void*)&other, sizeof(RenderMesh3D));
+	RenderMesh3D(const void* meshData, const void* textureData, uint32_t id, bool textureRepeat = false, bool textureAntialias = false) {
+		Initialize(meshData, textureData, id, textureRepeat, textureAntialias);
 	}
 
+	RenderMesh3D() {
+		Uninitialize();
+	}
+
+	~RenderMesh3D() {
+		Uninitialize();
+	}
+
+	void Initialize(const void* meshData, const void* textureData, uint32_t id, bool textureRepeat = false, bool textureAntialias = false) {
+		_id = id;
+		_mesh.Initialize(meshData);
+		_texture.Initialize(textureData, textureRepeat, textureAntialias);
+	}
+
+	void Uninitialize() {
+		_id = 0;
+		_mesh.Uninitialize();
+		_texture.Uninitialize();
+	}
+
+	Texture* getTexture() { return &_texture; }
+	Mesh* getMesh() { return &_mesh; }
+	const uint32_t getId() const { return _id; }
+
 private:
-	RenderMesh3D();
-	Texture _texture;
+	uint32_t _id;
 	Mesh _mesh;
-	const uint32_t _id;
+	Texture _texture;
+
+	void operator=(RenderMesh3D const& other);
 };
 #endif // !RENDER_MESH_3D_H_

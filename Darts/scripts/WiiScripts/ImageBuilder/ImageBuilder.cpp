@@ -24,7 +24,6 @@ int main(int argc, char** argv, char** envp)
 {
 	std::string path("./textures/");
 	std::string ext(".png");
-	fs::current_path(fs::path("C:\\Users\\austi\\source\\repos\\Wii\\PureGX"));
 	for (auto& p : fs::recursive_directory_iterator(path))
 	{
 		if (p.path().extension() == ext) {

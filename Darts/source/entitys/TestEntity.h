@@ -1,5 +1,7 @@
 #ifndef ENTITY_TEST_ENTITY_H_
 #define ENTITY_TEST_ENTITY_H_
+#include <cstring>
+
 #include "Entity.h"
 #include "../rendering/RenderMeshFactory.h"
 #include "../rendering/RenderMesh3D.h"
@@ -8,15 +10,22 @@
 class TestEntity : public Entity
 {
 public:
-	TestEntity() : _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_TEST)) {}
+	TestEntity() : Entity(Vector3f(-5, 0, -4), Vector3f(0, 90, 0), Vector3f(1)), _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {	
+		t = 0x12345678;
+	}
 
-	void onUpdate() override {
-		Renderer::getInstance().drawText(100, 100, "hi");
-		Renderer::getInstance().drawRenderMesh(_renderMesh, getWorldPosition());
+	virtual ~TestEntity() {}
+
+	void onUpdate(Mtx& matrix) override {
+		//Vector3f pos(0, 0, 0);
+		//Renderer::getInstance().drawString("test", pos, 1);
+		rotate(Vector3f(1, 0, 0));
+		Renderer::getInstance().drawRenderMesh(_renderMesh, matrix);
 	}
 
 private:
-	const RenderMesh3D* _renderMesh;
+	uint32_t t;
+	RenderMesh3D* _renderMesh;
 };
 
 #endif // !ENTITY_TEST_ENTITY_H_
