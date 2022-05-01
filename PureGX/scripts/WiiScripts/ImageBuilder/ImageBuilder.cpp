@@ -45,7 +45,7 @@ int main(int argc, char** argv, char** envp)
 				uint32_t index = 0;
 				for (int y = 0; y < h; ++y) {
 					for (int x = 0; x < w; ++x) {
-						setPixel(x, w - 1 - y, image[index++], uH, rawImg + 4, ((uint64_t)w * h * 4));
+						setPixel(x, y, image[index++], uH, rawImg + 4, ((uint64_t)w * h * 4));
 					}
 				}
 

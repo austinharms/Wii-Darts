@@ -19,7 +19,7 @@ void createRoom() {
 	en = new RenderEntity(RM3D_BOARD);
 	en->scale(Vector3f(0.4572f));
 	en->setPosition(Vector3f(0, 1.72f, -2.37f));
-	en->rotate(Vector3f(-90, 0, 180));
+	en->rotate(Vector3f(-90, 0, 0));
 	masterEntity->addChild(en);
 	en->drop();
 	en = nullptr;
@@ -31,19 +31,20 @@ int main(void) {
 	masterEntity = new Entity();
 	createRoom();
 
-	{
-		TestEntity* dart = new TestEntity();
-		masterEntity->addChild((Entity*)dart);
-		dart->drop();
-		dart = nullptr;
-	}
-
+	TestEntity* dart = new TestEntity();
+	masterEntity->addChild((Entity*)dart);
+	//dart->drop();
+	uint32_t i = 0;
 	while (true) {
 		WPAD_ScanPads();
 		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) break;
 		masterEntity->update();
 		Renderer* r = &Renderer::getInstance();
 		r->swapFrameBuffer();
+
+		if (++i == 1000) {
+			masterEntity->removeChild(dart)->drop();
+		}
 	}
 
 	masterEntity->drop();

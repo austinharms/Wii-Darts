@@ -10,7 +10,9 @@
 class TestEntity : public Entity
 {
 public:
-	TestEntity() : Entity(Vector3f(-5, 0, -4), Vector3f(0, 90, 0), Vector3f(1)), _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {	}
+	TestEntity() : Entity(Vector3f(-5, 0, -4), Vector3f(0, 90, 0), Vector3f(1)), _renderMesh(RenderMeshFactory::getInstance().getRenderMesh(RM3D_DART)) {	
+		t = 0x12345678;
+	}
 
 	virtual ~TestEntity() {}
 
@@ -22,6 +24,7 @@ public:
 	}
 
 private:
+	uint32_t t;
 	RenderMesh3D* _renderMesh;
 };
 
