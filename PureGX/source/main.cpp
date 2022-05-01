@@ -19,7 +19,7 @@ void createRoom() {
 	en = new RenderEntity(RM3D_BOARD);
 	en->scale(Vector3f(0.4572f));
 	en->setPosition(Vector3f(0, 1.72f, -2.37f));
-	en->rotate(Vector3f(-90, 0, 0));
+	en->rotate(Vector3f(90, 0, 0));
 	masterEntity->addChild(en);
 	en->drop();
 	en = nullptr;
