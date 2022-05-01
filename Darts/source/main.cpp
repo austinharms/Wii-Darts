@@ -31,8 +31,11 @@ int main(void) {
 	masterEntity = new Entity();
 	createRoom();
 
-	TestEntity* dart = new TestEntity();
-	masterEntity->addChild((Entity*)dart);
+	Entity* dart = new RenderEntity(RM3D_DART);
+	dart->scale(Vector3f(0.02225f));
+	dart->setPosition(Vector3f(0, 1.72f, -1));
+	dart->rotate(Vector3f(0, 90, 0));
+	masterEntity->addChild(dart);
 	//dart->drop();
 	uint32_t i = 0;
 	while (true) {
