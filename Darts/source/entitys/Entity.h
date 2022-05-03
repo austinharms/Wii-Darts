@@ -1,6 +1,7 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 #include "../Vector3f.h"
+#include <ogc/gu.h>
 
 class Entity
 {

@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "Debug",
+      "includePath": [
+        "${env.INCLUDE}",
+        "${workspaceRoot}\\**",
+        "C:\\devkitPro\\libogc\\include"
+      ],
+      "defines": [
+        "GEKKO"
+      ],
+      "intelliSenseMode": "windows-msvc-x64"
+    }
+  ]
+}

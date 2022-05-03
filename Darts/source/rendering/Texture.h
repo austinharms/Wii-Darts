@@ -5,6 +5,8 @@
 #include <cstring>
 
 #include "RenderGlobal.h"
+#include <ogc/gx.h>
+#include <ogc/cache.h>
 
 class Texture
 {

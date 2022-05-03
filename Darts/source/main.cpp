@@ -8,6 +8,7 @@
 #include "rendering/Renderer.h"
 #include "entitys/TestEntity.h"
 #include "entitys/RenderEntity.h"
+#include "rendering/RenderGlobal.h"
 
 Entity* masterEntity = nullptr;
 
@@ -40,6 +41,8 @@ int main(void) {
 	uint32_t i = 0;
 	while (true) {
 		WPAD_ScanPads();
+		WPAD_SetVRes(WPAD_CHAN_ALL, RenderGlobal::mode->fbWidth, RenderGlobal::mode->efbHeight);
+
 		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) break;
 		masterEntity->update();
 		Renderer* r = &Renderer::getInstance();

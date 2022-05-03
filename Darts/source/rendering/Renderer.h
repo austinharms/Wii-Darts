@@ -14,6 +14,8 @@
 #include "RenderMesh3D.h"
 #include "font_256_img.h"
 #include "RenderGlobal.h"
+#include <ogc/video.h>
+#include <ogc/system.h>
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
