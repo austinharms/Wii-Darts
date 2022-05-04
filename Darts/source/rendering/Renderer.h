@@ -292,7 +292,6 @@ private:
 		guPerspective(m, 60, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
 		GX_LoadProjectionMtx(m, GX_PERSPECTIVE);
 		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-
 		guVector camPos = (guVector){ 0, 0, 0 };
 		guVector lookDir = (guVector){ 0, 0, 1 };
 		guLookAt(_view, &camPos, &s_axixY, &lookDir);
@@ -307,6 +306,7 @@ private:
 		delete _fontTexture;
 		GX_SetClipMode(GX_CLIP_DISABLE);
 		GX_SetScissor(0, 0, _vmode->fbWidth, _vmode->efbHeight);
+		VIDEO_SetBlack(true);
 		GX_DrawDone();
 		GX_AbortFrame();
 		free(MEM_K1_TO_K0(_frameBuffers[0]));
