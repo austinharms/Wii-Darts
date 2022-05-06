@@ -6,7 +6,7 @@
 
 #include "rendering/RenderMeshFactory.h"
 #include "rendering/Renderer.h"
-#include "entitys/TestEntity.h"
+#include "entitys/Dart.h"
 #include "entitys/RenderEntity.h"
 #include "rendering/RenderGlobal.h"
 #include <stdio.h>
@@ -34,19 +34,17 @@ int main(void) {
 	masterEntity = new Entity();
 	createRoom();
 
-	Entity* dart = new RenderEntity(RM3D_DART);
-	dart->scale(Vector3f(0.02225f));
+	Dart* dart = new Dart();
 	dart->setPosition(Vector3f(0, 1.72f, -1));
-	dart->rotate(Vector3f(0, 90, 0));
-	masterEntity->addChild(dart);
-	//dart->drop();
-	uint32_t i = 0;
+	masterEntity->addChild((Entity*)dart);
+
 	while (true) {
 		WPAD_ScanPads();
 		WPAD_SetVRes(WPAD_CHAN_ALL, RenderGlobal::mode->fbWidth, RenderGlobal::mode->efbHeight);
 		WPADData* wiimote0 = WPAD_Data(0);
 		if (wiimote0->btns_d & WPAD_BUTTON_HOME) break;
-		WPAD_Rumble(WPAD_CHAN_0, (wiimote0->btns_d & WPAD_BUTTON_B)?1:0);
+		WPAD_Rumble(WPAD_CHAN_0, (wiimote0->btns_d & WPAD_BUTTON_B) ? 1 : 0);
+		dart->setRotation(Vector3f(wiimote0->gforce.x * 70,0,0));
 		masterEntity->update();
 		Renderer* r = &Renderer::getInstance();
 		Vector3f textPos(-1.5f, 2.65f, -2);
@@ -66,12 +64,9 @@ int main(void) {
 		sprintf(accelStr, "Rot: %+09.6f, %+09.6f, %+09.6f", wiimote0->orient.pitch, wiimote0->orient.yaw, wiimote0->orient.roll);
 		r->drawString(accelStr, textPos, 0.1f, 0xffffffff);
 		r->swapFrameBuffer();
-
-		if (++i == 1000) {
-			masterEntity->removeChild(dart)->drop();
-		}
 	}
 
+	dart->drop();
 	masterEntity->drop();
 	masterEntity = nullptr;
 	return 0;

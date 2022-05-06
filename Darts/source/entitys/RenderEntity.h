@@ -2,6 +2,7 @@
 #define ENTITY_RENDER_ENTITY_H_
 #include <cstring>
 
+#include "../Vector3f.h"
 #include "Entity.h"
 #include "../rendering/RenderMeshFactory.h"
 #include "../rendering/RenderMesh3D.h"
