@@ -367,4 +367,5 @@ FodyWeavers.xsd
 *.elf
 /PureGX/build
 *.img
-*mesh
+*.mesh
+!*/meshes/*.obj
