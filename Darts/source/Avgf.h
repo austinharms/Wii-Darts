@@ -7,6 +7,7 @@ class Avgf
 {
 public:
 	Avgf(uint16_t sampleCount, float initialValue = 0) {
+		_sampleCount = sampleCount;
 		_samples = (float*)malloc(sampleCount * sizeof(float));
 		for (uint16_t i = 0; i < sampleCount; i++)
 			_samples[i] = initialValue;
@@ -28,6 +29,10 @@ public:
 
 	float value() const {
 		return _sum / _sampleCount;
+	}
+
+	operator float() const {
+		return value();
 	}
 
 private:
