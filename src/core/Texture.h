@@ -1,0 +1,43 @@
+#include <stdint.h>
+#include <ogc/gx.h>
+
+#include "RefCount.h"
+
+#ifndef WIIDARTS_TEXTURE_H_
+#define WIIDARTS_TEXTURE_H_
+namespace wiidarts {
+	class Texture : public RefCount
+	{
+	public:
+		Texture(uint16_t width, uint16_t height, uint32_t* rgbaPixelBuffer = nullptr, bool repeat = false, bool antialias = false);
+		Texture(uint8_t* pixelBuffer, bool repeat = false, bool antialias = false, bool locked = false);
+		Texture(const Texture& other);
+		virtual ~Texture();
+		void bind(uint8_t slot = 0);
+		void lock();
+		bool getLocked() const;
+		bool getAntialias() const;
+		bool getRepeat() const;
+		bool getValid() const;
+		uint16_t getHeight() const;
+		uint16_t getWidth() const;
+		void setPixelRGBA(const int x, const int y, const uint32_t color);
+		void setAntialias(bool value);
+		void setRepeat(bool value);
+
+	private:
+		uint8_t* _pixelBuffer;
+		GXTexObj _gxTexture;
+		uint16_t _width;
+		uint16_t _height;
+		bool _locked;
+		bool _allocatedBuffer;
+		bool _repeat;
+		bool _antialias;
+		bool _dirty;
+
+		void updateGXTexture();
+		Texture& operator=(const Texture& other);
+	};
+}
+#endif // !WIIDARTS_TEXTURE_H_

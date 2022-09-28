@@ -4,7 +4,7 @@
       "name": "Debug",
       "includePath": [
         "${env.INCLUDE}",
-        "${workspaceRoot}\\**",
+        "${workspaceRoot}",
         "C:\\devkitPro\\libogc\\include"
       ],
       "defines": [

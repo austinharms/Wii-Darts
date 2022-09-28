@@ -361,8 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Dolphin-x64
-/Darts/build
+/Dolphin
+/build
 *.dol
 *.elf
 /PureGX/build

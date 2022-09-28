@@ -17,11 +17,11 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/gfx
+SOURCES		:=	src/core src source source/gfx
 DATA		:=	data
 INCLUDES	:=
-$(shell ./scripts/ImageBuilder.exe)
-$(shell ./scripts/MeshBuilder.exe)
+#$(shell ./scripts/ImageBuilder.exe)
+#$(shell ./scripts/MeshBuilder.exe)
 
 #---------------------------------------------------------------------------------
 # options for code generation

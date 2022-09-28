@@ -3,7 +3,7 @@
   "tasks": [
     {
       "taskLabel": "Makefile-build",
-      "appliesTo": "*/Makefile",
+      "appliesTo": "Makefile",
       "type": "launch",
       "contextType": "build",
       "command": "make",
@@ -14,7 +14,7 @@
     },
     {
       "taskLabel": "Makefile-clean",
-      "appliesTo": "*/Makefile",
+      "appliesTo": "Makefile",
       "type": "launch",
       "contextType": "clean",
       "command": "make",
@@ -25,7 +25,7 @@
     },
     {
       "taskLabel": "Makefile-build",
-      "appliesTo": "*/Makefile",
+      "appliesTo": "Makefile",
       "type": "launch",
       "contextType": "rebuild",
       "commands": [
@@ -65,7 +65,7 @@
           ]
         },
         {
-          "command": "${workspaceRoot}\\Dolphin-x64\\Dolphin.exe",
+          "command": "${workspaceRoot}\\Dolphin\\Dolphin.exe",
           "args": [
             "--exec=\"${file}\"",
             "--batch"
@@ -98,7 +98,7 @@
       "taskLabel": "Play",
       "appliesTo": "*.dol",
       "type": "default",
-      "command": "${workspaceRoot}\\Dolphin-x64\\Dolphin.exe",
+      "command": "${workspaceRoot}\\Dolphin\\Dolphin.exe",
       "args": [
         "--exec=\"${file}\"",
         "--batch"
