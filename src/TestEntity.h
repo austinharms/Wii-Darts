@@ -32,7 +32,7 @@ namespace wiidarts {
 			}
 
 			_texture->setPixelRGBA(0, 0, 0x0000ffff);
-			_transform.setPosition({ 0.5f, 0, 0 });
+			_transform.setPosition({ 0.5f, 0, 10 });
 		}
 
 		virtual ~TestEntity() {
@@ -47,7 +47,7 @@ namespace wiidarts {
 			if (_texture == nullptr || _mesh == nullptr) return;
 			_texture->bind();
 			Renderer::getInstance().drawMesh3D(*_mesh);
-			_transform.rotate({ 0,0.5f,0 });
+			_transform.rotate({ 0,0.05f,0 });
 		}
 
 	private:

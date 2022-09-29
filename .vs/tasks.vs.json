@@ -103,6 +103,11 @@
         "--exec=\"${file}\"",
         "--batch"
       ]
+    },
+    {
+      "taskLabel": "task-WiiDarts",
+      "appliesTo": "WiiDarts.dol",
+      "type": "launch"
     }
   ]
 }

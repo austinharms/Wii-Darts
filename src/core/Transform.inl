@@ -81,7 +81,7 @@ namespace wiidarts {
 	Transform Transform::operator*(const Transform& other) const
 	{
 		Transform t;
-		guMtxConcat(((Transform*)this)->_matrix, ((Transform*)&other)->_matrix, t._matrix);
+		guMtxConcat(((Transform*)&other)->_matrix, ((Transform*)this)->_matrix, t._matrix);
 		return t;
 	}
 
