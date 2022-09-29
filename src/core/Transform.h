@@ -19,7 +19,7 @@ namespace wiidarts {
 		inline void translate(const guVector& vector);
 
 		// rotate the Transform by vector radians
-		// Note: the rotation order id XYZ
+		// Note: the rotation order is XYZ
 		inline void rotate(const guVector& vector);
 
 		// scale the Transform by vector amount

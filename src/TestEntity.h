@@ -47,6 +47,7 @@ namespace wiidarts {
 			if (_texture == nullptr || _mesh == nullptr) return;
 			_texture->bind();
 			Renderer::getInstance().drawMesh3D(*_mesh);
+			_transform.rotate({ 0,0.5f,0 });
 		}
 
 	private:

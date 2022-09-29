@@ -135,7 +135,7 @@ namespace wiidarts {
 		GX_LoadPosMtxImm(identityMtx, GX_PNMTX2);
 		GX_SetCurrentMtx(GX_PNMTX0);
 		_currentPositionMatrix = GX_PNMTX0;
-		_cameraTransform.setPosition({ 0,0,-1 });
+		_cameraTransform.setPosition({ 0, 0, -10 });
 		_cameraTransform.lookAt({ 0, 0, 0 }, { 0, 1, 0 });
 		resetTransformStack();
 

@@ -26,24 +26,28 @@ namespace wiidarts {
 
 	void Transform::rotate(const guVector& vector)
 	{
+		guVector pos = getPosition();
+		setPosition({ 0,0,0 });
 		Mtx temp;
 		if (vector.x) {
 			guVector axis{ 1, 0, 0 };
-			guMtxRotAxisDeg(temp, &axis, vector.x);
+			guMtxRotAxisRad(temp, &axis, vector.x);
 			guMtxConcat(temp, _matrix, _matrix);
 		}
 
 		if (vector.y) {
 			guVector axis{ 0, 1, 0 };
-			guMtxRotAxisDeg(temp, &axis, vector.y);
+			guMtxRotAxisRad(temp, &axis, vector.y);
 			guMtxConcat(temp, _matrix, _matrix);
 		}
 
 		if (vector.z) {
 			guVector axis{ 0, 0, 1 };
-			guMtxRotAxisDeg(temp, &axis, vector.z);
+			guMtxRotAxisRad(temp, &axis, vector.z);
 			guMtxConcat(temp, _matrix, _matrix);
 		}
+
+		setPosition(pos);
 	}
 
 	void Transform::scale(const guVector& vector)
