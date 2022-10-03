@@ -11,7 +11,7 @@
     (((uintptr_t)(const void *)(POINTER)) % (BYTE_COUNT) == 0)
 
 namespace wiidarts {
-	Texture::Texture(uint16_t width, uint16_t height, uint32_t* rgbaPixelBuffer, bool repeat, bool antialias)
+	Texture::Texture(uint16_t width, uint16_t height, const uint32_t* rgbaPixelBuffer, bool repeat, bool antialias)
 	{
 		_locked = false;
 		_dirty = true;
@@ -26,23 +26,24 @@ namespace wiidarts {
 		memset(_pixelBuffer, 0x00, size);
 		if (rgbaPixelBuffer) {
 			uint32_t index = 0;
-			for (uint16_t w = 0; w < _width; ++w) {
-				for (uint16_t h = 0; h < _height; ++h) {
-					setPixelRGBA(h, _width - 1 - w, rgbaPixelBuffer[++index]);
+			for (int x = 0; x < _width; ++x) {
+				for (int y = 0; y < _height; ++y) {
+					setPixelRGBA(x, y, _pixelBuffer[index++]);
 				}
 			}
 		}
 	}
 
-	Texture::Texture(uint8_t* pixelBuffer, bool repeat, bool antialias, bool locked)
+	Texture::Texture(const uint8_t* pixelBuffer, bool repeat, bool antialias, bool locked)
 	{
 		_dirty = true;
 		_locked = false;
 		_repeat = repeat;
 		_antialias = antialias;
-		_width = (pixelBuffer[0] << 8) + pixelBuffer[1];
-		_height = (pixelBuffer[2] << 8) + pixelBuffer[3];
-		_pixelBuffer = pixelBuffer + 4;
+		_width = ((uint16_t*)pixelBuffer)[0];
+		_height = ((uint16_t*)pixelBuffer)[1];
+		// pad after the size bytes to allow for 32 byte alignment on pixel bytes
+		_pixelBuffer = (uint8_t*)pixelBuffer + 32;
 		if (locked && is_aligned(_pixelBuffer, 32)) {
 			_allocatedBuffer = false;
 			lock();
@@ -53,7 +54,7 @@ namespace wiidarts {
 		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;
 		_pixelBuffer = (uint8_t*)memalign(32, size);
 		if (!_pixelBuffer) return;
-		memcpy(_pixelBuffer, pixelBuffer + 4, size);
+		memcpy(_pixelBuffer, pixelBuffer + (sizeof(uint16_t) * 2), size);
 		if (locked) lock();
 	}
 
@@ -81,7 +82,8 @@ namespace wiidarts {
 
 	void Texture::bind(uint8_t slot)
 	{
-		if (_dirty) updateGXTexture();
+		//if (_dirty) updateGXTexture();
+		updateGXTexture();
 		GX_LoadTexObj(&_gxTexture, GX_TEXMAP0 + slot);
 	}
 
@@ -121,12 +123,10 @@ namespace wiidarts {
 		return _width;
 	}
 
-	void Texture::setPixelRGBA(const int x, const int y, const uint32_t color)
-	{
+	void Texture::setPixelRGBA(const int x, const int y, const uint32_t color) {
 		if (_locked) return;
 		uint32_t  offs;
 		offs = (((y & (~3)) << 2) * _width) + ((x & (~3)) << 4) + ((((y & 3) << 2) + (x & 3)) << 1);
-
 		*((uint16_t*)(_pixelBuffer + offs)) = (uint16_t)((color << 8) | (color >> 24));
 		*((uint16_t*)(_pixelBuffer + offs + 32)) = (uint16_t)(color >> 8);
 		_dirty = true;
@@ -144,6 +144,12 @@ namespace wiidarts {
 		if (_locked) return;
 		_repeat = value;
 		_dirty = true;
+	}
+
+	const uint8_t* Texture::getRawPixelBuffer() const
+	{
+		if (_locked) return nullptr;
+		return _pixelBuffer;
 	}
 
 	void Texture::updateGXTexture()
@@ -168,6 +174,6 @@ namespace wiidarts {
 			GX_SetCopyFilter(GX_FALSE, mode->sample_pattern, GX_FALSE, mode->vfilter);
 		}
 
-		GX_InvalidateTexAll();
+		//GX_InvalidateTexAll();
 	}
 }

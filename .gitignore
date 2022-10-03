@@ -365,7 +365,4 @@ FodyWeavers.xsd
 /build
 *.dol
 *.elf
-/PureGX/build
-*.img
-*.mesh
-!*/meshes/*.obj
+/assets

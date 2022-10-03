@@ -25,7 +25,7 @@ namespace wiidarts {
 	};
 	const uint16_t TestMesh::INDEX_BUFFER[INDEX_COUNT] = {
 		0, 1, 2,
-		0, 3, 2
+		0, 2, 3
 	};
 }
 #endif // !WIIDARTS_TESTMESH_H_

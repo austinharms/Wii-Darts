@@ -3,7 +3,9 @@
 #include "core/Entity.h"
 #include "core/Renderer.h"
 #include "core/Texture.h"
-#include "TestMesh.h"
+#include "core/Mesh.h"
+#include "board_RGBA8.h"
+#include "board_mesh.h"
 
 #ifndef WIIDARTS_TESTENTITY_H_
 #define WIIDARTS_TESTENTITY_H_
@@ -14,14 +16,15 @@ namespace wiidarts {
 		TestEntity() {
 			_mesh = nullptr;
 			_texture = nullptr;
-			_texture = new(std::nothrow) Texture(1, 1);
+
+			_texture = new(std::nothrow) Texture(board_RGBA8, false, true, true);
 			if (_texture == nullptr || !_texture->getValid()) {
 				if (_texture) _texture->drop();
 				_texture = nullptr;
 				return;
 			}
 
-			_mesh = new(std::nothrow) TestMesh();
+			_mesh = new(std::nothrow) Mesh(board_mesh);
 			if (_mesh == nullptr || !_mesh->getValid()) {
 				_texture->drop();
 				_texture = nullptr;
@@ -31,8 +34,9 @@ namespace wiidarts {
 				return;
 			}
 
-			_texture->setPixelRGBA(0, 0, 0x0000ffff);
-			_transform.setPosition({ 0.5f, 0, 10 });
+			_transform.rotate({ 90, 0, 0 });
+			_transform.setPosition({ 0, 0, -6 });
+			_transform.scale({ 1, 1, 1 });
 		}
 
 		virtual ~TestEntity() {
@@ -47,7 +51,7 @@ namespace wiidarts {
 			if (_texture == nullptr || _mesh == nullptr) return;
 			_texture->bind();
 			Renderer::getInstance().drawMesh3D(*_mesh);
-			_transform.rotate({ 0,0.05f,0 });
+			//_transform.rotate({ 0,0.05f,0 });
 		}
 
 	private:

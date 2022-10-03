@@ -18,11 +18,11 @@ include $(DEVKITPPC)/wii_rules
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	src/core src source source/gfx
-DATA		:=	data
+RESOURCES	:=	res/textures res/meshes
+ASSETS		:=	assets
 INCLUDES	:=
-#$(shell ./scripts/ImageBuilder.exe)
+#$(shell python ./build-tools/buildStaticTextures.py)
 #$(shell ./scripts/MeshBuilder.exe)
-
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ ifneq ($(BUILD),$(notdir $(CURDIR)))
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+					$(foreach dir,$(RESOURCES),$(CURDIR)/$(dir))
 
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
@@ -65,7 +65,7 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+BINFILES	:=	$(foreach dir,$(RESOURCES),$(notdir $(wildcard $(dir)/*.*)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -79,8 +79,7 @@ endif
 export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
 export OFILES_SOURCES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(sFILES:.s=.o) $(SFILES:.S=.o)
 export OFILES := $(OFILES_BIN) $(OFILES_SOURCES)
-
-export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
+export HFILES := $(shell echo $(addsuffix .h,$(subst .,_,$(BINFILES))) | sed s/_png/_RGBA8/g | sed s/_obj/_mesh/g)
 
 #---------------------------------------------------------------------------------
 # build a list of include paths
@@ -101,12 +100,12 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 #---------------------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(DATA)/*.img *.mesh $(DATA)/*.mesh
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(ASSETS)/*.RGBA8 *.mesh $(ASSETS)/*.mesh
 
 #---------------------------------------------------------------------------------
 run:
@@ -115,45 +114,29 @@ run:
 
 #---------------------------------------------------------------------------------
 else
-
 DEPENDS	:=	$(OFILES:.o=.d)
 
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
 $(OUTPUT).dol: $(OUTPUT).elf
-$(OUTPUT).elf: $(OFILES)
+$(OUTPUT).elf:	$(shell echo $(OFILES) | sed s/.png/.RGBA8/g | sed s/.obj/.mesh/g)
 
 $(OFILES_SOURCES) : $(HFILES)
-
 #---------------------------------------------------------------------------------
 # This rule links in binary data with the .obj extension
 #---------------------------------------------------------------------------------
-%.obj.o	:	%.obj
+%.mesh.o	:	%.obj
 #---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
+	@echo $(shell python $(CURDIR)/../build-tools/convertObj.py $(notdir $<) $(RESOURCES) $(ASSETS))
+	$(SILENTCMD)bin2s -a 32 -H `(echo $(<F) | sed s/.obj/_mesh/)`.h `(shell python $(CURDIR)/../build-tools/replacePath.py $< $(RESOURCES) $(ASSETS) | sed s/.obj/.mesh/)` | $(AS) -o `(echo $(<F) | sed s/.obj/.mesh/)`.o
 #---------------------------------------------------------------------------------
 # This rule links in binary data with the .png extension
 #---------------------------------------------------------------------------------
-%.png.o	:	%.png
+%.RGBA8.o	:	%.png
 #---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
-#---------------------------------------------------------------------------------
-# This rule links in binary data with the .mesh extension
-#---------------------------------------------------------------------------------
-%.mesh.o	:	%.mesh
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
-#---------------------------------------------------------------------------------
-# This rule links in binary data with the .img extension
-#---------------------------------------------------------------------------------
-%.img.o	:	%.img
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
+	@echo $(shell python $(CURDIR)/../build-tools/convertImg.py $(notdir $<) $(RESOURCES) $(ASSETS))
+	$(SILENTCMD)bin2s -a 32 -H `(echo $(<F) | sed s/.png/_RGBA8/)`.h `(shell python $(CURDIR)/../build-tools/replacePath.py $< $(RESOURCES) $(ASSETS) | sed s/.png/.RGBA8/)` | $(AS) -o `(echo $(<F) | sed s/.png/.RGBA8/)`.o
 #---------------------------------------------------------------------------------
 # This rule links in binary data with the .ttf extension
 #---------------------------------------------------------------------------------

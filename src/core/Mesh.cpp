@@ -6,7 +6,7 @@
 #include "Logger.h"
 
 namespace wiidarts {
-	Mesh::Mesh(uint8_t* meshBuffer)
+	Mesh::Mesh(const uint8_t* meshBuffer)
 	{
 		_locked = true;
 		_allocatedBuffer = false;

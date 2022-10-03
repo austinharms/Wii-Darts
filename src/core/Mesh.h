@@ -10,7 +10,7 @@ namespace wiidarts {
 	{
 	public:
 		static const uint16_t FLOATS_PER_VERTEX = 5;
-		Mesh(uint8_t* meshBuffer);
+		Mesh(const uint8_t* meshBuffer);
 		Mesh(uint16_t vertexCount, uint16_t indexCount, const uint16_t* indexBuffer = nullptr, const float* vertexBuffer = nullptr, bool locked = false);
 		Mesh();
 		Mesh(const Mesh& other);

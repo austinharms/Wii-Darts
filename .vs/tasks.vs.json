@@ -74,6 +74,27 @@
       ]
     },
     {
+      "taskLabel": "Build & Play",
+      "appliesTo": "*.dol",
+      "type": "default",
+      "commands": [
+        {
+          "command": "make",
+          "args": [
+            "--directory=${fileDirname}",
+            "build"
+          ]
+        },
+        {
+          "command": "${workspaceRoot}\\Dolphin\\Dolphin.exe",
+          "args": [
+            "--exec=\"${file}\"",
+            "--batch"
+          ]
+        }
+      ]
+    },
+    {
       "taskLabel": "Rebuild",
       "appliesTo": "*.dol",
       "type": "default",
@@ -103,11 +124,6 @@
         "--exec=\"${file}\"",
         "--batch"
       ]
-    },
-    {
-      "taskLabel": "task-WiiDarts",
-      "appliesTo": "WiiDarts.dol",
-      "type": "launch"
     }
   ]
 }
