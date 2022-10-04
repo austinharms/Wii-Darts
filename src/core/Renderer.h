@@ -29,6 +29,8 @@ namespace wiidarts {
 		void drawMesh2D(const Mesh& mesh, const Transform& transform, const uint32_t color = RGBA_COLOR_WHITE);
 		void drawMeshIdentity3D(const Mesh& mesh, const uint32_t color = RGBA_COLOR_WHITE);
 		void drawMeshIdentity2D(const Mesh& mesh, const uint32_t color = RGBA_COLOR_WHITE);
+		uint16_t getScreenWidth() const;
+		uint16_t getScreenHeight() const;
 		GXRModeObj* getMode() const;
 
 	private:
@@ -41,6 +43,7 @@ namespace wiidarts {
 		Mtx44 _perspectiveMatrix;
 		Mtx44 _orthographicMatrix;
 		Transform _cameraTransform;
+		Transform _2DTransform;
 		uint8_t _activeFramebuffer;
 		uint8_t _currentProjection;
 		uint8_t _currentPositionMatrix;

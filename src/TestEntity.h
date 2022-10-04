@@ -36,7 +36,7 @@ namespace wiidarts {
 
 			_transform.rotate({ 90, 0, 0 });
 			_transform.setPosition({ 0, 0, -6 });
-			_transform.scale({ 1, 1, 1 });
+			//_transform.scale({ 1, 1, 1 });
 		}
 
 		virtual ~TestEntity() {

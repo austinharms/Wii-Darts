@@ -12,6 +12,7 @@ namespace wiidarts {
 		Font(FontAtlas* atlas = nullptr);
 		virtual ~Font();
 		bool getValid() const;
+		// in screen coordinates (bottom right is 0,0)
 		void setCursor(float x = 0, float y = 0);
 		void setColor(uint32_t color);
 		uint32_t getColor() const;

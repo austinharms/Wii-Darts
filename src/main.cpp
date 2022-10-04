@@ -13,14 +13,14 @@ int main(void) {
 	BasicFontAtlas& testAtlas = BasicFontAtlas::getInstance();
 	Font* testFont = new(std::nothrow) Font(&testAtlas);
 	if (!testFont) return -1;
-	testFont->setSize(0.5f);
+	testFont->setSize(50);
 	testFont->setColor(0xff0000ff);
 	TestEntity* testEntity = new(std::nothrow) TestEntity();
 	if (!testEntity) return -1;
 	while (true)
 	{
-		//testEntity->update();
-		testFont->setCursor(5,0);
+		testEntity->update();
+		testFont->setCursor(testFont->getSize(), renderer.getScreenHeight() - testFont->getSize());
 		testFont->drawText("Test text\nWW a new line!\nhow well will this work with #?\n0123456789\n!@#$%^&*(){}|\\\"';:<>=_-+");
 		renderer.swapFrameBuffers();
 	}

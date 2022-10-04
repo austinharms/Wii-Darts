@@ -2,7 +2,7 @@
 
 #include "core/FontAtlas.h"
 #include "core/Texture.h"
-#include "font_512_RGBA8.h"
+#include "font_1024_RGBA8.h"
 
 #ifndef WIIDARTS_BASICFONTATLAS_H_
 #define WIIDARTS_BASICFONTATLAS_H_
@@ -88,7 +88,7 @@ namespace wiidarts {
 		Texture* _fontTexture;
 
 		BasicFontAtlas() {
-			_fontTexture = new(std::nothrow) Texture(font_512_RGBA8, false, true, true);
+			_fontTexture = new(std::nothrow) Texture(font_1024_RGBA8, false, true, true);
 		}
 
 		BasicFontAtlas(const BasicFontAtlas&);

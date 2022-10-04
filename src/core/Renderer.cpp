@@ -103,7 +103,6 @@ namespace wiidarts {
 		GX_SetCullMode(GX_CULL_BACK);
 		GX_SetClipMode(GX_CLIP_ENABLE);
 		GX_SetScissor(0, 0, _vmode->fbWidth, _vmode->efbHeight);
-		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 		GX_SetChanAmbColor(GX_COLOR0A0, { 0xff, 0xff, 0xff, 0xff });
 
 		// setup vertex attribs
@@ -124,7 +123,7 @@ namespace wiidarts {
 
 		// setup projection matrices
 		guPerspective(_perspectiveMatrix, 60, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
-		guOrtho(_orthographicMatrix, 1, 0, 0, 1, 0.01, 100);
+		guOrtho(_orthographicMatrix, (f32)_vmode->efbHeight, 0, 0, (f32)_vmode->fbWidth, 0, 100);
 		GX_LoadProjectionMtx(_perspectiveMatrix, GX_PERSPECTIVE);
 		_currentProjection = GX_PERSPECTIVE;
 		// setup position matrices and transform stack
@@ -135,6 +134,8 @@ namespace wiidarts {
 		GX_LoadPosMtxImm(identityMtx, GX_PNMTX2);
 		GX_SetCurrentMtx(GX_PNMTX0);
 		_currentPositionMatrix = GX_PNMTX0;
+		_2DTransform.setPosition({ 0, 0, 0 });
+		_2DTransform.lookAt({ 0, 0, 1 }, { 0, 1, 0 });
 		_cameraTransform.setPosition({ 0, 0, -10 });
 		_cameraTransform.lookAt({ 0, 0, 0 }, { 0, 1, 0 });
 		resetTransformStack();
@@ -177,6 +178,8 @@ namespace wiidarts {
 			else {
 				Logger::error("Renderer::setProjectionMatrix invalid projection type expected GX_PERSPECTIVE or GX_ORTHOGRAPHIC");
 			}
+
+			_currentProjection = projection;
 		}
 	}
 
@@ -197,7 +200,8 @@ namespace wiidarts {
 
 	void Renderer::setOtherPositionMatrix(const Transform& transform)
 	{
-		GX_LoadPosMtxImm(((Transform*)&transform)->getMatrix(), GX_PNMTX2);
+		Transform t = _2DTransform * transform;
+		GX_LoadPosMtxImm(t.getMatrix(), GX_PNMTX2);
 		setPositionMatrix(GX_PNMTX2);
 	}
 
@@ -305,6 +309,16 @@ namespace wiidarts {
 	{
 		setIdentityPositionMatrix();
 		drawRawMesh2D(mesh, color);
+	}
+
+	uint16_t Renderer::getScreenWidth() const
+	{
+		return  _vmode->fbWidth;
+	}
+
+	uint16_t Renderer::getScreenHeight() const
+	{
+		return _vmode->efbHeight;
 	}
 
 	GXRModeObj* Renderer::getMode() const

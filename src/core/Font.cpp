@@ -105,10 +105,8 @@ namespace wiidarts {
 			if (!_fontAtlas->hasChar(letter))
 				letter = _fontAtlas->getErrorChar();
 			_fontAtlas->setMeshCharUV(letter, *_charMesh);
-			Renderer::getInstance().pushTransform(_transform);
-			Renderer::getInstance().drawMesh3D(*_charMesh, _color);
-			Renderer::getInstance().popTransform();
-			_transform.translate({ -_fontAtlas->getCharWidth(letter) * _size, 0, 0 });
+			Renderer::getInstance().drawMesh2D(*_charMesh, _transform, _color);
+			_transform.translate({ _fontAtlas->getCharWidth(letter) * _size, 0, 0 });
 		}
 	}
 }
