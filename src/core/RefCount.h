@@ -16,7 +16,7 @@ namespace wiidarts {
 
 		// decrease the ref count by one
 		// returns true if the new ref count is 0 and the object was deleted
-		inline bool drop();
+		inline virtual bool drop();
 
 		// returns the ref count of the RefCount
 		inline uint16_t getRefCount() const;
