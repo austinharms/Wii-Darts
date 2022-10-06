@@ -1,8 +1,7 @@
 #include <stdint.h>
 
-#include "core/FontAtlas.h"
-#include "core/Texture.h"
-#include "font_1024_RGBA8.h"
+#include "FontAtlas.h"
+#include "Texture.h"
 
 #ifndef WIIDARTS_BASICFONTATLAS_H_
 #define WIIDARTS_BASICFONTATLAS_H_
@@ -10,10 +9,15 @@ namespace wiidarts {
 	class BasicFontAtlas : public FontAtlas
 	{
 	public:
-		static BasicFontAtlas& getInstance()
-		{
-			static BasicFontAtlas instance;
-			return instance;
+		BasicFontAtlas(Texture* fontTexture, uint8_t charGridWidth, uint8_t charGridHeight, char firstChar, char lastChar, char errorChar) {
+			_fontTexture = fontTexture;
+			_charGridWidth = charGridWidth;
+			_charGridHeight = charGridHeight;
+			_firstChar = firstChar;
+			_lastChar = lastChar;
+			_errorChar = errorChar;
+			if (_fontTexture != nullptr)
+				_fontTexture->grab();
 		}
 
 		virtual ~BasicFontAtlas() {
@@ -27,11 +31,11 @@ namespace wiidarts {
 		}
 
 		char getErrorChar() const override {
-			return ' ';
+			return _errorChar;
 		}
 
 		bool hasChar(char letter) const override {
-			return letter >= 32 && letter < 127;
+			return letter >= _firstChar && letter <= _lastChar;
 		}
 
 		float getCharWidth(char letter) const override {
@@ -72,24 +76,29 @@ namespace wiidarts {
 			float* buf = (float*)charMesh.getVertexBufferPtr();
 			//this is crappy but works for now
 			//TODO refactor this
-			letter = -letter + 131;
-			constexpr float charUVSize = 1.0f / 10.0f;
-			buf[3] = (letter % 10) * charUVSize;
-			buf[4] = (letter / 10) * charUVSize;
-			buf[8] = buf[3] + charUVSize;
+			
+			// letter is treated and a the index of the letter on the texture
+			letter -= _firstChar;
+			letter = (_charGridHeight * _charGridWidth - 1) - letter;
+			float charUVWidth = 1.0f / (float)_charGridWidth;
+			float charUVHeight = 1.0f / (float)_charGridHeight;
+			buf[3] = (letter % _charGridWidth) * charUVWidth;
+			buf[4] = (letter / _charGridWidth) * charUVHeight;
+			buf[8] = buf[3] + charUVWidth;
 			buf[9] = buf[4];
 			buf[13] = buf[8];
-			buf[19] = buf[4] + charUVSize;
+			buf[19] = buf[4] + charUVHeight;
 			buf[18] = buf[3];
 			buf[14] = buf[19];
 		}
 
 	private:
+		char _firstChar;
+		char _lastChar;
+		char _errorChar;
+		uint8_t _charGridWidth;
+		uint8_t _charGridHeight;
 		Texture* _fontTexture;
-
-		BasicFontAtlas() {
-			_fontTexture = new(std::nothrow) Texture(font_1024_RGBA8, false, true, true);
-		}
 
 		BasicFontAtlas(const BasicFontAtlas&);
 		void operator=(const BasicFontAtlas&);

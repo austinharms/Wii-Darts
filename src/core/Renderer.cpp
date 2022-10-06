@@ -9,7 +9,6 @@
 #include <ogc/system.h>
 #include <gctypes.h>
 #include <cstring>
-#include <wiiuse/wpad.h>
 
 #include "Logger.h"
 
@@ -139,12 +138,6 @@ namespace wiidarts {
 		_cameraTransform.setPosition({ 0, 0, -10 });
 		_cameraTransform.lookAt({ 0, 0, 0 }, { 0, 1, 0 });
 		resetTransformStack();
-
-		// Setup the input system
-		WPAD_Init();
-		WPAD_SetDataFormat(WPAD_CHAN_ALL, WPAD_FMT_BTNS_ACC_IR);
-		// Must be done after Renderer initialization because of fbWidth and efbHeight
-		WPAD_SetVRes(WPAD_CHAN_ALL, _vmode->fbWidth, _vmode->efbHeight);
 
 		// enable display output
 		VIDEO_SetBlack(false);

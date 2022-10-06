@@ -25,9 +25,10 @@ for line in obj_file_lines:
 	elif line.startswith("f "):
 		# we only support triangle faces
 		faces = line.split(" ")[1:4]
+		# fix vertex order
 		file_faces.append(faces[0].split("/"))
-		file_faces.append(faces[1].split("/"))
 		file_faces.append(faces[2].split("/"))
+		file_faces.append(faces[1].split("/"))
 
 mesh_verticies = OrderedDict()
 mesh_indicies = []
@@ -45,7 +46,8 @@ for key, vertex in mesh_verticies.items():
 	mesh_file.write(struct.pack( ">f", float(vertex[1])))
 	mesh_file.write(struct.pack( ">f", float(vertex[2])))
 	mesh_file.write(struct.pack( ">f", float(vertex[3])))
-	mesh_file.write(struct.pack( ">f", float(vertex[4])))
+	# fix texture u flipped
+	mesh_file.write(struct.pack( ">f", 1 - float(vertex[4])))
 	mesh_file.write(struct.pack( ">f", float(vertex[5])))
 
 for index in mesh_indicies:

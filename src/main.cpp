@@ -4,14 +4,12 @@
 
 #include "TestEntity.h"
 #include "core/Renderer.h"
-#include "BasicFontAtlas.h"
 #include "core/Font.h"
 
 int main(void) {
 	using namespace wiidarts;
 	Renderer& renderer = Renderer::getInstance();
-	BasicFontAtlas& testAtlas = BasicFontAtlas::getInstance();
-	Font* testFont = new(std::nothrow) Font(&testAtlas);
+	Font* testFont = new(std::nothrow) Font(Prefabs::DefaultFontAtlas);
 	if (!testFont) return -1;
 	testFont->setSize(50);
 	testFont->setColor(0xff0000ff);

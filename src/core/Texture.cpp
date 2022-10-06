@@ -82,8 +82,7 @@ namespace wiidarts {
 
 	void Texture::bind(uint8_t slot)
 	{
-		//if (_dirty) updateGXTexture();
-		updateGXTexture();
+		if (_dirty) updateGXTexture();
 		GX_LoadTexObj(&_gxTexture, GX_TEXMAP0 + slot);
 	}
 
