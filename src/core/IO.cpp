@@ -24,4 +24,11 @@ namespace wiidarts {
 	{
 		return WPAD_SetDataFormat(WPAD_CHAN_ALL, type);
 	}
+
+	void IO::updateInputs()
+	{
+		WPAD_ScanPads();
+		u32 pressed = WPAD_ButtonsDown(0);
+		if (pressed & WPAD_BUTTON_HOME) exit(0);
+	}
 }

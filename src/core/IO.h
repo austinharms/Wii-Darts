@@ -24,6 +24,8 @@ namespace wiidarts {
 		// returns 0 on success 
 		int32_t setWiimoteInputType(InputOptions type);
 
+		void updateInputs();
+
 	private:
 		IO();
 		IO(const IO&);
