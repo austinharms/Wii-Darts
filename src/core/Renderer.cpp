@@ -121,7 +121,7 @@ namespace wiidarts {
 		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 
 		// setup projection matrices
-		guPerspective(_perspectiveMatrix, 60, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
+		guPerspective(_perspectiveMatrix, 90, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
 		guOrtho(_orthographicMatrix, (f32)_vmode->efbHeight, 0, 0, (f32)_vmode->fbWidth, 0, 100);
 		GX_LoadProjectionMtx(_perspectiveMatrix, GX_PERSPECTIVE);
 		_currentProjection = GX_PERSPECTIVE;
@@ -133,10 +133,10 @@ namespace wiidarts {
 		GX_LoadPosMtxImm(identityMtx, GX_PNMTX2);
 		GX_SetCurrentMtx(GX_PNMTX0);
 		_currentPositionMatrix = GX_PNMTX0;
-		_2DTransform.setPosition({ 0, 0, 0 });
+		//_2DTransform.setPosition({ 0, 0, 0 });
 		_2DTransform.lookAt({ 0, 0, 1 }, { 0, 1, 0 });
-		_cameraTransform.setPosition({ 0, 0, -10 });
-		_cameraTransform.lookAt({ 0, 0, 0 }, { 0, 1, 0 });
+		//_cameraTransform.setPosition({ 0, 0, 0 });
+		_cameraTransform.lookAt({ 0, 0, 1 }, { 0, 1, 0 });
 		resetTransformStack();
 
 		// enable display output

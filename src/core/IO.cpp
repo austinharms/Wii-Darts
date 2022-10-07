@@ -1,8 +1,10 @@
 #include "IO.h"
 
 #include <wiiuse/wpad.h>
+#include <fat.h>
 
 #include "Renderer.h"
+#include "Logger.h"
 
 namespace wiidarts {
 	IO::IO() {
@@ -11,6 +13,7 @@ namespace wiidarts {
 		setWiimoteInputType(BUTTONS);
 		GXRModeObj* mode = Renderer::getInstance().getMode();
 		WPAD_SetVRes(WPAD_CHAN_ALL, mode->fbWidth, mode->efbHeight);
+		if (!fatInitDefault()) Logger::fatal("Failed to init Fat file system");
 	}
 
 	IO::~IO()

@@ -46,6 +46,17 @@
       ]
     },
     {
+      "taskLabel": "Wiiload",
+      "appliesTo": "Makefile",
+      "type": "launch",
+      "contextType": "custom",
+      "command": "make",
+      "args": [
+        "--directory=${fileDirname}",
+        "run"
+      ]
+    },
+    {
       "taskLabel": "Rebuild & Play",
       "appliesTo": "*.dol",
       "type": "default",

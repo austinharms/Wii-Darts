@@ -33,7 +33,7 @@ namespace wiidarts {
 
 			_mesh->grab();
 			_transform.rotate({ 0, -M_PI/2, 0 });
-			_transform.setPosition({ 0, 0, 0 });
+			_transform.setPosition({ 0, 0, 1 });
 			//_transform.scale({ 1, 1, 1 });
 		}
 
