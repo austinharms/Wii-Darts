@@ -9,6 +9,11 @@ namespace wiidarts {
 	class Font : public RefCount
 	{
 	public:
+		const static uint16_t CHAR_MESH_VERTEX_COUNT;
+		const static uint16_t CHAR_MESH_INDEX_COUNT;
+		const static float CHAR_MESH_VERTEX_BUFFER[];
+		const static uint16_t CHAR_MESH_INDEX_BUFFER[];
+
 		Font(FontAtlas* atlas = nullptr);
 		virtual ~Font();
 		bool getValid() const;
@@ -23,10 +28,6 @@ namespace wiidarts {
 		void drawText(const char* text);
 
 	private:
-		const static uint16_t CHAR_MESH_VERTEX_COUNT;
-		const static uint16_t CHAR_MESH_INDEX_COUNT;
-		const static float CHAR_MESH_VERTEX_BUFFER[];
-		const static uint16_t CHAR_MESH_INDEX_BUFFER[];
 
 		FontAtlas* _fontAtlas;
 		Mesh* _charMesh;

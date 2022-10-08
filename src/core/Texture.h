@@ -11,6 +11,7 @@ namespace wiidarts {
 	public:
 		Texture(uint16_t width, uint16_t height, const uint32_t* rgbaPixelBuffer = nullptr, bool repeat = false, bool antialias = false);
 		Texture(const uint8_t* pixelBuffer, bool repeat = false, bool antialias = false, bool locked = false);
+		Texture(const char* filePath, bool repeat = false, bool antialias = false, bool locked = false);
 		Texture(const Texture& other);
 		virtual ~Texture();
 		void bind(uint8_t slot = 0);

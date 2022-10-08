@@ -13,6 +13,7 @@ namespace wiidarts {
 		extern Texture* DartBoardTexture;
 		extern Texture* WallTexture;
 		extern Texture* LargeFontTexture;
+		extern Texture* PackedFontTexture;
 		extern FontAtlas* DefaultFontAtlas;
 	}
 }

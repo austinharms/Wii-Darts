@@ -4,6 +4,7 @@
 #include <malloc.h>
 
 #include "Logger.h"
+#include "IO.h"
 
 namespace wiidarts {
 	Mesh::Mesh(const uint8_t* meshBuffer)
@@ -16,8 +17,55 @@ namespace wiidarts {
 		_indexBuffer = (uint16_t*)(_vertexBuffer + getFloatCount());
 	}
 
+	Mesh::Mesh(const char* meshPath, bool locked)
+	{
+		uint8_t* meshBuffer = IO::getInstance().getFileBytes(meshPath);
+		if (!meshBuffer) {
+			_locked = false;
+			_allocatedBuffer = false;
+			_vertexCount = 0;
+			_indexCount = 0;
+			_vertexBuffer = nullptr;
+			_indexBuffer = nullptr;
+			return;
+		}
+
+		_locked = false;
+		_allocatedBuffer = true;
+		_vertexCount = (meshBuffer[0] << 8) + meshBuffer[1];
+		_indexCount = (meshBuffer[2] << 8) + meshBuffer[3];
+		_vertexBuffer = (float*)malloc(sizeof(float) * getFloatCount());
+		_indexBuffer = (uint16_t*)malloc(sizeof(uint16_t) * _indexCount);
+		if (_indexBuffer == nullptr || _vertexBuffer == nullptr) {
+			if (_indexBuffer) free(_indexBuffer);
+			if (_vertexBuffer) free(_vertexBuffer);
+			_indexBuffer = nullptr;
+			_vertexBuffer = nullptr;
+			_indexCount = 0;
+			_vertexCount = 0;
+			Logger::error("Mesh::Mesh failed to allocate Mesh buffers");
+		}
+		else {
+			memcpy(_vertexBuffer, (float*)(meshBuffer + 4), sizeof(float) * getFloatCount());
+			memcpy(_indexBuffer, (uint16_t*)(meshBuffer + 4 + (getFloatCount() * sizeof(float))), sizeof(uint16_t) * _indexCount);
+			if (locked) lock();
+		}
+
+		free(meshBuffer);
+	}
+
 	Mesh::Mesh(uint16_t vertexCount, uint16_t indexCount, const uint16_t* indexBuffer, const float* vertexBuffer, bool locked)
 	{
+		if (vertexCount == 0 || indexCount == 0) {
+			_locked = false;
+			_allocatedBuffer = false;
+			_vertexCount = 0;
+			_indexCount = 0;
+			_vertexBuffer = nullptr;
+			_indexBuffer = nullptr;
+			return;
+		}
+
 		_locked = false;
 		_allocatedBuffer = true;
 		_vertexCount = vertexCount;

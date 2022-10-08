@@ -6,6 +6,8 @@
 #include <cstring>
 
 #include "Renderer.h"
+#include "Logger.h"
+#include "IO.h"
 
 #define is_aligned(POINTER, BYTE_COUNT) \
     (((uintptr_t)(const void *)(POINTER)) % (BYTE_COUNT) == 0)
@@ -22,7 +24,11 @@ namespace wiidarts {
 		_allocatedBuffer = true;
 		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;
 		_pixelBuffer = (uint8_t*)memalign(32, size);
-		if (!_pixelBuffer) return;
+		if (!_pixelBuffer) {
+			Logger::error("Texture::Texture failed to allocate pixelBuffer");
+			return;
+		}
+
 		memset(_pixelBuffer, 0x00, size);
 		if (rgbaPixelBuffer) {
 			uint32_t index = 0;
@@ -53,9 +59,42 @@ namespace wiidarts {
 		_allocatedBuffer = true;
 		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;
 		_pixelBuffer = (uint8_t*)memalign(32, size);
-		if (!_pixelBuffer) return;
+		if (!_pixelBuffer) {
+			Logger::error("Texture::Texture failed to allocate pixelBuffer");
+			return;
+		}
+
 		memcpy(_pixelBuffer, pixelBuffer + (sizeof(uint16_t) * 2), size);
 		if (locked) lock();
+	}
+
+	Texture::Texture(const char* filePath, bool repeat, bool antialias, bool locked) {
+		_allocatedBuffer = true;
+		_dirty = true;
+		_locked = false;
+		_repeat = repeat;
+		_antialias = antialias;
+		uint8_t* pixelBuffer = IO::getInstance().getFileBytes(filePath);
+		if (!pixelBuffer) {
+			_width = 0;
+			_height = 0;
+			_pixelBuffer = nullptr;
+			return;
+		}
+
+		_width = ((uint16_t*)pixelBuffer)[0];
+		_height = ((uint16_t*)pixelBuffer)[1];
+		uint32_t size = ((uint32_t)_width * (uint32_t)_height) << 2;
+		_pixelBuffer = (uint8_t*)memalign(32, size);
+		if (_pixelBuffer) {
+			memcpy(_pixelBuffer, (pixelBuffer + 32), size);
+			if (locked) lock();
+		}
+		else {
+			Logger::error("Texture::Texture failed to allocate pixelBuffer");
+		}
+
+		free(pixelBuffer);
 	}
 
 	Texture::Texture(const Texture& other)

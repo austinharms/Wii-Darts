@@ -26,10 +26,19 @@ namespace wiidarts {
 
 		void updateInputs();
 
+		const char* getCWD() const;
+
+		// read file bytes and set size to file size if it is not null
+		// returned pointer needs to be freed using free if it is not null
+		// returns null on error or if the file is empty
+		uint8_t* getFileBytes(const char* path, uint32_t* size = nullptr);
+
 	private:
 		IO();
 		IO(const IO&);
 		void operator=(const IO&);
+
+		char* _cwd;
 	};
 }
 #endif
