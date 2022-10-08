@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <wiiuse/wpad.h>
 
 #ifndef WIIDARTS_IO_H_
 #define WIIDARTS_IO_H_
@@ -24,6 +25,14 @@ namespace wiidarts {
 		// returns 0 on success 
 		int32_t setWiimoteInputType(InputOptions type);
 
+		void rumbleController(int8_t controllerNumber, bool active);
+
+		bool getControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y);
+
+		bool getControllerButtonDown(uint8_t controllerNumber, uint32_t button);
+		bool getControllerButtonPressed(uint8_t controllerNumber, uint32_t button);
+		bool getControllerButtonReleased(uint8_t controllerNumber, uint32_t button);
+
 		void updateInputs();
 
 		const char* getCWD() const;
@@ -39,6 +48,7 @@ namespace wiidarts {
 		void operator=(const IO&);
 
 		char* _cwd;
+		InputOptions _currentInputType;
 	};
 }
 #endif

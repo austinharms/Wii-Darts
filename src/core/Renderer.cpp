@@ -14,6 +14,9 @@
 
 namespace wiidarts {
 	Renderer::Renderer() {
+		_FOV = 90;
+		_FOVIncrement = 0;
+		_targetFOV = 0;
 		VIDEO_Init();
 		// disable display output
 		VIDEO_SetBlack(true);
@@ -236,6 +239,15 @@ namespace wiidarts {
 		_activeFramebuffer ^= 1;		// Flip framebuffer
 		//GX_InvalidateTexAll(); // Fixes some texture garbles
 		resetTransformStack();
+
+		if (_FOV != _targetFOV) {
+			_FOV += _FOVIncrement;
+			if (_FOVIncrement > 0 && _FOV > _targetFOV || _FOVIncrement < 0 && _FOV < _targetFOV)
+				_FOV = _targetFOV;
+			guPerspective(_perspectiveMatrix, _FOV, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
+			// this forces a reload of the GX_PERSPECTIVE matrix when it is next used
+			setProjectionMatrix(GX_ORTHOGRAPHIC);
+		}
 	}
 
 	void Renderer::pushTransform(const Transform& t)
@@ -302,6 +314,23 @@ namespace wiidarts {
 	{
 		setIdentityPositionMatrix();
 		drawRawMesh2D(mesh, color);
+	}
+
+	void Renderer::setFOV(float fov, bool smooth)
+	{
+		_targetFOV = fov;
+		_FOVIncrement = (_targetFOV - _FOV) / 30.0f;
+		if (!smooth) _FOV = fov;
+	}
+
+	float Renderer::getFOV() const
+	{
+		return _FOV;
+	}
+
+	float Renderer::getTargetFOV() const
+	{
+		return _targetFOV;
 	}
 
 	uint16_t Renderer::getScreenWidth() const

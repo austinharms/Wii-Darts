@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <gctypes.h>
 #include <new>
+#include <stdio.h>
 
 #include "core/Logger.h"
 #include "TestEntity.h"
@@ -17,12 +18,13 @@ int main(void) {
 	// ensure our renderer is setup first and also create IO Instance 
 	Renderer& renderer = Renderer::getInstance();
 	IO& io = IO::getInstance();
+	io.setWiimoteInputType(IO::BUTTONS_ACCELEROMETER_POINTER);
 
 	// load and setup default font
 	Font* font = new(std::nothrow) Font(Prefabs::DefaultFontAtlas);
 	if (!font) Logger::fatal("Failed to create defaultFont");
 	font->setSize(40);
-	font->setColor(0xff0000ff);
+	font->setColor(0xffffffff);
 
 	// create master/parent entity
 	// all entitys should be a child of this one
@@ -89,12 +91,26 @@ int main(void) {
 		room->drop();
 	}
 
+	renderer.setFOV(90, false);
+	renderer.setFOV(30);
 	while (true)
 	{
 		masterEntity->update();
 		font->setCursor(font->getSize() * 2, renderer.getScreenHeight() - font->getSize() * 2);
-		font->drawText("Hello World!");
+
+		float x;
+		float y;
+		io.getControllerIRScreenPos(0, &x, &y);
+		char buf[256];
+		sprintf(buf, "IR: %4.2f, %4.2f", x, y);
+		font->drawText(buf);
+		font->setCursor(x, y);
+		font->drawText("O");
+
 		io.updateInputs();
+		io.rumbleController(0, io.getControllerButtonDown(0, WPAD_BUTTON_B));
+		if (io.getControllerButtonPressed(0, WPAD_BUTTON_A)) renderer.setFOV(90);
+		if (io.getControllerButtonReleased(0, WPAD_BUTTON_A)) renderer.setFOV(30);
 		renderer.swapFrameBuffers();
 	}
 

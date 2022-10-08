@@ -20,7 +20,7 @@ namespace wiidarts {
 		GXRModeObj* mode = Renderer::getInstance().getMode();
 		WPAD_SetVRes(WPAD_CHAN_ALL, mode->fbWidth, mode->efbHeight);
 		if (!fatInitDefault()) Logger::fatal("Failed to init Fat file system");
-		if(chdir("sd:/apps/darts/") != 0) Logger::fatal("Failed to set working directory");
+		if (chdir("sd:/apps/darts/") != 0) Logger::fatal("Failed to set working directory");
 		if ((_cwd = getcwd(nullptr, 0)) == nullptr) Logger::fatal("Failed to get working directory");
 	}
 
@@ -31,14 +31,43 @@ namespace wiidarts {
 
 	int32_t IO::setWiimoteInputType(InputOptions type)
 	{
+		_currentInputType = type;
 		return WPAD_SetDataFormat(WPAD_CHAN_ALL, type);
+	}
+
+	void IO::rumbleController(int8_t controllerNumber, bool active)
+	{
+		WPAD_Rumble(controllerNumber, active);
+	}
+
+	bool IO::getControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y)
+	{
+		if (_currentInputType != BUTTONS_ACCELEROMETER_POINTER)	return false;
+		WPADData* data = WPAD_Data(controllerNumber);
+		*x = data->ir.x;
+		*y = Renderer::getInstance().getScreenHeight() - data->ir.y;
+		return true;
+	}
+
+	bool IO::getControllerButtonDown(uint8_t controllerNumber, uint32_t button)
+	{
+		return WPAD_ButtonsHeld(controllerNumber) & button;
+	}
+
+	bool IO::getControllerButtonPressed(uint8_t controllerNumber, uint32_t button)
+	{
+		return WPAD_ButtonsDown(controllerNumber) & button;
+	}
+
+	bool IO::getControllerButtonReleased(uint8_t controllerNumber, uint32_t button)
+	{
+		return WPAD_ButtonsUp(controllerNumber) & button;
 	}
 
 	void IO::updateInputs()
 	{
 		WPAD_ScanPads();
-		u32 pressed = WPAD_ButtonsDown(0);
-		if (pressed & WPAD_BUTTON_HOME) exit(0);
+		if (getControllerButtonDown(0, WPAD_BUTTON_HOME)) exit(0);
 	}
 
 	const char* IO::getCWD() const
