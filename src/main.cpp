@@ -23,7 +23,7 @@ int main(void) {
 	// load and setup default font
 	Font* font = new(std::nothrow) Font(Prefabs::DefaultFontAtlas);
 	if (!font) Logger::fatal("Failed to create defaultFont");
-	font->setSize(40);
+	font->setSize(30);
 	font->setColor(0xffffffff);
 
 	// create master/parent entity
@@ -31,9 +31,9 @@ int main(void) {
 	Entity* masterEntity = new(std::nothrow) Entity();
 	if (!masterEntity) Logger::fatal("Failed to create master entity");
 
-	TestEntity* testEntity = new(std::nothrow) TestEntity();
-	if (!testEntity) Logger::fatal("Failed to create dart entity");
-	masterEntity->addChild(*testEntity);
+	//TestEntity* testEntity = new(std::nothrow) TestEntity();
+	//if (!testEntity) Logger::fatal("Failed to create dart entity");
+	//masterEntity->addChild(*testEntity);
 
 	// limit the scope of the entities
 	// add it to the master entity and forget about it
@@ -54,7 +54,7 @@ int main(void) {
 		RenderEntity* dartBoard = new(std::nothrow) RenderEntity(Prefabs::DartBoardMesh, Prefabs::DartBoardTexture);
 		if (!dartBoard) Logger::fatal("Failed to create dartBoard entity");
 		// set board rotation
-		dartBoard->getTransform().rotate({ 0, -M_PI/2.0f, 0 });
+		dartBoard->getTransform().rotate({ 0, -M_PI / 2.0f, 0 });
 		// scale back down to original size
 		dartBoard->getTransform().scale({ 0.4f, 0.4f, 0.4f });
 		backWall->addChild(*dartBoard);
@@ -91,21 +91,39 @@ int main(void) {
 		room->drop();
 	}
 
+	RenderEntity* dart = new(std::nothrow) RenderEntity(Prefabs::DartMesh, Prefabs::DartTexture, 0xffffff90);
+	if (!dart) Logger::fatal("Failed to create dart entity");
+	dart->getTransform().rotate({ 0, M_PI, 0 });
+	masterEntity->addChild(*dart);
+
 	renderer.setFOV(90, false);
 	renderer.setFOV(30);
+	char buf[1024];
 	while (true)
 	{
 		masterEntity->update();
 		font->setCursor(font->getSize() * 2, renderer.getScreenHeight() - font->getSize() * 2);
+		guVector camForward = renderer.getCameraTransform().getForward();
+		guVector camUp = renderer.getCameraTransform().getUp();
+		guVector camRight = renderer.getCameraTransform().getRight();
+		//renderer.getCameraTransform().rotate({ 0, 0.01f, 0 });
+		sprintf(buf, "Up: %4.2f, %4.2f, %4.2f\nForward: %4.2f, %4.2f, %4.2f\nRight: %4.2f, %4.2f, %4.2f\n", camUp.x, camUp.y, camUp.z, camForward.x, camForward.y, camForward.z, camRight.x, camRight.y, camRight.z);
+		font->drawText(buf);
 
 		float x;
 		float y;
-		io.getControllerIRScreenPos(0, &x, &y);
-		char buf[256];
-		sprintf(buf, "IR: %4.2f, %4.2f", x, y);
-		font->drawText(buf);
-		font->setCursor(x, y);
-		font->drawText("O");
+		guVector cursorVector;
+		if (io.getControllerIRScreenPos(0, &x, &y) && io.getControllerIRVector(0, cursorVector)) {
+			sprintf(buf, "IR: %4.2f, %4.2f\nVec: %4.2f, %4.2f, %4.2f", x, y, cursorVector.x, cursorVector.y, cursorVector.z);
+			font->drawText(buf);
+			font->setCursor(x, y);
+			font->drawText("O");
+
+			guVecScale(&cursorVector, &cursorVector, 2.44f);
+			guVector pos = renderer.getCameraTransform().getPosition();
+			guVecAdd(&pos, &cursorVector, &pos);
+			dart->getTransform().setPosition(pos);
+		}
 
 		io.updateInputs();
 		io.rumbleController(0, io.getControllerButtonDown(0, WPAD_BUTTON_B));
@@ -114,7 +132,9 @@ int main(void) {
 		renderer.swapFrameBuffers();
 	}
 
-	testEntity->drop();
+	masterEntity->drop();
+	//testEntity->drop();
+	dart->drop();
 	font->drop();
 	return 0;
 }

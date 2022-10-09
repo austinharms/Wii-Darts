@@ -8,9 +8,11 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <malloc.h>
+#include <math.h>
 
 #include "Renderer.h"
 #include "Logger.h"
+#include "Transform.h"
 
 namespace wiidarts {
 	IO::IO() {
@@ -44,8 +46,30 @@ namespace wiidarts {
 	{
 		if (_currentInputType != BUTTONS_ACCELEROMETER_POINTER)	return false;
 		WPADData* data = WPAD_Data(controllerNumber);
+		if (!data || !data->ir.raw_valid) return false;
 		*x = data->ir.x;
 		*y = Renderer::getInstance().getScreenHeight() - data->ir.y;
+		return true;
+	}
+
+	bool IO::getControllerIRVector(uint8_t controllerNumber, guVector& vector)
+	{
+		Transform& cam = Renderer::getInstance().getCameraTransform();
+		Renderer& r = Renderer::getInstance();
+		float x, y;
+		if (!getControllerIRScreenPos(controllerNumber, &x, &y)) return false;
+		// normalize between 1 and -1
+		x = -(((x / r.getScreenWidth()) * 2) - 1);
+		y = ((y / r.getScreenHeight()) * 2) - 1;
+		float z = sinf(DegToRad(r.getFOV()) / 2.0f);
+		guVector yComponent = cam.getUp();
+		guVecScale(&yComponent, &yComponent, z * y);
+		guVector xComponent = cam.getRight();
+		guVecScale(&xComponent, &xComponent, z * x * ((float)r.getScreenWidth()/r.getScreenHeight()));
+		vector = cam.getForward();
+		guVecAdd(&vector, &yComponent, &vector);
+		guVecAdd(&vector, &xComponent, &vector);
+		guVecNormalize(&vector);
 		return true;
 	}
 

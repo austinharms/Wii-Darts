@@ -35,6 +35,7 @@ namespace wiidarts {
 		uint16_t getScreenWidth() const;
 		uint16_t getScreenHeight() const;
 		GXRModeObj* getMode() const;
+		Transform& getCameraTransform();
 
 	private:
 		const static uint32_t DEFAULT_FIFO_SIZE = 256 * 1024;

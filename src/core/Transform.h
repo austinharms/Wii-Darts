@@ -33,6 +33,12 @@ namespace wiidarts {
 
 		inline guVector getPosition() const;
 
+		inline guVector getForward() const;
+
+		inline guVector getUp() const;
+
+		inline guVector getRight() const;
+
 		// set the Transform to "look at" the target with the specified up vector
 		inline void lookAt(const guVector& target, const guVector& up);
 

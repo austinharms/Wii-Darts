@@ -24,11 +24,9 @@ namespace wiidarts {
 
 		// returns 0 on success 
 		int32_t setWiimoteInputType(InputOptions type);
-
 		void rumbleController(int8_t controllerNumber, bool active);
-
 		bool getControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y);
-
+		bool getControllerIRVector(uint8_t controllerNumber, guVector& vector);
 		bool getControllerButtonDown(uint8_t controllerNumber, uint32_t button);
 		bool getControllerButtonPressed(uint8_t controllerNumber, uint32_t button);
 		bool getControllerButtonReleased(uint8_t controllerNumber, uint32_t button);

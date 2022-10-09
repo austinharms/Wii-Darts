@@ -72,6 +72,21 @@ namespace wiidarts {
 		return { _matrix[0][3], _matrix[1][3], _matrix[2][3] };
 	}
 
+	guVector Transform::getForward() const
+	{
+		return { -_matrix[0][2], -_matrix[1][2], -_matrix[2][2] };
+	}
+
+	guVector Transform::getUp() const
+	{
+		return { _matrix[0][1], _matrix[1][1], _matrix[2][1] };
+	}
+
+	guVector Transform::getRight() const
+	{
+		return { -_matrix[0][0], -_matrix[1][0], -_matrix[2][0] };
+	}
+
 	void Transform::lookAt(const guVector& target, const guVector& up)
 	{
 		guVector pos = getPosition();

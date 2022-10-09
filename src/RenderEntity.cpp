@@ -3,10 +3,11 @@
 #include "core/Renderer.h"
 
 namespace wiidarts {
-	RenderEntity::RenderEntity(Mesh* mesh, Texture* texture)
+	RenderEntity::RenderEntity(Mesh* mesh, Texture* texture, uint32_t color)
 	{
 		_mesh = nullptr;
 		_texture = nullptr;
+		setColor(color);
 		setMesh(mesh);
 		setTexture(texture);
 	}
@@ -42,9 +43,19 @@ namespace wiidarts {
 		return _texture;
 	}
 
+	void RenderEntity::setColor(uint32_t color)
+	{
+		_color = color;
+	}
+
+	uint32_t RenderEntity::getColor() const
+	{
+		return _color;
+	}
+
 	void RenderEntity::onUpdate()
 	{
 		if (_texture && _texture->getValid()) _texture->bind();
-		if (_mesh && _mesh->getValid()) Renderer::getInstance().drawMesh3D(*_mesh);
+		if (_mesh && _mesh->getValid()) Renderer::getInstance().drawMesh3D(*_mesh, _color);
 	}
 }

@@ -242,7 +242,7 @@ namespace wiidarts {
 
 		if (_FOV != _targetFOV) {
 			_FOV += _FOVIncrement;
-			if (_FOVIncrement > 0 && _FOV > _targetFOV || _FOVIncrement < 0 && _FOV < _targetFOV)
+			if ((_FOVIncrement > 0 && _FOV > _targetFOV) || (_FOVIncrement < 0 && _FOV < _targetFOV))
 				_FOV = _targetFOV;
 			guPerspective(_perspectiveMatrix, _FOV, (f32)_vmode->fbWidth / _vmode->efbHeight, 0.01, 100);
 			// this forces a reload of the GX_PERSPECTIVE matrix when it is next used
@@ -346,5 +346,9 @@ namespace wiidarts {
 	GXRModeObj* Renderer::getMode() const
 	{
 		return _vmode;
+	}
+	Transform& Renderer::getCameraTransform()
+	{
+		return _cameraTransform;
 	}
 }
