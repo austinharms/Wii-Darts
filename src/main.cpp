@@ -118,8 +118,8 @@ int main(void) {
 			font->drawText(buf);
 			font->setCursor(x, y);
 			font->drawText("O");
-
-			guVecScale(&cursorVector, &cursorVector, 2.44f);
+			float scale = abs(2.44f * (1 / cursorVector.z));
+			guVecScale(&cursorVector, &cursorVector, scale);
 			guVector pos = renderer.getCameraTransform().getPosition();
 			guVecAdd(&pos, &cursorVector, &pos);
 			dart->getTransform().setPosition(pos);
