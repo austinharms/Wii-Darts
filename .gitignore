@@ -366,3 +366,5 @@ FodyWeavers.xsd
 *.dol
 *.elf
 /assets
+/sd/**/*.RGBA8
+/sd/**/*.mesh
