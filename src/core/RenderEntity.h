@@ -1,8 +1,8 @@
 #include <stdint.h>
 
-#include "core/Entity.h"
-#include "core/Mesh.h"
-#include "core/Texture.h"
+#include "Entity.h"
+#include "Mesh.h"
+#include "Texture.h"
 
 #ifndef WIIDARTS_RENDER_ENTITY_H_
 #define WIIDARTS_RENDER_ENTITY_H_
@@ -12,7 +12,6 @@ namespace wiidarts {
 	public:
 		RenderEntity(Mesh* mesh, Texture* texture, uint32_t color = 0xffffffff);
 		virtual ~RenderEntity();
-		Transform& getTransform();
 		void setMesh(Mesh* mesh);
 		void setTexture(Texture* texture);
 		Mesh* getMesh() const;

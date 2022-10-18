@@ -4,10 +4,20 @@
 
 #include "../Prefabs.h"
 #include "Renderer.h"
+#include "FontAtlas.h"
+#include "BasicFontAtlas.h"
 
 namespace wiidarts {
 	namespace Logger {
-		Font* LogFont;
+		Font* LogFont = new(std::nothrow) Font(Prefabs::DefaultFontAtlas);
+
+		void setFont(Font* font)
+		{
+			if (LogFont) LogFont->drop();
+			LogFont = font;
+			if (font) font->grab(); 
+		}
+
 		void debug(const char* msg) {
 			print("[DEBUG]", msg, 0xffffffff);
 		}
@@ -32,7 +42,7 @@ namespace wiidarts {
 
 		void print(const char* prefix, const char* msg, uint32_t color)
 		{
-			if (LogFont) {
+			if (LogFont && LogFont->getValid()) {
 				LogFont->setColor(color);
 				LogFont->drawText(prefix);
 				LogFont->drawText(msg);

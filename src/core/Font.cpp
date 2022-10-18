@@ -3,6 +3,8 @@
 #include <ogc/gu.h>
 #include <new>
 
+#include "Renderer.h"
+
 namespace wiidarts {
 	const uint16_t Font::CHAR_MESH_VERTEX_COUNT = 4;
 	const uint16_t Font::CHAR_MESH_INDEX_COUNT = 6;

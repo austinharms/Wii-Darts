@@ -17,10 +17,9 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	src/core src source source/gfx
+SOURCES		:=	src/core src/darts src source source/gfx
 RESOURCES	:=	res/textures res/meshes
-ASSETS		:=	assets
-SD_ASSET_PATH	:=	sd/apps/darts/assets
+ASSETS		:=	sd/apps/darts/assets
 INCLUDES	:=
 #$(shell python ./build-tools/buildStaticTextures.py)
 #$(shell ./scripts/MeshBuilder.exe)
@@ -106,7 +105,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(ASSETS)/*.RGBA8 *.mesh $(ASSETS)/*.mesh $(SD_ASSET_PATH)/*.mesh $(SD_ASSET_PATH)/*.RGBA8
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol *.img $(ASSETS)/*.RGBA8 *.mesh $(ASSETS)/*.mesh
 
 #---------------------------------------------------------------------------------
 run:
@@ -130,7 +129,6 @@ $(OFILES_SOURCES) : $(HFILES)
 %.mesh.o	:	%.obj
 #---------------------------------------------------------------------------------
 	@echo $(shell python $(CURDIR)/../build-tools/convertObj.py $(notdir $<) $(RESOURCES) $(ASSETS))
-	@cp ../$(ASSETS)/$(shell echo $(<F) | sed s/.obj/.mesh/) ../$(SD_ASSET_PATH)/
 	$(SILENTCMD)bin2s -a 32 -H `(echo $(<F) | sed s/.obj/_mesh/)`.h `(shell python $(CURDIR)/../build-tools/replacePath.py $< $(RESOURCES) $(ASSETS) | sed s/.obj/.mesh/)` | $(AS) -o `(echo $(<F) | sed s/.obj/.mesh/)`.o
 #---------------------------------------------------------------------------------
 # This rule links in binary data with the .png extension
@@ -138,7 +136,6 @@ $(OFILES_SOURCES) : $(HFILES)
 %.RGBA8.o	:	%.png
 #---------------------------------------------------------------------------------
 	@echo $(shell python $(CURDIR)/../build-tools/convertImg.py $(notdir $<) $(RESOURCES) $(ASSETS))
-	@cp ../$(ASSETS)/$(shell echo $(<F) | sed s/.png/.RGBA8/) ../$(SD_ASSET_PATH)/
 	$(SILENTCMD)bin2s -a 32 -H `(echo $(<F) | sed s/.png/_RGBA8/)`.h `(shell python $(CURDIR)/../build-tools/replacePath.py $< $(RESOURCES) $(ASSETS) | sed s/.png/.RGBA8/)` | $(AS) -o `(echo $(<F) | sed s/.png/.RGBA8/)`.o
 #---------------------------------------------------------------------------------
 # This rule links in binary data with the .ttf extension

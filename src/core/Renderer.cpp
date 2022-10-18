@@ -347,8 +347,14 @@ namespace wiidarts {
 	{
 		return _vmode;
 	}
+
 	Transform& Renderer::getCameraTransform()
 	{
 		return _cameraTransform;
+	}
+
+	Entity& Renderer::getMasterEntity()
+	{
+		return _masterEntity;
 	}
 }

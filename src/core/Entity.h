@@ -16,6 +16,9 @@ namespace wiidarts {
 		// returns the Entity Transform
 		const Transform& getTransform() const;
 
+		// returns the Entity Transform
+		Transform& getTransform();
+
 		// calls the onUpdate method of this Entity and all of its children
 		void update();
 

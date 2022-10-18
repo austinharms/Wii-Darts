@@ -7,6 +7,7 @@
 #define WIIDARTS_LOGGER_H_
 namespace wiidarts {
 	namespace Logger {
+		void setFont(Font* font);
 		void debug(const char* msg);
 		void info(const char* msg);
 		void warn(const char* msg);

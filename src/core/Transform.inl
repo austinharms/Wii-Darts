@@ -90,7 +90,9 @@ namespace wiidarts {
 	void Transform::lookAt(const guVector& target, const guVector& up)
 	{
 		guVector pos = getPosition();
-		guLookAt(_matrix, &pos, (guVector*)&up, (guVector*)&target);
+		guVector upPos = pos;
+		guVecAdd((guVector*)&up, &upPos, &upPos);
+		guLookAt(_matrix, &pos, &upPos, (guVector*)&target);
 	}
 
 	Transform Transform::operator*(const Transform& other) const

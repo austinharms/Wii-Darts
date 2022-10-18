@@ -1,6 +1,6 @@
 #include "RenderEntity.h"
 
-#include "core/Renderer.h"
+#include "Renderer.h"
 
 namespace wiidarts {
 	RenderEntity::RenderEntity(Mesh* mesh, Texture* texture, uint32_t color)
@@ -16,8 +16,6 @@ namespace wiidarts {
 		setMesh(nullptr);
 		setTexture(nullptr);
 	}
-
-	Transform& RenderEntity::getTransform() { return _transform; }
 
 	void RenderEntity::setMesh(Mesh* mesh)
 	{

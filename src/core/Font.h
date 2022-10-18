@@ -1,6 +1,8 @@
+#include <stdint.h>
+
 #include "RefCount.h"
-#include "Renderer.h"
 #include "Mesh.h"
+#include "Transform.h"
 #include "FontAtlas.h"
 
 #ifndef WIIDARTS_FONT_H_

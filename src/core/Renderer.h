@@ -5,6 +5,7 @@
 
 #include "Transform.h"
 #include "Mesh.h"
+#include "Entity.h"
 
 #ifndef WIIDARTS_RENDERER_H_
 #define WIIDARTS_RENDERER_H_
@@ -37,6 +38,9 @@ namespace wiidarts {
 		GXRModeObj* getMode() const;
 		Transform& getCameraTransform();
 
+		// all rendered entities should be a child of this entity
+		Entity& getMasterEntity();
+
 	private:
 		const static uint32_t DEFAULT_FIFO_SIZE = 256 * 1024;
 
@@ -44,6 +48,7 @@ namespace wiidarts {
 		void* _frameBuffers[2];
 		void* _fifoBuffer;
 		std::stack<Transform, std::list<Transform>> _transformStack;
+		Entity _masterEntity;
 		Mtx44 _perspectiveMatrix;
 		Mtx44 _orthographicMatrix;
 		Transform _cameraTransform;

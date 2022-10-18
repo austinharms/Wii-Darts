@@ -23,6 +23,11 @@ namespace wiidarts {
 		return _transform;
 	}
 
+	Transform& Entity::getTransform()
+	{
+		return _transform;
+	}
+
 	void Entity::update() {
 		Renderer::getInstance().pushTransform(_transform);
 		onUpdate();
@@ -80,7 +85,7 @@ namespace wiidarts {
 		}
 	}
 
-	inline bool Entity::removeChild(Entity& child)
+	bool Entity::removeChild(Entity& child)
 	{
 		EntityNode* lastNode = nullptr;
 		EntityNode* currentNode = _children;
@@ -104,7 +109,7 @@ namespace wiidarts {
 		return true;
 	}
 
-	inline bool Entity::removeChild(uint16_t index)
+	bool Entity::removeChild(uint16_t index)
 	{
 		if (index >= _childCount) return false;
 		uint16_t currentIndex = 0;
@@ -130,7 +135,7 @@ namespace wiidarts {
 		return true;
 	}
 
-	inline void Entity::clearChildren()
+	void Entity::clearChildren()
 	{
 		_childCount = 0;
 		EntityNode* topNode = _children;
