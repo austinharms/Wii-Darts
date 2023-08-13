@@ -1,80 +1,223 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Release|Wii">
-			<Configuration>Release</Configuration>
-			<Platform>Wii</Platform>
-		</ProjectConfiguration>
-	</ItemGroup>
-	<PropertyGroup Label="Globals">
-		<VCProjectVersion>17.0</VCProjectVersion>
-		<ProjectGuid>{35E907BC-917A-4004-BE7B-1BD739276DEE}</ProjectGuid>
-		<Keyword>Win32Proj</Keyword>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Wii'" Label="Configuration">
-		<ConfigurationType>Makefile</ConfigurationType>
-		<UseDebugLibraries>false</UseDebugLibraries>
-		<PlatformToolset>v143</PlatformToolset>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-	<ImportGroup Label="ExtensionSettings">
-	</ImportGroup>
-	<ImportGroup Label="Shared">
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Wii'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<PropertyGroup Label="UserMacros" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Wii'">
-		<NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
-		<NMakeOutput>Darts.dol</NMakeOutput>
-		<NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
-		<NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-		<OutDir>./</OutDir>
-		<IntDir>./build/</IntDir>
-		<ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
-		<AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
-		<AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
-		<ReferencePath>
-		</ReferencePath>
-		<SourcePath>
-		</SourcePath>
-		<LibraryWPath>
-		</LibraryWPath>
-		<ExcludePath>
-		</ExcludePath>
-		<LibraryPath>
-		</LibraryPath>
-		<ExternalIncludePath>
-		</ExternalIncludePath>
-		<IncludePath>
-		</IncludePath>
-	</PropertyGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Wii'">
-		<BuildLog>
-			<Path>./VS-$(MSBuildProjectName).log</Path>
-		</BuildLog>
-	</ItemDefinitionGroup>
-	<ItemGroup>
-		<None Include="Makefile" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="src\main.cpp" />
-	</ItemGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-	<ImportGroup Label="ExtensionTargets">
-	</ImportGroup>
-	<Target
-		Name="CoreCppClean"
-		DependsOnTargets="$(CoreCppCleanDependsOn)">
-		<CppClean
-		  FoldersToClean                     =";"
-		  FilesExcludedFromClean	           =""
-		  DoDelete                      	   =""
-		  FilePatternsToDeleteOnClean        =";"
-      >
-			<Output TaskParameter="DeletedFiles" ItemName="DeletedFilesByCppCleanTask"/>
-		</CppClean>
-	</Target>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Dolphin|Wii">
+      <Configuration>Dolphin</Configuration>
+      <Platform>Wii</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="WiiLoad|Wii">
+      <Configuration>WiiLoad</Configuration>
+      <Platform>Wii</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{35E907BC-917A-4004-BE7B-1BD739276DEE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
+    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeOutput>Darts.dol</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>./</OutDir>
+    <IntDir>./build/</IntDir>
+    <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <ReferencePath>
+    </ReferencePath>
+    <SourcePath>C:\devkitPro\libogc\lib\wii</SourcePath>
+    <LibraryWPath>
+    </LibraryWPath>
+    <ExcludePath>
+    </ExcludePath>
+    <LibraryPath>
+    </LibraryPath>
+    <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
+    <IncludePath>
+    </IncludePath>
+    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>
+    </NMakeForcedIncludes>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeOutput>Darts.dol</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>./</OutDir>
+    <IntDir>./build/</IntDir>
+    <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <ReferencePath />
+    <SourcePath>C:\devkitPro\libogc\lib\wii</SourcePath>
+    <LibraryWPath />
+    <ExcludePath />
+    <LibraryPath />
+    <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
+    <IncludePath />
+    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeOutput>Darts.dol</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>./</OutDir>
+    <IntDir>./build/</IntDir>
+    <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <ReferencePath />
+    <SourcePath>C:\devkitPro\libogc\lib\wii</SourcePath>
+    <LibraryWPath />
+    <ExcludePath />
+    <LibraryPath />
+    <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
+    <IncludePath />
+    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeOutput>Darts.dol</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>./</OutDir>
+    <IntDir>./build/</IntDir>
+    <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <ReferencePath />
+    <SourcePath>C:\devkitPro\libogc\lib\wii</SourcePath>
+    <LibraryWPath />
+    <ExcludePath />
+    <LibraryPath />
+    <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
+    <IncludePath />
+    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeOutput>Darts.dol</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>./</OutDir>
+    <IntDir>./build/</IntDir>
+    <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <ReferencePath />
+    <SourcePath>C:\devkitPro\libogc\lib\wii</SourcePath>
+    <LibraryWPath />
+    <ExcludePath />
+    <LibraryPath />
+    <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
+    <IncludePath />
+    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
+    <BuildLog>
+      <Path>./VS-$(MSBuildProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <BuildLog>
+      <Path>./VS-$(MSBuildProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <BuildLog>
+      <Path>./VS-$(MSBuildProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <BuildLog>
+      <Path>./VS-$(MSBuildProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <BuildLog>
+      <Path>./VS-$(MSBuildProjectName).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\EngineCore.cpp" />
+    <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\TextureHandle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Core.h" />
+    <ClInclude Include="include\Defines.h" />
+    <ClInclude Include="include\EngineCore.h" />
+    <ClInclude Include="include\Input.h" />
+    <ClInclude Include="include\Ints.h" />
+    <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\TextureHandle.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="CoreCppClean" DependsOnTargets="$(CoreCppCleanDependsOn)">
+    <CppClean FoldersToClean=";" FilesExcludedFromClean="" DoDelete="" FilePatternsToDeleteOnClean=";">
+      <Output TaskParameter="DeletedFiles" ItemName="DeletedFilesByCppCleanTask" />
+    </CppClean>
+  </Target>
 </Project>

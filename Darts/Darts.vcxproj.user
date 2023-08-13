@@ -3,4 +3,36 @@
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>make.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>run</LocalDebuggerCommandArguments>
+    <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
+    <LocalDebuggerMergeEnvironment>false</LocalDebuggerMergeEnvironment>
+    <LocalDebuggerSQLDebugging>false</LocalDebuggerSQLDebugging>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>Dolphin.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>--exec="$(NMakeOutput)" --batch</LocalDebuggerCommandArguments>
+    <LocalDebuggerDebuggerType>GPUOnly</LocalDebuggerDebuggerType>
+    <LocalDebuggerMergeEnvironment>false</LocalDebuggerMergeEnvironment>
+    <LocalDebuggerSQLDebugging>false</LocalDebuggerSQLDebugging>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
 </Project>
