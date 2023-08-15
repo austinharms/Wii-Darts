@@ -1,4 +1,5 @@
 #include "engine/Engine.h"
+#include <fstream>
 
 Engine Engine::s_engine;
 
@@ -27,6 +28,24 @@ WD_NODISCARD void* Engine::AllocateSceneMem(size_t size)
 	return s_engine.m_sceneAllocator.Allocate(size);
 }
 
+WD_NODISCARD void* Engine::AllocateAlignedSceneMem(size_t size)
+{
+	// Ensure size is in 32 byte sized blocks
+	size += size % 32;
+	return s_engine.m_sceneAllocator.AllocateTail(size);
+}
+
+WD_NODISCARD void* Engine::AllocateTempUpdateMem(size_t size)
+{
+	return s_engine.m_tempAllocator.Allocate(size);;
+}
+
+WD_NODISCARD void* Engine::AllocateTempMem(size_t size, bool keepLastAllocation)
+{
+	if (!keepLastAllocation) s_engine.m_tempAllocator.ClearTail();
+	return s_engine.m_tempAllocator.AllocateTail(size);
+}
+
 void Engine::Start()
 {
 	s_engine.InternalStart();
@@ -35,6 +54,31 @@ void Engine::Start()
 void Engine::Quit()
 {
 	s_engine.InternalQuit();
+}
+
+WD_NODISCARD void* Engine::Allocate(size_t size, WDAllocatorEnum allocator)
+{
+	switch (allocator) {
+	case WD_ALLOCATOR_SCENE: return AllocateSceneMem(size);
+	case WD_ALLOCATOR_ALIGNED_SCENE: return AllocateAlignedSceneMem(size);
+	case WD_ALLOCATOR_UPDATE_TEMP: return AllocateTempUpdateMem(size);
+	case WD_ALLOCATOR_TEMP: return AllocateTempMem(size, false);
+	case WD_ALLOCATOR_TEMP_KEEP: return AllocateTempMem(size, true);
+	default: return nullptr;
+	}
+}
+
+WD_NODISCARD uint8_t* Engine::ReadFile(const char* filepath, size_t* fileSize, WDAllocatorEnum allocator) {
+	std::ifstream file(filepath, std::ios::binary);
+	file.seekg(0, std::ios::end);
+	int32_t endPos = file.tellg();
+	if (endPos <= 0) return nullptr;
+	file.seekg(0, std::ios::beg);
+	uint8_t* buf = (uint8_t*)Allocate(endPos, allocator);
+	if (!buf) return nullptr;
+	file.read((char*)buf, endPos);
+	if (fileSize) *fileSize = (uint32_t)endPos;
+	return buf;
 }
 
 void Engine::InternalStart()
@@ -53,6 +97,7 @@ void Engine::InternalStart()
 			m_rootEntities[m_activeRootEntity].~RootEntity();
 			m_activeRootEntity ^= 0x01;
 			m_sceneAllocator.ClearAllocations();
+			AlignSceneTailAllocator();
 			m_rootEntities[m_activeRootEntity].Load();
 			m_renderer.Enable();
 			m_tempAllocator.ClearAllocations();
@@ -73,4 +118,12 @@ void Engine::InternalStart()
 void Engine::InternalQuit()
 {
 	m_quit = true;
+}
+
+void Engine::AlignSceneTailAllocator()
+{
+	// Allocate a 0 byte block to get current alignment
+	size_t currentTail = (size_t)m_sceneAllocator.AllocateTail(0);
+	// Allocate and waste the required amount of bytes for the next allocation to be aligned
+	m_sceneAllocator.AllocateTail(currentTail % 32);
 }

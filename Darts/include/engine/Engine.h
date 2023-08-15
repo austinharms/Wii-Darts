@@ -8,6 +8,15 @@
 #include <utility>
 #include <new>
 
+enum WDAllocatorEnum
+{
+	WD_ALLOCATOR_SCENE = 0, // Engine::AllocateSceneMem(size)
+	WD_ALLOCATOR_ALIGNED_SCENE, // Engine::AllocateAlignedSceneMem(size)
+	WD_ALLOCATOR_UPDATE_TEMP, // Engine::AllocateTempUpdateMem(size)
+	WD_ALLOCATOR_TEMP, // Engine::AllocateTempMem(size, false)
+	WD_ALLOCATOR_TEMP_KEEP // Engine::AllocateTempMem(size, true)
+};
+
 class Engine
 {
 public:
@@ -15,12 +24,13 @@ public:
 	WD_NOCOPY(Engine);
 	WD_NODISCARD static Renderer& GetRenderer();
 	WD_NODISCARD static Input& GetInput();
+
 	// Allocates memory for scene use
 	// this memory will be reset when a new RootEntity is loaded
 	// returned pointer should NOT be freed
 	WD_NODISCARD static void* AllocateSceneMem(size_t size);
 
-	// Allocates memory for scene use
+	// Allocates 32byte aligned memory for scene use
 	// this memory will be reset when a new RootEntity is loaded
 	// returned pointer should NOT be freed
 	WD_NODISCARD static void* AllocateAlignedSceneMem(size_t size);
@@ -29,10 +39,19 @@ public:
 	// the allocated memory is valid until the next start of the next update 
 	// returned pointer should NOT be freed
 	WD_NODISCARD static void* AllocateTempUpdateMem(size_t size);
+
 	// Allocates memory for very temporary use
 	// memory allocated will be invalidated by the next call to AllocateTempMem unless keepLastAllocation is true
 	// returned pointer should NOT be freed
 	WD_NODISCARD static void* AllocateTempMem(size_t size, bool keepLastAllocation = false);
+
+	// Allocates memory base on the supplied allocator enum
+	WD_NODISCARD static void* Allocate(size_t size, WDAllocatorEnum allocator);
+
+	// Reads the file and returns a buffer with the files data
+	// if fileSize is not null, sets fileSize to the size in bytes of the returned buffer
+	// Returns nullptr on error and fileSize will be unchanged
+	WD_NODISCARD static uint8_t* ReadFile(const char* filepath, size_t* fileSize = nullptr, WDAllocatorEnum allocator = WD_ALLOCATOR_TEMP_KEEP);
 
 	template <class RootEntityT, typename ...Args>
 	static void SetRootEntity(Args&&... args) {
@@ -59,5 +78,8 @@ private:
 	Engine();
 	void InternalStart();
 	void InternalQuit();
+	// Must be called after the scene allocator is reset
+	// Ensures allocations make from the tail of the scene allocator are 32 byte aligned
+	void AlignSceneTailAllocator();
 };
 #endif // !DARTS_ENGINE_CORE_H_
