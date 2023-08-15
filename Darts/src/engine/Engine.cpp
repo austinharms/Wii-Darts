@@ -1,5 +1,10 @@
 #include "engine/Engine.h"
 #include <fstream>
+#include <fat.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 Engine Engine::s_engine;
 
@@ -85,8 +90,8 @@ void Engine::InternalStart()
 {
 	// If the default root entity has not changed don't start
 	if (!m_switchRootEntity) return;
-
 	m_quit = false;
+	SetupFS();
 	while (!m_quit) {
 		m_tempAllocator.ClearAllocations();
 
@@ -126,4 +131,15 @@ void Engine::AlignSceneTailAllocator()
 	size_t currentTail = (size_t)m_sceneAllocator.AllocateTail(0);
 	// Allocate and waste the required amount of bytes for the next allocation to be aligned
 	m_sceneAllocator.AllocateTail(currentTail % 32);
+}
+
+void Engine::SetupFS()
+{
+	if (!fatInitDefault()) {
+		GetRenderer().SetClearColor(0xff0000ff);
+		Quit();
+	}
+
+	//if (chdir("sd:/apps/darts/") != 0) GetRenderer().SetClearColor(0x00ff00ff);
+	//if ((_cwd = getcwd(nullptr, 0)) == nullptr) Logger::fatal("Failed to get working directory");
 }

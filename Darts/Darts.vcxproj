@@ -63,7 +63,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
-    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make build &amp;&amp; "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets"</NMakeBuildCommandLine>
     <NMakeOutput>Darts.dol</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -149,7 +149,7 @@
     <NMakeForcedIncludes />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
-    <NMakeBuildCommandLine>make build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make build &amp;&amp; "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets"</NMakeBuildCommandLine>
     <NMakeOutput>Darts.dol</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -195,6 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="tools\WiiAssetBuilder.exe" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\Allocator.cpp" />
@@ -223,6 +224,9 @@
     <ClInclude Include="include\TestRectEntity.h" />
     <ClInclude Include="include\engine\TextureHandle.h" />
     <ClInclude Include="include\engine\Transform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\test.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

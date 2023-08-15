@@ -12,9 +12,9 @@
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
-uint32_t defaultTextureColor = 0xffffffff;
+uint32_t defaultTexture[4] = { 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff };
 
-Renderer::Renderer() : m_defaultTexture(&defaultTextureColor, 1, 1, true, false) {
+Renderer::Renderer() : m_defaultTexture(defaultTexture, 2, 2, true, false, WD_PIXEL_RGBA8) {
 	m_videoMode = nullptr;
 	m_videoFIFO = nullptr;
 	m_framebuffers[0] = nullptr;
@@ -249,7 +249,7 @@ void Renderer::DrawNonIndexedMesh(const RenderMesh& mesh)
 			vertexItr += 1;
 		}
 		else {
-			GX_Color1u32(0xff0000ff);
+			GX_Color1u32(0xff00ffff);
 		}
 
 		if (format & RMF_HAS_VERTEX_UVS) {
