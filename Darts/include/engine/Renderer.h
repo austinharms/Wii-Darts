@@ -58,6 +58,8 @@ private:
 	void CorrectVideoMode();
 	void WaitVSync() const;
 	void SetupGX();
+	void SetupTEV();
+	void SetupVtxAttribs();
 	void SwapBuffers();
 	void UpdateProjectionMatrix();
 	void ResetViewMatrix();

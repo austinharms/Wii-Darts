@@ -85,12 +85,13 @@ guVector Transform::GetRight() const
 	return { -m_matrix[0][0], -m_matrix[1][0], -m_matrix[2][0] };
 }
 
-void Transform::LookAt(const guVector& tarGet, const guVector& up)
+void Transform::LookAt(const guVector& target, const guVector& up)
 {
 	guVector pos = GetPosition();
-	guVector upPos = pos;
-	guVecAdd((guVector*)&up, &upPos, &upPos);
-	guLookAt(m_matrix, &pos, &upPos, (guVector*)&tarGet);
+	Reset();
+	//guVector upPos = pos;
+	//guVecAdd((guVector*)&up, &upPos, &upPos);
+	guLookAt(m_matrix, &pos, &const_cast<guVector&>(up), (guVector*)&target);
 }
 
 Transform Transform::operator*(const Transform& other) const

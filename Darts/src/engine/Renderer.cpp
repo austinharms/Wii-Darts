@@ -12,7 +12,7 @@
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
-uint32_t defaultTextureColor = 0xFFFFFFFF;
+uint32_t defaultTextureColor = 0xffffffff;
 
 Renderer::Renderer() : m_defaultTexture(&defaultTextureColor, 1, 1, true, false) {
 	m_videoMode = nullptr;
@@ -38,6 +38,8 @@ Renderer::Renderer() : m_defaultTexture(&defaultTextureColor, 1, 1, true, false)
 	VIDEO_Flush();
 	WaitVSync();
 	SetupGX();
+	SetupTEV();
+	SetupVtxAttribs();
 	UpdateProjectionMatrix();
 	ResetViewMatrix();
 }
@@ -92,7 +94,7 @@ GXRModeObj& Renderer::GetVideoMode()
 
 void Renderer::PushTransform(const Transform& t)
 {
-	Transform::Mul(m_transformStack[m_transformStackIndex], t, m_transformStack[++m_transformStackIndex]);
+	Transform::Mul(t, m_transformStack[m_transformStackIndex], m_transformStack[++m_transformStackIndex]);
 }
 
 void Renderer::PushIdentityTransform()
@@ -108,7 +110,6 @@ void Renderer::PopTransform()
 void Renderer::DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture)
 {
 	if (!m_frameStarted || !mesh.GetValid()) return;
-
 	if (!texture) {
 		m_defaultTexture.Bind();
 	}
@@ -116,7 +117,7 @@ void Renderer::DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture)
 		texture->Bind();
 	}
 
-	PushActiveTransform();	
+	PushActiveTransform();
 	if (mesh.GetFormat() & RMF_HAS_INDICES) {
 		DrawIndexedMesh(mesh);
 	}
@@ -147,7 +148,6 @@ void Renderer::SwapBuffers()
 	VIDEO_Flush();
 	WaitVSync();
 	m_activeFramebuffer ^= 1;
-	//GX_InvalidateTexAll(); // Fixes some texture garbles
 }
 
 void Renderer::UpdateProjectionMatrix()
@@ -214,7 +214,7 @@ void Renderer::DrawIndexedMesh(const RenderMesh& mesh)
 			GX_TexCoord2f32(0.0f, 0.0f);
 		}
 
-		if (format & RMF_HAS_VERTEX_UVS) {
+		if (format & RMF_HAS_VERTEX_COLOR) {
 			GX_Color1u32(((uint32_t*)vertexItr)[0]);
 			vertexItr += 1;
 		}
@@ -235,6 +235,7 @@ void Renderer::DrawNonIndexedMesh(const RenderMesh& mesh)
 	for (uint16_t i = 0; i < primCount; ++i) {
 		GX_Position3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
 		vertexItr += 3;
+
 		if (format & RMF_HAS_VERTEX_NORMAL) {
 			GX_Normal3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
 			vertexItr += 3;
@@ -243,20 +244,20 @@ void Renderer::DrawNonIndexedMesh(const RenderMesh& mesh)
 			GX_Normal3f32(0, 0, 1);
 		}
 
+		if (format & RMF_HAS_VERTEX_COLOR) {
+			GX_Color1u32(((uint32_t*)vertexItr)[0]);
+			vertexItr += 1;
+		}
+		else {
+			GX_Color1u32(0xff0000ff);
+		}
+
 		if (format & RMF_HAS_VERTEX_UVS) {
 			GX_TexCoord2f32(vertexItr[0], vertexItr[1]);
 			vertexItr += 2;
 		}
 		else {
-			GX_TexCoord2f32(0.0f, 0.0f);
-		}
-
-		if (format & RMF_HAS_VERTEX_UVS) {
-			GX_Color1u32(((uint32_t*)vertexItr)[0]);
-			vertexItr += 1;
-		}
-		else {
-			GX_Color1u32(0xffffffff);
+			GX_TexCoord2f32(0.5f, 0.5f);
 		}
 	}
 
@@ -339,38 +340,61 @@ void Renderer::SetupGX()
 	GX_SetCopyFilter(m_videoMode->aa, m_videoMode->sample_pattern, GX_TRUE, m_videoMode->vfilter);
 	GX_SetFieldMode(m_videoMode->field_rendering, ((m_videoMode->viHeight == 2 * m_videoMode->xfbHeight) ? GX_ENABLE : GX_DISABLE));
 	GX_SetDispCopyGamma(GX_GM_1_0);
-
-	GX_SetNumChans(1);    // colour is the same as vertex colour
-	GX_SetNumTexGens(1);  // One texture exists
-	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
-	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
-
-	// setup render settings
 	GX_SetViewport(0.0f, 0.0f, m_videoMode->fbWidth, m_videoMode->efbHeight, 0.0f, 1.0f);
 	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
 	GX_SetAlphaUpdate(GX_TRUE);
 	GX_SetAlphaCompare(GX_GREATER, 0, GX_AOP_AND, GX_ALWAYS, 0);
 	GX_SetColorUpdate(GX_ENABLE);
+	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetCullMode(GX_CULL_FRONT);
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	GX_SetScissor(0, 0, m_videoMode->fbWidth, m_videoMode->efbHeight);
 	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0x00, 0x00, 0xff });
+	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
+}
 
-	// setup vertex attribs
+void Renderer::SetupTEV()
+{
+	GX_SetNumChans(1);    // colour is the same as vertex colour
+	GX_SetNumTexGens(1);  // One texture exists
+	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+
+	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
+
+	//GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY);
+	//Mtx mv;
+	//Mtx mr;
+	//guLightPerspective(mv, 45, (f32)m_videoMode->fbWidth / (f32)m_videoMode->efbHeight, 1.05F, 1.0F, 0.0F, 0.0F);
+	//guMtxTrans(mr, 0.0F, 0.0F, -1.0F);
+	//guMtxConcat(mv, mr, mv);
+	//GX_LoadTexMtxImm(mv, GX_TEXMTX0, GX_MTX3x4);
+
+	//GX_SetTevColor(GX_CC_C2, (GXColor) { 0xff, 0xff, 0xff, 0xff });
+
+	//GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_C2, GX_CC_RASC, GX_CC_ZERO);
+	//GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ONE, GX_CC_RASC, GX_CC_ZERO);
+	GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+	GX_SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
+	GX_SetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+	GX_SetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+
+	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+	//GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+}
+
+void Renderer::SetupVtxAttribs()
+{
 	GX_ClearVtxDesc();
 	GX_InvVtxCache();
 	GX_InvalidateTexAll();
 
 	GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
 	GX_SetVtxDesc(GX_VA_NRM, GX_DIRECT);
-	GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
 	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
 
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_F32, 0);
-	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
-	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
 }
