@@ -369,10 +369,6 @@ void Renderer::SetupTEV()
 	//guMtxConcat(mv, mr, mv);
 	//GX_LoadTexMtxImm(mv, GX_TEXMTX0, GX_MTX3x4);
 
-	//GX_SetTevColor(GX_CC_C2, (GXColor) { 0xff, 0xff, 0xff, 0xff });
-
-	//GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_C2, GX_CC_RASC, GX_CC_ZERO);
-	//GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ONE, GX_CC_RASC, GX_CC_ZERO);
 	GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
 	GX_SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
 	GX_SetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
