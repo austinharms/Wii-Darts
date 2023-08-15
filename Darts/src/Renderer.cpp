@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "RenderMesh.h"
 #include <ogc/video.h>
 #include <ogc/system.h>
 #include <gctypes.h>
@@ -25,6 +26,8 @@ Renderer::Renderer() : m_defaultTexture(&defaultTextureColor, 1, 1, true, false)
 	m_nearPlane = 0.01f;
 	m_farPlane = 100;
 	m_fov = 90;
+	m_transformStackIndex = 0;
+	m_frameStarted = false;
 	VIDEO_Init();
 	Disable();
 	m_videoMode = VIDEO_GetPreferredMode(NULL);
@@ -58,9 +61,9 @@ void Renderer::GetFramebufferSize(uint16_t* width, uint16_t* height) const
 	if (height) *height = m_videoMode->efbHeight;
 }
 
-void Renderer::SetCameraTransform(Mtx transform)
+void Renderer::SetCameraTransform(const Transform& t)
 {
-	GX_LoadPosMtxImm(transform, GX_PNMTX0);
+	m_viewTransform = t;
 }
 
 void Renderer::SetFOV(float fov)
@@ -89,7 +92,42 @@ GXRModeObj& Renderer::GetVideoMode()
 	return *m_videoMode;
 }
 
-void Renderer::Enabled()
+void Renderer::PushTransform(const Transform& t)
+{
+	Transform::Mul(m_transformStack[m_transformStackIndex], t, m_transformStack[++m_transformStackIndex]);
+}
+
+void Renderer::PushIdentityTransform()
+{
+	m_transformStack[++m_transformStackIndex] = m_transformStack[m_transformStackIndex - 1];
+}
+
+void Renderer::PopTransform()
+{
+	--m_transformStackIndex;
+}
+
+void Renderer::DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture)
+{
+	if (!m_frameStarted || !mesh.GetValid()) return;
+
+	if (!texture) {
+		m_defaultTexture.Bind();
+	}
+	else {
+		texture->Bind();
+	}
+
+	PushActiveTransform();	
+	if (mesh.GetFormat() & RMF_HAS_INDICES) {
+		DrawIndexedMesh(mesh);
+	}
+	else {
+		DrawNonIndexedMesh(mesh);
+	}
+}
+
+void Renderer::Enable()
 {
 	VIDEO_SetBlack(false);
 	m_enabled = true;
@@ -125,51 +163,120 @@ void Renderer::UpdateProjectionMatrix()
 
 void Renderer::ResetViewMatrix()
 {
-	Mtx44 m;
-	guMtx44Identity(m);
 	guVector camPos = (guVector){ 0, 0, 1 };
-	guVector lookDir = (guVector){ 0, 0, 0 };
+	guVector lookPos = (guVector){ 0, 0, 0 };
 	guVector up = (guVector){ 0, 1, 0 };
-	guLookAt(m, &camPos, &up, &lookDir);
-	SetCameraTransform(m);
+	Transform t;
+	t.SetPosition(camPos);
+	t.LookAt(lookPos, up);
+	SetCameraTransform(t);
 }
 
-void Renderer::DrawTestRect()
+void Renderer::PushActiveTransform()
 {
-	float x = 0;
-	float y = 0;
-	float z = 0;
-	uint32_t color = 0x0000ffff;
+	GX_LoadPosMtxImm(m_transformStack[m_transformStackIndex].GetMatrix(), GX_PNMTX0);
+}
 
-	m_defaultTexture.Bind();
+void Renderer::DrawIndexedMesh(const RenderMesh& mesh)
+{
+	const float* vertexData = (float*)mesh.GetVertexBuffer();
+	const uint16_t* indexData = mesh.GetIndexBuffer();
+	uint16_t primCount = mesh.GetIndexCount();
+	RenderMeshFormat format = mesh.GetFormat();
 
-	GX_Begin(GX_TRIANGLES, GX_VTXFMT0, 6);
+	uint8_t vertexStride = sizeof(float) * 3;
+	if (format & RMF_HAS_VERTEX_NORMAL)
+		vertexStride += sizeof(float) * 3;
+	if (format & RMF_HAS_VERTEX_UVS)
+		vertexStride += sizeof(float) * 2;
+	if (format & RMF_HAS_VERTEX_COLOR)
+		vertexStride += sizeof(uint32_t);
 
-	GX_Position3f32(0 + x, 0 + y, 0 + z);
-	GX_Color1u32(color);
-	GX_TexCoord2f32(0.0f, 0.0f);
+	vertexStride /= sizeof(float);
 
-	GX_Position3f32(0.05f + x, 0.05f + y, 0 + z);
-	GX_Color1u32(color);
-	GX_TexCoord2f32(0.0f, 0.0f);
+	GX_Begin(GX_TRIANGLES, GX_VTXFMT0, primCount);
+	for (uint16_t i = 0; i < primCount; ++i) {
+		const float* vertexItr = vertexData + (vertexStride * indexData[i]);
+		GX_Position3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
+		vertexItr += 3;
 
-	GX_Position3f32(0 + x, 0.05f + y, 0 + z);
-	GX_Color1u32(color);
-	GX_TexCoord2f32(0.0f, 0.0f);
+		if (format & RMF_HAS_VERTEX_NORMAL) {
+			GX_Normal3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
+			vertexItr += 3;
+		}
+		else {
+			GX_Normal3f32(0, 0, 1);
+		}
 
-	GX_Position3f32(0 + x, 0 + y, 0 + z);
-	GX_Color1u32(color);
-	GX_TexCoord2f32(0.0f, 0.0f);
+		if (format & RMF_HAS_VERTEX_UVS) {
+			GX_TexCoord2f32(vertexItr[0], vertexItr[1]);
+			vertexItr += 2;
+		}
+		else {
+			GX_TexCoord2f32(0.0f, 0.0f);
+		}
 
-	GX_Position3f32(0.05f + x, 0 + y, 0 + z);
-	GX_Color1u32(color);
-	GX_TexCoord2f32(0.0f, 0.0f);
-
-	GX_Position3f32(0.05f + x, 0.05f + y, 0 + z);
-	GX_Color1u32(color);
-	GX_TexCoord2f32(0.0f, 0.0f);
+		if (format & RMF_HAS_VERTEX_UVS) {
+			GX_Color1u32(((uint32_t*)vertexItr)[0]);
+			vertexItr += 1;
+		}
+		else {
+			GX_Color1u32(0xffffffff);
+		}
+	}
 
 	GX_End();
+}
+
+void Renderer::DrawNonIndexedMesh(const RenderMesh& mesh)
+{
+	const float* vertexItr = (float*)mesh.GetVertexBuffer();
+	uint16_t primCount = mesh.GetVertexCount();
+	RenderMeshFormat format = mesh.GetFormat();
+	GX_Begin(GX_TRIANGLES, GX_VTXFMT0, primCount);
+	for (uint16_t i = 0; i < primCount; ++i) {
+		GX_Position3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
+		vertexItr += 3;
+		if (format & RMF_HAS_VERTEX_NORMAL) {
+			GX_Normal3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
+			vertexItr += 3;
+		}
+		else {
+			GX_Normal3f32(0, 0, 1);
+		}
+
+		if (format & RMF_HAS_VERTEX_UVS) {
+			GX_TexCoord2f32(vertexItr[0], vertexItr[1]);
+			vertexItr += 2;
+		}
+		else {
+			GX_TexCoord2f32(0.0f, 0.0f);
+		}
+
+		if (format & RMF_HAS_VERTEX_UVS) {
+			GX_Color1u32(((uint32_t*)vertexItr)[0]);
+			vertexItr += 1;
+		}
+		else {
+			GX_Color1u32(0xffffffff);
+		}
+	}
+
+	GX_End();
+}
+
+void Renderer::StartFrame()
+{
+	m_transformStackIndex = 0;
+	m_transformStack[0] = m_viewTransform;
+	PushActiveTransform();
+	m_frameStarted = true;
+}
+
+void Renderer::EndFrame()
+{
+	m_frameStarted = false;
+	SwapBuffers();
 }
 
 void Renderer::CorrectVideoMode()
@@ -250,7 +357,7 @@ void Renderer::SetupGX()
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	GX_SetScissor(0, 0, m_videoMode->fbWidth, m_videoMode->efbHeight);
 	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
+	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0x00, 0x00, 0xff });
 
 	// setup vertex attribs
 	GX_ClearVtxDesc();
@@ -258,13 +365,13 @@ void Renderer::SetupGX()
 	GX_InvalidateTexAll();
 
 	GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
-	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	GX_SetVtxDesc(GX_VA_NRM, GX_DIRECT);
 	GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
 
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
 	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
 	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
-	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 }

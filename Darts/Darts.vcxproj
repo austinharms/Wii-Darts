@@ -197,20 +197,32 @@
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Allocator.cpp" />
     <ClCompile Include="src\EngineCore.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\RenderMesh.cpp" />
+    <ClCompile Include="src\TestRectEntity.cpp" />
     <ClCompile Include="src\TextureHandle.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Allocator.h" />
     <ClInclude Include="include\Core.h" />
     <ClInclude Include="include\Defines.h" />
     <ClInclude Include="include\EngineCore.h" />
+    <ClInclude Include="include\Entity.h" />
     <ClInclude Include="include\Input.h" />
     <ClInclude Include="include\Ints.h" />
+    <ClInclude Include="include\MainMenuRootEntity.h" />
     <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\RenderMesh.h" />
+    <ClInclude Include="include\RootEntity.h" />
+    <ClInclude Include="include\TestRectEntity.h" />
     <ClInclude Include="include\TextureHandle.h" />
+    <ClInclude Include="include\Transform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

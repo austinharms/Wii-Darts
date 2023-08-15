@@ -9,6 +9,7 @@ namespace darts {
 	{
 	public:
 		~Input();
+		WD_NOCOPY(Input);
 
 	private:
 		friend class EngineCore;
