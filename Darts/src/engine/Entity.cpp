@@ -1,5 +1,5 @@
-#include "Entity.h"
-#include "Engine.h"
+#include "Engine/Entity.h"
+#include "Engine/Engine.h"
 
 Entity::Entity(bool enabled) {
 	m_parent = nullptr;

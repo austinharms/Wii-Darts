@@ -1,8 +1,8 @@
 #ifndef DARTS_TEST_RECT_ENTITY_H_
 #define DARTS_TEST_RECT_ENTITY_H_
-#include "Core.h"
-#include "Entity.h"
-#include "RenderMesh.h"
+#include "Engine/Core.h"
+#include "Engine/Entity.h"
+#include "Engine/RenderMesh.h"
 
 class TestRectEntity : public Entity
 {

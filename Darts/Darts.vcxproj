@@ -197,32 +197,32 @@
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Allocator.cpp" />
-    <ClCompile Include="src\Engine.cpp" />
-    <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\engine\Allocator.cpp" />
+    <ClCompile Include="src\engine\Engine.cpp" />
+    <ClCompile Include="src\engine\Entity.cpp" />
+    <ClCompile Include="src\engine\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\RenderMesh.cpp" />
+    <ClCompile Include="src\engine\Renderer.cpp" />
+    <ClCompile Include="src\engine\RenderMesh.cpp" />
     <ClCompile Include="src\TestRectEntity.cpp" />
-    <ClCompile Include="src\TextureHandle.cpp" />
-    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\engine\TextureHandle.cpp" />
+    <ClCompile Include="src\engine\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Allocator.h" />
-    <ClInclude Include="include\Core.h" />
-    <ClInclude Include="include\Defines.h" />
-    <ClInclude Include="include\Engine.h" />
-    <ClInclude Include="include\Entity.h" />
-    <ClInclude Include="include\Input.h" />
-    <ClInclude Include="include\Ints.h" />
+    <ClInclude Include="include\engine\Allocator.h" />
+    <ClInclude Include="include\engine\Core.h" />
+    <ClInclude Include="include\engine\Defines.h" />
+    <ClInclude Include="include\engine\Engine.h" />
+    <ClInclude Include="include\engine\Entity.h" />
+    <ClInclude Include="include\engine\Input.h" />
+    <ClInclude Include="include\engine\Ints.h" />
     <ClInclude Include="include\MainMenuRootEntity.h" />
-    <ClInclude Include="include\Renderer.h" />
-    <ClInclude Include="include\RenderMesh.h" />
-    <ClInclude Include="include\RootEntity.h" />
+    <ClInclude Include="include\engine\Renderer.h" />
+    <ClInclude Include="include\engine\RenderMesh.h" />
+    <ClInclude Include="include\engine\RootEntity.h" />
     <ClInclude Include="include\TestRectEntity.h" />
-    <ClInclude Include="include\TextureHandle.h" />
-    <ClInclude Include="include\Transform.h" />
+    <ClInclude Include="include\engine\TextureHandle.h" />
+    <ClInclude Include="include\engine\Transform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
-#include "renderer.h"
-#include "RenderMesh.h"
+#include "Engine/Renderer.h"
+#include "Engine/RenderMesh.h"
 #include <ogc/video.h>
 #include <ogc/system.h>
 #include <gctypes.h>
