@@ -1,6 +1,6 @@
-#include "Engine/TextureHandle.h"
-#include "Engine/Engine.h"
-#include "Engine/Renderer.h"
+#include "engine/TextureHandle.h"
+#include "engine/Engine.h"
+#include "engine/Renderer.h"
 #include <ogc/cache.h>
 #include <malloc.h>
 #include <cstring>

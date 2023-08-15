@@ -1,6 +1,6 @@
-#include "Engine/Input.h"
-#include "Engine/Engine.h"
-#include "Engine/Renderer.h"
+#include "engine/Input.h"
+#include "engine/Engine.h"
+#include "engine/Renderer.h"
 #include <wiiuse/wpad.h>
 
 Input::Input() {

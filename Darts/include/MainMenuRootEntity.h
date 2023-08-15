@@ -1,6 +1,6 @@
 #ifndef DARTS_MAIN_MENU_ROOT_ENTITY_H_
 #define DARTS_MAIN_MENU_ROOT_ENTITY_H_
-#include "Engine/RootEntity.h"
+#include "engine/RootEntity.h"
 #include "TestRectEntity.h"
 
 class MainMenuRoot : public RootEntity

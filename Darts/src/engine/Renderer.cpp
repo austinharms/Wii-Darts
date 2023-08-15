@@ -1,5 +1,5 @@
-#include "Engine/Renderer.h"
-#include "Engine/RenderMesh.h"
+#include "engine/Renderer.h"
+#include "engine/RenderMesh.h"
 #include <ogc/video.h>
 #include <ogc/system.h>
 #include <gctypes.h>
@@ -368,8 +368,9 @@ void Renderer::SetupGX()
 	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
 
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_F32, 0);
+	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
 	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
 	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
 }

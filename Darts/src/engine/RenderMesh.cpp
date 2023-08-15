@@ -1,6 +1,6 @@
-#include "Engine/RenderMesh.h"
-#include "Engine/Engine.h"
-#include "Engine/Renderer.h"
+#include "engine/RenderMesh.h"
+#include "engine/Engine.h"
+#include "engine/Renderer.h"
 
 RenderMesh::RenderMesh(RenderMeshFormat format, void* vertexData, uint16_t vertexCount, uint16_t* indexData, uint16_t indexCount) : m_indexData(indexData), m_vertexData(vertexData), m_indexCount(indexCount), m_vertexCount(vertexCount), m_format(format) { }
 
