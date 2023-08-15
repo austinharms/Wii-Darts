@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "Entity.h"
 
-class EngineCore;
+class Engine;
 
 class RootEntity : public Entity
 {
@@ -16,7 +16,7 @@ protected:
 	uint8_t m_userData[128];
 
 private:
-	friend class EngineCore;
+	friend class Engine;
 	using Entity::ResetTransform;
 	using Entity::UpdateTransform;
 	using Entity::Enable;

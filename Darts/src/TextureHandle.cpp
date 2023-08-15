@@ -1,5 +1,5 @@
 #include "TextureHandle.h"
-#include "EngineCore.h"
+#include "Engine.h"
 #include "Renderer.h"
 #include <ogc/cache.h>
 #include <malloc.h>
@@ -20,7 +20,7 @@ TextureHandle::TextureHandle(void* pixels, uint32_t width, uint32_t height, bool
 		GX_InitTexObj(&m_textureHandle, pixelData, width, height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
 	}
 
-	GXRModeObj& mode = EngineCore::GetRenderer().GetVideoMode();
+	GXRModeObj& mode = Engine::GetRenderer().GetVideoMode();
 
 	if (antialias) {
 		GX_SetCopyFilter(mode.aa, mode.sample_pattern, GX_TRUE, mode.vfilter);

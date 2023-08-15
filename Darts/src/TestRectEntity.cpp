@@ -1,5 +1,5 @@
 #include "TestRectEntity.h"
-#include "EngineCore.h"
+#include "Engine.h"
 
 float TestRectMeshData[18] = {
 	0.0f, 0.0f, 0.0f,

@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "EngineCore.h"
+#include "Engine.h"
 
 Entity::Entity(bool enabled) {
 	m_parent = nullptr;
@@ -49,7 +49,7 @@ uint16_t Entity::GetChildCount() const
 
 void* Entity::AllocateChildMem(size_t size)
 {
-	return EngineCore::AllocateSceneMem(size);
+	return Engine::AllocateSceneMem(size);
 }
 
 void Entity::Update()
@@ -68,10 +68,10 @@ void Entity::Render()
 {
 	if (!m_enabled || !m_loaded) return;
 	if (m_identityTransform) {
-		EngineCore::GetRenderer().PushIdentityTransform();
+		Engine::GetRenderer().PushIdentityTransform();
 	}
 	else {
-		EngineCore::GetRenderer().PushTransform(m_transform);
+		Engine::GetRenderer().PushTransform(m_transform);
 	}
 
 	OnRender();

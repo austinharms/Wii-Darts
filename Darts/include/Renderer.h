@@ -6,7 +6,7 @@
 #include <ogc/gx_struct.h>
 #include <ogc/gu.h>
 
-class EngineCore;
+class Engine;
 class RenderMesh;
 
 class Renderer
@@ -28,7 +28,7 @@ public:
 	void DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture = nullptr);
 
 private:
-	friend class EngineCore;
+	friend class Engine;
 
 	GXRModeObj* m_videoMode;
 	void* m_videoFIFO;
@@ -44,7 +44,7 @@ private:
 	bool m_enabled;
 	bool m_frameStarted;
 
-	// ##### Methods called by EngineCore #####
+	// ##### Methods called by Engine #####
 
 	Renderer();
 	void StartFrame();

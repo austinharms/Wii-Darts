@@ -1,8 +1,8 @@
-#include "EngineCore.h"
+#include "Engine.h"
 #include "MainMenuRootEntity.h"
 
 int main() {
-	EngineCore::SetRootEntity<MainMenuRoot>();
-	EngineCore::Start();
+	Engine::SetRootEntity<MainMenuRoot>();
+	Engine::Start();
 	return 0;
 }

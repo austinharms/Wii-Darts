@@ -8,11 +8,11 @@
 #include <utility>
 #include <new>
 
-class EngineCore
+class Engine
 {
 public:
-	~EngineCore();
-	WD_NOCOPY(EngineCore);
+	~Engine();
+	WD_NOCOPY(Engine);
 	WD_NODISCARD static Renderer& GetRenderer();
 	WD_NODISCARD static Input& GetInput();
 	// Allocates memory for scene use
@@ -36,7 +36,7 @@ public:
 
 	template <class RootEntityT, typename ...Args>
 	static void SetRootEntity(Args&&... args) {
-		WD_STATIC_ASSERT(sizeof(RootEntityT) == sizeof(RootEntity), "EngineCore::SetRootEntity RootEntityT size was not that of RootEntity");
+		WD_STATIC_ASSERT(sizeof(RootEntityT) == sizeof(RootEntity), "Engine::SetRootEntity RootEntityT size was not that of RootEntity");
 		new((void*)&(s_engine.m_rootEntities[s_engine.m_activeRootEntity ^ 0x01])) RootEntityT(std::forward<Args>(args)...);
 		s_engine.m_switchRootEntity = true;
 	}
@@ -45,7 +45,7 @@ public:
 	static void Quit();
 
 private:
-	static EngineCore s_engine;
+	static Engine s_engine;
 
 	Renderer m_renderer;
 	Input m_input;
@@ -56,7 +56,7 @@ private:
 	bool m_quit;
 	bool m_switchRootEntity;
 
-	EngineCore();
+	Engine();
 	void InternalStart();
 	void InternalQuit();
 };

@@ -198,7 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Allocator.cpp" />
-    <ClCompile Include="src\EngineCore.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -212,7 +212,7 @@
     <ClInclude Include="include\Allocator.h" />
     <ClInclude Include="include\Core.h" />
     <ClInclude Include="include\Defines.h" />
-    <ClInclude Include="include\EngineCore.h" />
+    <ClInclude Include="include\Engine.h" />
     <ClInclude Include="include\Entity.h" />
     <ClInclude Include="include\Input.h" />
     <ClInclude Include="include\Ints.h" />

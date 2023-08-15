@@ -1,43 +1,43 @@
-#include "EngineCore.h"
+#include "Engine.h"
 
-EngineCore EngineCore::s_engine;
+Engine Engine::s_engine;
 
-EngineCore::EngineCore() : m_sceneAllocator(10000000), m_tempAllocator(10000000) {
+Engine::Engine() : m_sceneAllocator(10000000), m_tempAllocator(10000000) {
 	m_quit = true;
 	m_switchRootEntity = false;
 	m_activeRootEntity = 0;
 }
 
-EngineCore::~EngineCore() {
+Engine::~Engine() {
 
 }
 
-WD_NODISCARD Renderer& EngineCore::GetRenderer()
+WD_NODISCARD Renderer& Engine::GetRenderer()
 {
 	return s_engine.m_renderer;
 }
 
-WD_NODISCARD Input& EngineCore::GetInput()
+WD_NODISCARD Input& Engine::GetInput()
 {
 	return s_engine.m_input;
 }
 
-WD_NODISCARD void* EngineCore::AllocateSceneMem(size_t size)
+WD_NODISCARD void* Engine::AllocateSceneMem(size_t size)
 {
 	return s_engine.m_sceneAllocator.Allocate(size);
 }
 
-void EngineCore::Start()
+void Engine::Start()
 {
 	s_engine.InternalStart();
 }
 
-void EngineCore::Quit()
+void Engine::Quit()
 {
 	s_engine.InternalQuit();
 }
 
-void EngineCore::InternalStart()
+void Engine::InternalStart()
 {
 	// If the default root entity has not changed don't start
 	if (!m_switchRootEntity) return;
@@ -70,7 +70,7 @@ void EngineCore::InternalStart()
 	m_rootEntities[m_activeRootEntity].~RootEntity();
 }
 
-void EngineCore::InternalQuit()
+void Engine::InternalQuit()
 {
 	m_quit = true;
 }

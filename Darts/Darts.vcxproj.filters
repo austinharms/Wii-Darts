@@ -21,7 +21,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineCore.cpp">
+    <ClCompile Include="src\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer.cpp">
@@ -50,7 +50,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\EngineCore.h">
+    <ClInclude Include="include\Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Renderer.h">

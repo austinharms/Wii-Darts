@@ -2,7 +2,7 @@
 #define DARTS_INPUT_H_
 #include "Core.h"
 
-class EngineCore;
+class Engine;
 
 class Input
 {
@@ -11,7 +11,7 @@ public:
 	WD_NOCOPY(Input);
 
 private:
-	friend class EngineCore;
+	friend class Engine;
 
 	Input();
 
