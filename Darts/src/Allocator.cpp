@@ -1,8 +1,6 @@
 #include "Allocator.h"
 #include <malloc.h>
 
-using namespace darts;
-
 Allocator::Allocator(size_t stackSize) {
 	m_stackStart = malloc(stackSize);
 	m_stackEnd = (void*)(((uint8_t*)m_stackStart) + stackSize);

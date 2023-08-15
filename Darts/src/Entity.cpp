@@ -1,8 +1,6 @@
 #include "Entity.h"
 #include "EngineCore.h"
 
-using namespace darts;
-
 Entity::Entity(bool enabled) {
 	m_parent = nullptr;
 	m_childPtr = nullptr;

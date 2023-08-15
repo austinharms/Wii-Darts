@@ -2,7 +2,7 @@
 #include "MainMenuRootEntity.h"
 
 int main() {
-	darts::EngineCore::SetRootEntity<darts::MainMenuRoot>();
-	darts::EngineCore::Start();
+	EngineCore::SetRootEntity<MainMenuRoot>();
+	EngineCore::Start();
 	return 0;
 }

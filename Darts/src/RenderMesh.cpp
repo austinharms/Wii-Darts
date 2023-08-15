@@ -2,8 +2,6 @@
 #include "EngineCore.h"
 #include "Renderer.h"
 
-using namespace darts;
-
 RenderMesh::RenderMesh(RenderMeshFormat format, void* vertexData, uint16_t vertexCount, uint16_t* indexData, uint16_t indexCount) : m_indexData(indexData), m_vertexData(vertexData), m_indexCount(indexCount), m_vertexCount(vertexCount), m_format(format) { }
 
 RenderMesh::~RenderMesh() {

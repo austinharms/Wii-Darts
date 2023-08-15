@@ -2,22 +2,20 @@
 #define DARTS_INPUT_H_
 #include "Core.h"
 
-namespace darts {
-	class EngineCore;
+class EngineCore;
 
-	class Input
-	{
-	public:
-		~Input();
-		WD_NOCOPY(Input);
+class Input
+{
+public:
+	~Input();
+	WD_NOCOPY(Input);
 
-	private:
-		friend class EngineCore;
+private:
+	friend class EngineCore;
 
-		Input();
+	Input();
 
-		// Updates WPAD inputs
-		void PollEvents();
-	};
-}
+	// Updates WPAD inputs
+	void PollEvents();
+};
 #endif // !DARTS_INPUT_H_

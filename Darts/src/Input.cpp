@@ -3,8 +3,6 @@
 #include "Renderer.h"
 #include <wiiuse/wpad.h>
 
-using namespace darts;
-
 Input::Input() {
 	uint16_t w = 0;
 	uint16_t h = 0;

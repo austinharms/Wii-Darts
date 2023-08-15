@@ -1,7 +1,5 @@
 #include "EngineCore.h"
 
-using namespace darts;
-
 EngineCore EngineCore::s_engine;
 
 EngineCore::EngineCore() : m_sceneAllocator(10000000), m_tempAllocator(10000000) {

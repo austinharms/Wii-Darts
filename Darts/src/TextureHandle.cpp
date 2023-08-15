@@ -5,8 +5,6 @@
 #include <malloc.h>
 #include <cstring>
 
-using namespace darts;
-
 TextureHandle::TextureHandle(void* pixels, uint32_t width, uint32_t height, bool repeat, bool antialias) {
 	size_t size = width * height * 4;
 	void* pixelData = memalign(32, size);

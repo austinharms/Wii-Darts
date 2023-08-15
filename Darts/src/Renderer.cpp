@@ -10,8 +10,6 @@
 #include <malloc.h>
 #include <cstring>
 
-using namespace darts;
-
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
 uint32_t defaultTextureColor = 0xFFFFFFFF;

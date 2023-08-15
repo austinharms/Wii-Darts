@@ -1,7 +1,5 @@
 #include "Transform.h"
 
-using namespace darts;
-
 Transform::Transform() {
 	guMtxIdentity(m_matrix);
 }
