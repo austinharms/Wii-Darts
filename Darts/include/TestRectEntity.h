@@ -3,7 +3,6 @@
 #include "engine/Core.h"
 #include "engine/Entity.h"
 #include "engine/RenderMesh.h"
-#include "engine/TextureHandle.h"
 
 class TestRectEntity : public Entity
 {
@@ -16,6 +15,5 @@ protected:
 
 private:
 	RenderMesh m_mesh;
-	TextureHandle m_texture;
 };
 #endif // !DARTS_TEST_RECT_ENTITY_H_

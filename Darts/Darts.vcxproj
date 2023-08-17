@@ -311,7 +311,7 @@
     <ClInclude Include="include\engine\Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\test.png" />
+    <Image Include="res\test.png.unused" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

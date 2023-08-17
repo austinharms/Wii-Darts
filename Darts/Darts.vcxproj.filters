@@ -346,7 +346,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\test.png">
+    <Image Include="res\test.png.unused">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

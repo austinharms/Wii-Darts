@@ -125,7 +125,6 @@ void Renderer::DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture, Wd
 		texture->Bind();
 	}
 
-	//m_gui.GetFontAtlasTexture()->Bind();
 	UpdateActiveMatrix(mode);
 	if (mesh.GetFormat() & RMF_HAS_INDICES) {
 		DrawIndexedMesh(mesh);
@@ -155,6 +154,7 @@ void Renderer::StartFrame()
 	GX_LoadPosMtxImm(m_transformStack[0].GetMatrix(), WD_RENDER_STACK);
 	ResetScissor();
 	SetupTEV();
+	UpdateActiveMatrix(WD_RENDER_STACK);
 	m_gui.StartFrame();
 	m_frameStarted = true;
 }
@@ -168,8 +168,8 @@ void Renderer::EndFrame()
 
 void Renderer::SwapBuffers()
 {
-	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_SET);
+	GX_SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+	GX_SetAlphaCompare(GX_GREATER, 0, GX_AOP_AND, GX_ALWAYS, 0);
 	GX_SetAlphaUpdate(GX_TRUE);
 	GX_SetColorUpdate(GX_TRUE);
 	GX_CopyDisp(m_framebuffers[m_activeFramebuffer], GX_TRUE);
@@ -202,9 +202,11 @@ void Renderer::UpdateActiveMatrix(WdRenderModeEnum mode)
 	if (mode != m_currentRenderMode) {
 		if (mode == WD_RENDER_UI) {
 			GX_LoadProjectionMtx(m_orthoProjection, GX_ORTHOGRAPHIC);
+			GX_SetZMode(GX_FALSE, GX_LEQUAL, GX_TRUE);
 		}
 		else if (m_currentRenderMode == WD_RENDER_UI) {
 			GX_LoadProjectionMtx(m_perspecProjection, GX_PERSPECTIVE);
+			GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 		}
 
 		m_currentRenderMode = mode;
@@ -244,7 +246,18 @@ void Renderer::DrawIndexedMesh(const RenderMesh& mesh)
 		}
 
 		if (format & RMF_HAS_VERTEX_COLOR) {
-			GX_Color1u32(((uint32_t*)vertexItr)[0]);
+			uint8_t tmp;
+			uint32_t col = ((uint32_t*)vertexItr)[0];
+			uint8_t* srcPixelBuf = (uint8_t*)&col;
+			tmp = srcPixelBuf[0];
+			srcPixelBuf[0] = srcPixelBuf[3];
+			srcPixelBuf[3] = tmp;
+			tmp = srcPixelBuf[1];
+			srcPixelBuf[1] = srcPixelBuf[2];
+			srcPixelBuf[2] = tmp;
+
+			GX_Color1u32(col);
+			//GX_Color1u32(0xffffffff);
 			vertexItr += 1;
 		}
 		else {
@@ -371,9 +384,9 @@ void Renderer::SetupGX()
 	GX_SetFieldMode(m_videoMode->field_rendering, ((m_videoMode->viHeight == 2 * m_videoMode->xfbHeight) ? GX_ENABLE : GX_DISABLE));
 	GX_SetDispCopyGamma(GX_GM_1_0);
 	//GX_SetViewport(0.0f, 0, m_videoMode->fbWidth, m_videoMode->efbHeight, 0.0f, 1.0f);
-	GX_SetViewport(0.0f, m_videoMode->efbHeight, m_videoMode->fbWidth, -m_videoMode->efbHeight, 0.0f, 1.0f);	
-	GX_SetCullMode(GX_CULL_NONE);
-	//GX_SetCullMode(GX_CULL_BACK);
+	GX_SetViewport(0.0f, m_videoMode->efbHeight, m_videoMode->fbWidth, -m_videoMode->efbHeight, 0.0f, 1.0f);
+	//GX_SetCullMode(GX_CULL_NONE);
+	GX_SetCullMode(GX_CULL_BACK);
 	//GX_SetClipMode(GX_CLIP_DISABLE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
@@ -386,23 +399,25 @@ void Renderer::SetupTEV()
 	GX_SetNumTexGens(1);  // One texture exists
 	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 
-	//GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
+	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
 
-	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_TEXMTX0);
-	Mtx mv;
-	Mtx mr;
-	guLightPerspective(mv, 45, (f32)m_videoMode->fbWidth / (f32)m_videoMode->efbHeight, 1.05F, 1.0F, 0.0F, 0.0F);
-	guMtxTrans(mr, 0.0F, 0.0F, -1.0F);
-	guMtxConcat(mv, mr, mv);
-	GX_LoadTexMtxImm(mv, GX_TEXMTX0, GX_MTX3x4);
+	//GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_TEXMTX0);
+	//Mtx mv;
+	//Mtx mr;
+	//guLightPerspective(mv, 45, (f32)m_videoMode->fbWidth / (f32)m_videoMode->efbHeight, 1.05F, 1.0F, 0.0F, 0.0F);
+	//guMtxTrans(mr, 0.0F, 0.0F, -1.0F);
+	//guMtxConcat(mv, mr, mv);
+	//GX_LoadTexMtxImm(mv, GX_TEXMTX0, GX_MTX3x4);
 
 	//GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
 	//GX_SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
 	//GX_SetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 	//GX_SetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-	//GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+	//GX_SetTevOp(GX_TEVSTAGE0, GX_BLEND);
 	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+	//GX_SetTevOp(GX_TEVSTAGE0, );
 	//GX_SetTevOp(GX_TEVSTAGE1, GX_BLEND);
 	//GX_SetNumTevStages(2);
 }
@@ -428,9 +443,10 @@ void Renderer::SetupMatrices()
 {
 	Transform t;
 	GX_LoadPosMtxImm(t.GetMatrix(), WD_RENDER_IDENT);
+	t.SetPosition((guVector) { 0, 0, -100 });
 	GX_LoadPosMtxImm(t.GetMatrix(), WD_RENDER_UI);
-	guOrtho(m_orthoProjection, (float)m_videoMode->efbHeight, 0, 0, (float)m_videoMode->fbWidth, 0, 100);
-	
+	guOrtho(m_orthoProjection, (float)m_videoMode->efbHeight, 0, 0, (float)m_videoMode->fbWidth, 0, 1000);
+
 	guVector camPos = (guVector){ 0, 0, 1 };
 	guVector lookPos = (guVector){ 0, 0, 0 };
 	guVector up = (guVector){ 0, 1, 0 };
