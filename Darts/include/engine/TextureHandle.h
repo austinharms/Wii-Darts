@@ -12,7 +12,7 @@ enum WDPixelFormatEnum
 class TextureHandle
 {
 public:
-	TextureHandle(void* pixels, uint16_t width, uint16_t height, bool repeat = false, bool antialias = false, WDPixelFormatEnum srcFormat = WD_PIXEL_ARGB4X4);
+	TextureHandle(const void* pixels, uint16_t width, uint16_t height, bool repeat = false, bool antialias = false, WDPixelFormatEnum srcFormat = WD_PIXEL_ARGB4X4);
 	~TextureHandle();
 	bool Bind(uint8_t slot = 0);
 

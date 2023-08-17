@@ -17,15 +17,15 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	src src/engine source source/gfx
+SOURCES		:=	src src/engine source source/gfx imgui
 DATA		:=	assets
-INCLUDES	:=  include
+INCLUDES	:=  include imgui
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -g -O2 -Wall $(MACHDEP) $(INCLUDE)
+CFLAGS	= -g -O2 -Wall $(MACHDEP) $(INCLUDE) -DIMGUI_USER_CONFIG=\"engine/imguiConfig.h\"
 CXXFLAGS	=	$(CFLAGS)
 
 #LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map

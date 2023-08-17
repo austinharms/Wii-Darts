@@ -53,6 +53,12 @@ public:
 	// Returns nullptr on error and fileSize will be unchanged
 	WD_NODISCARD static uint8_t* ReadFile(const char* filepath, size_t* fileSize = nullptr, WDAllocatorEnum allocator = WD_ALLOCATOR_TEMP_KEEP);
 
+	static void WriteFile(const char* filepath, void* buffer, size_t size);
+
+	static void Log(const char* msg);
+
+	static float GetDelta();
+
 	template <class RootEntityT, typename ...Args>
 	static void SetRootEntity(Args&&... args) {
 		WD_STATIC_ASSERT(sizeof(RootEntityT) == sizeof(RootEntity), "Engine::SetRootEntity RootEntityT size was not that of RootEntity");
@@ -71,6 +77,7 @@ private:
 	Allocator m_sceneAllocator;
 	Allocator m_tempAllocator;
 	RootEntity m_rootEntities[2];
+	float m_delta;
 	uint8_t m_activeRootEntity;
 	bool m_quit;
 	bool m_switchRootEntity;

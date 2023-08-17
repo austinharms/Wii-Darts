@@ -5,13 +5,23 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <ogc/lwp_watchdog.h>
+#include <gccore.h>
+#include <wiiuse/wpad.h>
 
 Engine Engine::s_engine;
+
+void WiiResetCallback(u32 irq, void* ctx) { Engine::Quit(); }
+void WiiPowerCallback() { Engine::Quit(); }
+void WiimotePowerCallback(int32_t chan) { Engine::Quit(); }
 
 Engine::Engine() : m_sceneAllocator(10000000), m_tempAllocator(10000000) {
 	m_quit = true;
 	m_switchRootEntity = false;
 	m_activeRootEntity = 0;
+	SYS_SetResetCallback(WiiResetCallback);
+	SYS_SetPowerCallback(WiiPowerCallback);
+	WPAD_SetPowerButtonCallback(WiimotePowerCallback);
 }
 
 Engine::~Engine() {
@@ -86,14 +96,37 @@ WD_NODISCARD uint8_t* Engine::ReadFile(const char* filepath, size_t* fileSize, W
 	return buf;
 }
 
+void Engine::WriteFile(const char* filepath, void* buffer, size_t size)
+{
+	std::ofstream file(filepath, std::ios_base::binary);
+	file.write((const char*)buffer, size);
+	file.flush();
+}
+
+void Engine::Log(const char* msg)
+{
+	std::ofstream file("sd:/log.txt", std::ios_base::app);
+	file << msg << "\n";
+	file.flush();
+}
+
+float Engine::GetDelta()
+{
+	return s_engine.m_delta;
+}
+
 void Engine::InternalStart()
 {
 	// If the default root entity has not changed don't start
 	if (!m_switchRootEntity) return;
 	m_quit = false;
 	SetupFS();
+	settime((uint64_t)0);
+	uint64_t lastDelta = gettime();
 	while (!m_quit) {
 		m_tempAllocator.ClearAllocations();
+		m_delta = (float)(gettime() - lastDelta) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		lastDelta = gettime();
 
 		if (m_switchRootEntity) {
 			m_switchRootEntity = false;
@@ -118,6 +151,7 @@ void Engine::InternalStart()
 	m_renderer.Disable();
 	m_rootEntities[m_activeRootEntity].Unload();
 	m_rootEntities[m_activeRootEntity].~RootEntity();
+	Log("Engine Exit");
 }
 
 void Engine::InternalQuit()
@@ -137,8 +171,11 @@ void Engine::SetupFS()
 {
 	if (!fatInitDefault()) {
 		GetRenderer().SetClearColor(0xff0000ff);
-		Quit();
 	}
+
+	std::ofstream file("sd:/log.txt");
+	file << "FS Init!\n";
+	file.flush();
 
 	//if (chdir("sd:/apps/darts/") != 0) GetRenderer().SetClearColor(0x00ff00ff);
 	//if ((_cwd = getcwd(nullptr, 0)) == nullptr) Logger::fatal("Failed to get working directory");

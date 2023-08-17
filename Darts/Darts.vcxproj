@@ -63,10 +63,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
-    <NMakeBuildCommandLine>make build &amp;&amp; "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets"</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine> "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets" &amp;&amp; make build</NMakeBuildCommandLine>
     <NMakeOutput>Darts.dol</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakePreprocessorDefinitions>GEKKO;HW_RVL;IMGUI_USER_CONFIG="engine/imguiConfig.h";$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>./</OutDir>
     <IntDir>./build/</IntDir>
     <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
@@ -84,7 +84,7 @@
     <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
     <IncludePath>
     </IncludePath>
-    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>include;imgui;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>
     </NMakeForcedIncludes>
   </PropertyGroup>
@@ -149,10 +149,10 @@
     <NMakeForcedIncludes />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
-    <NMakeBuildCommandLine>make build &amp;&amp; "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets"</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine> "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets" &amp;&amp; make build</NMakeBuildCommandLine>
     <NMakeOutput>Darts.dol</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>GEKKO;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakePreprocessorDefinitions>GEKKO;HW_RVL;IMGUI_USER_CONFIG="engine/imguiConfig.h";$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>./</OutDir>
     <IntDir>./build/</IntDir>
     <ExecutablePath>$(Path);$(ExecutablePath)</ExecutablePath>
@@ -165,7 +165,7 @@
     <LibraryPath />
     <ExternalIncludePath>C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</ExternalIncludePath>
     <IncludePath />
-    <NMakeIncludeSearchPath>include;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>include;imgui;C:\devkitPro\libogc\include;C:\devkitPro\devkitPPC\lib\gcc\powerpc-eabi\12.1.0\include</NMakeIncludeSearchPath>
     <NMakeForcedIncludes />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
@@ -249,6 +249,7 @@
     <ClCompile Include="src\engine\Allocator.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\Entity.cpp" />
+    <ClCompile Include="src\engine\ImGuiDartsImpl.cpp" />
     <ClCompile Include="src\engine\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\engine\Renderer.cpp" />
@@ -297,6 +298,8 @@
     <ClInclude Include="include\engine\Defines.h" />
     <ClInclude Include="include\engine\Engine.h" />
     <ClInclude Include="include\engine\Entity.h" />
+    <ClInclude Include="include\engine\imguiConfig.h" />
+    <ClInclude Include="include\engine\ImGuiDartsImpl.h" />
     <ClInclude Include="include\engine\Input.h" />
     <ClInclude Include="include\engine\Ints.h" />
     <ClInclude Include="include\MainMenuRootEntity.h" />

@@ -1,7 +1,6 @@
 #include "engine/Input.h"
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
-#include <wiiuse/wpad.h>
 
 Input::Input() {
 	uint16_t w = 0;
@@ -14,6 +13,30 @@ Input::Input() {
 
 Input::~Input() {
 
+}
+
+bool Input::GetControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y)
+{
+	WPADData* data = WPAD_Data(controllerNumber);
+	if (!data || !data->ir.raw_valid) return false;
+	if (x) *x = data->ir.x;
+	if (y) *y = data->ir.y;
+	return true;
+}
+
+bool Input::GetControllerButtonDown(uint8_t controllerNumber, uint32_t button)
+{
+	return WPAD_ButtonsHeld(controllerNumber) & button;;
+}
+
+bool Input::GetControllerButtonPressed(uint8_t controllerNumber, uint32_t button)
+{
+	return WPAD_ButtonsDown(controllerNumber) & button;;
+}
+
+bool Input::GetControllerButtonReleased(uint8_t controllerNumber, uint32_t button)
+{
+	return WPAD_ButtonsUp(controllerNumber) & button;
 }
 
 void Input::PollEvents() {
