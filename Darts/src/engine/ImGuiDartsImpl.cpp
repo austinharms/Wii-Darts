@@ -44,16 +44,16 @@ void ImGuiDartsImpl::Init() {
 void ImGuiDartsImpl::UpdateFontAtlas()
 {
 	m_fontAtlasTexture.~TextureHandle();
-	unsigned char* pixelData = nullptr;
+	uint32_t* pixelData = nullptr;
 	int w, h;
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->Clear();
 	ImFontConfig fontCfg;
-	fontCfg.SizePixels = 15;
-	fontCfg.OversampleH = 2;
+	fontCfg.SizePixels = 35;
+	fontCfg.OversampleH = 3;
 	fontCfg.GlyphRanges = io.Fonts->GetGlyphRangesDefault();
 	io.Fonts->AddFontDefault(&fontCfg);
-	io.Fonts->TexDesiredWidth = 256;
+	io.Fonts->TexDesiredWidth = 512;
 	//io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines;
 	io.Fonts->Build();
 	if (!io.Fonts->TexReady) {
@@ -61,11 +61,11 @@ void ImGuiDartsImpl::UpdateFontAtlas()
 		Engine::Quit();
 	}
 
-	io.Fonts->GetTexDataAsRGBA32(&pixelData, &w, &h);
-	new((void*)&m_fontAtlasTexture) TextureHandle(pixelData, w, h, false, false, WD_PIXEL_RGBA8);
+	io.Fonts->GetTexDataAsRGBA32((unsigned char**)&pixelData, &w, &h);
+	int pixelCount = w * h;
+	new((void*)&m_fontAtlasTexture) TextureHandle(pixelData, w, h, false, true, WD_PIXEL_RGBA8);
 	io.Fonts->SetTexID(&m_fontAtlasTexture);
-	io.FontGlobalScale = 1;
-
+	io.FontGlobalScale = 0.5;
 	char* buf = (char*)Engine::AllocateTempMem(512);
 	sprintf(buf, "Updated Font Atlas, Size %i X %i", w, h);
 	Engine::Log(buf);
@@ -104,16 +104,18 @@ void ImGuiDartsImpl::StartFrame()
 
 void ImGuiDartsImpl::RenderUI()
 {
-	ImGui::ShowDemoWindow();
 	ImGui::Render();
 	Renderer& renderer = Engine::GetRenderer();
 	ImDrawData* drawData = ImGui::GetDrawData();
-	ImVec2 clip_off = drawData->DisplayPos;         // (0,0) unless using multi-viewports
-	ImVec2 clip_scale = drawData->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
 	renderer.ResetScissor();
 	for (int n = 0; n < drawData->CmdListsCount; n++)
 	{
 		const ImDrawList* cmdList = drawData->CmdLists[n];
+		// Clear Z Component of vertex positions
+		ImDrawVert* vertexItr = cmdList->VtxBuffer.Data;
+		for (uint16_t i = 0; i < cmdList->VtxBuffer.Size; ++i) {
+			vertexItr[i].posZ = 0;
+		}
 
 		for (int cmdI = 0; cmdI < cmdList->CmdBuffer.Size; cmdI++) {
 			const ImDrawCmd* pcmd = &cmdList->CmdBuffer[cmdI];
@@ -128,43 +130,15 @@ void ImGuiDartsImpl::RenderUI()
 			}
 			else
 			{
-				ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
-				ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
-				if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
+				const ImVec4& clipRect = pcmd->ClipRect;
+				if (clipRect.z <= clipRect.x || clipRect.w <= clipRect.y)
 					continue;
 
-				renderer.SetScissor(clip_min.x, clip_min.y, clip_max.x - clip_min.x, clip_max.y - clip_min.y);
+				renderer.SetScissor(clipRect.x, clipRect.y, clipRect.z - clipRect.x, clipRect.w - clipRect.y);
 				RenderMesh mesh(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_COLOR | RMF_HAS_VERTEX_UVS | RMF_HAS_INDICES, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size, &(cmdList->IdxBuffer.Data[pcmd->IdxOffset]), pcmd->ElemCount);
-				// Clear Z Component of positions
-				ImDrawVert* vertexItr = cmdList->VtxBuffer.Data;
-				for (uint16_t i = 0; i < cmdList->VtxBuffer.Size; ++i) {
-					vertexItr[i].posZ = 0;
-				}
-
 				renderer.DrawRenderMesh(mesh, (TextureHandle*)(pcmd->GetTexID()), WD_RENDER_UI);
-				
-				//// Project scissor/clipping rectangles into framebuffer space
-				//const ImVec4& rect = pcmd->ClipRect;
-				//if (rect.z <= rect.x || rect.w <= rect.y)
-				//	continue;
-
-				////char* buffer = (char*)Engine::AllocateTempMem(5000);
-				////sprintf(buffer, "Render Count: %i, Vtx: %f %f %f", pcmd->ElemCount, ((float*)cmdList->VtxBuffer.Data)[0], ((float*)cmdList->VtxBuffer.Data)[1], ((float*)cmdList->VtxBuffer.Data)[2]);
-				////Engine::Log(buffer);
-				//renderer.SetScissor(rect.x, rect.y, rect.z - rect.x, rect.w - rect.y);
-				//RenderMesh mesh(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_COLOR | RMF_HAS_VERTEX_UVS | RMF_HAS_INDICES, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size, &(cmdList->IdxBuffer.Data[pcmd->IdxOffset]), pcmd->ElemCount);
-				//
-				//// Clear Z Component of positions
-				//ImDrawVert* vertexItr = cmdList->VtxBuffer.Data;
-				//for (uint16_t i = 0; i < mesh.GetVertexCount(); ++i) {
-				//	vertexItr[i].posZ = 0;
-				//}
-
-				//renderer.DrawRenderMesh(mesh, ((TextureHandle*)pcmd->GetTexID()), WD_RENDER_UI);
 			}
 		}
-
-		//RenderMesh mesh(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_COLOR | RMF_HAS_VERTEX_UVS | RMF_HAS_INDICES, cmdList->VtxBuffer.Data,cmdList->VtxBuffer.Size, cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size);
 	}
 }
 

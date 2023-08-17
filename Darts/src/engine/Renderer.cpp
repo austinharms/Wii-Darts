@@ -19,7 +19,7 @@ uint32_t defaultTexture[16] = {
 	0xffffffff,0xffffffff,0xffffffff,0xffffffff
 };
 
-Renderer::Renderer() : m_defaultTexture(&defaultTexture, 4, 4, false, false, WD_PIXEL_RGBA8) {
+Renderer::Renderer() : m_defaultTexture(&defaultTexture, 4, 4, false, false, WD_PIXEL_ARGB4X4) {
 	m_videoMode = nullptr;
 	m_videoFIFO = nullptr;
 	m_framebuffers[0] = nullptr;
@@ -246,18 +246,7 @@ void Renderer::DrawIndexedMesh(const RenderMesh& mesh)
 		}
 
 		if (format & RMF_HAS_VERTEX_COLOR) {
-			uint8_t tmp;
-			uint32_t col = ((uint32_t*)vertexItr)[0];
-			uint8_t* srcPixelBuf = (uint8_t*)&col;
-			tmp = srcPixelBuf[0];
-			srcPixelBuf[0] = srcPixelBuf[3];
-			srcPixelBuf[3] = tmp;
-			tmp = srcPixelBuf[1];
-			srcPixelBuf[1] = srcPixelBuf[2];
-			srcPixelBuf[2] = tmp;
-
-			GX_Color1u32(col);
-			//GX_Color1u32(0xffffffff);
+			GX_Color1u32(((uint32_t*)vertexItr)[0]);
 			vertexItr += 1;
 		}
 		else {
@@ -383,11 +372,8 @@ void Renderer::SetupGX()
 	GX_SetCopyFilter(m_videoMode->aa, m_videoMode->sample_pattern, GX_TRUE, m_videoMode->vfilter);
 	GX_SetFieldMode(m_videoMode->field_rendering, ((m_videoMode->viHeight == 2 * m_videoMode->xfbHeight) ? GX_ENABLE : GX_DISABLE));
 	GX_SetDispCopyGamma(GX_GM_1_0);
-	//GX_SetViewport(0.0f, 0, m_videoMode->fbWidth, m_videoMode->efbHeight, 0.0f, 1.0f);
 	GX_SetViewport(0.0f, m_videoMode->efbHeight, m_videoMode->fbWidth, -m_videoMode->efbHeight, 0.0f, 1.0f);
-	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetCullMode(GX_CULL_BACK);
-	//GX_SetClipMode(GX_CLIP_DISABLE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 	SetClearColor(0x000000ff);

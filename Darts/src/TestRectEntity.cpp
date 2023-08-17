@@ -1,6 +1,7 @@
 #include "TestRectEntity.h"
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
+#include "imgui.h"
 
 float TestRectMeshData[30] = {
 	0.0f, 0.0f, 0.0f,  0.478516f, 0.0f,
@@ -22,5 +23,6 @@ TestRectEntity::~TestRectEntity()
 }
 
 void TestRectEntity::OnRender() {
-	m_mesh.Render();
+	ImGui::ShowDemoWindow();
+	//m_mesh.Render();
 }
