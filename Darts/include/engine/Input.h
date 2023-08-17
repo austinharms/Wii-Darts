@@ -18,8 +18,11 @@ public:
 private:
 	friend class Engine;
 
+	bool m_init;
+
 	Input();
 
+	void Init();
 	// Updates WPAD inputs
 	void PollEvents();
 };

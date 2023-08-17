@@ -3,16 +3,27 @@
 #include "engine/Renderer.h"
 
 Input::Input() {
-	uint16_t w = 0;
-	uint16_t h = 0;
-	Engine::GetRenderer().GetFramebufferSize(&w, &h);
-	WPAD_Init();
+	m_init = false;
+}
+
+void Input::Init()
+{
+	uint16_t w, h;
+	if (WPAD_Init() != WPAD_ERR_NONE) {
+		Engine::Log("Failed to Init WPAD");
+		Engine::Quit();
+	}
+
 	WPAD_SetDataFormat(WPAD_CHAN_ALL, WPAD_FMT_BTNS_ACC_IR);
+	WPAD_SetMotionPlus(WPAD_CHAN_ALL, true);
+	Engine::GetRenderer().GetFramebufferSize(&w, &h);
 	WPAD_SetVRes(WPAD_CHAN_ALL, w, h);
+	Engine::Log("Input Init");
+	m_init = true;
 }
 
 Input::~Input() {
-
+	if (m_init) WPAD_Shutdown();
 }
 
 bool Input::GetControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y)

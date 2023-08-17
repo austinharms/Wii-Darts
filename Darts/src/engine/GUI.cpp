@@ -1,24 +1,30 @@
-#include "engine/ImGuiDartsImpl.h"
+#include "engine/GUI.h"
 #include "imgui.h"
 #include "engine/RenderMesh.h"
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
 #include <new>
 #include <stdio.h>
+#include <cassert>
 
-ImGuiDartsImpl::ImGuiDartsImpl() : m_fontAtlasTexture(nullptr, 0, 0)
+void ImGuiAssertCallback(const char* msg) {
+	Engine::Log(msg);
+	assert(false);
+}
+
+GUI::GUI() : m_fontAtlasTexture(nullptr, 0, 0)
 {
 	IMGUI_CHECKVERSION();
 	m_init = false;
 	m_buildFontAtlas = false;
 }
 
-ImGuiDartsImpl::~ImGuiDartsImpl()
+GUI::~GUI()
 {
 	if (m_init) ImGui::DestroyContext();
 }
 
-void ImGuiDartsImpl::Init() {
+void GUI::Init() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -41,7 +47,7 @@ void ImGuiDartsImpl::Init() {
 	m_init = true;
 }
 
-void ImGuiDartsImpl::UpdateFontAtlas()
+void GUI::UpdateFontAtlas()
 {
 	m_fontAtlasTexture.~TextureHandle();
 	uint32_t* pixelData = nullptr;
@@ -72,7 +78,7 @@ void ImGuiDartsImpl::UpdateFontAtlas()
 	m_buildFontAtlas = true;
 }
 
-void ImGuiDartsImpl::StartFrame()
+void GUI::StartFrame()
 {
 	if (!m_buildFontAtlas) 	UpdateFontAtlas();
 
@@ -102,7 +108,7 @@ void ImGuiDartsImpl::StartFrame()
 	ImGui::NewFrame();
 }
 
-void ImGuiDartsImpl::RenderUI()
+void GUI::RenderUI()
 {
 	ImGui::Render();
 	Renderer& renderer = Engine::GetRenderer();
@@ -142,7 +148,3 @@ void ImGuiDartsImpl::RenderUI()
 	}
 }
 
-TextureHandle* ImGuiDartsImpl::GetFontAtlasTexture()
-{
-	return &m_fontAtlasTexture;
-}

@@ -189,7 +189,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\ImGuiDartsImpl.cpp">
+    <ClCompile Include="src\engine\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -338,7 +338,7 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\ImGuiDartsImpl.h">
+    <ClInclude Include="include\engine\GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\engine\imguiConfig.h">

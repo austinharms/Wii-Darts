@@ -3,7 +3,6 @@
 #include "Core.h"
 #include "TextureHandle.h"
 #include "Transform.h"
-#include "engine/ImGuiDartsImpl.h"
 #include <ogc/gx_struct.h>
 #include <ogc/gu.h>
 
@@ -45,7 +44,6 @@ private:
 	GXRModeObj* m_videoMode;
 	void* m_videoFIFO;
 	void* m_framebuffers[2];
-	ImGuiDartsImpl m_gui;
 	float m_fov;
 	float m_nearPlane;
 	float m_farPlane;

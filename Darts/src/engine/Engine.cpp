@@ -123,6 +123,9 @@ void Engine::InternalStart()
 	SetupFS();
 	settime((uint64_t)0);
 	uint64_t lastDelta = gettime();
+	m_input.Init();
+	m_GUI.Init();
+	m_GUI.UpdateFontAtlas();
 	while (!m_quit) {
 		m_tempAllocator.ClearAllocations();
 		m_delta = (float)(gettime() - lastDelta) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
@@ -142,9 +145,11 @@ void Engine::InternalStart()
 		}
 
 		m_input.PollEvents();
+		m_GUI.StartFrame();
 		m_rootEntities[m_activeRootEntity].Update();
 		m_renderer.StartFrame();
 		m_rootEntities[m_activeRootEntity].Render();
+		m_GUI.RenderUI();
 		m_renderer.EndFrame();
 	}
 
@@ -174,7 +179,7 @@ void Engine::SetupFS()
 	}
 
 	std::ofstream file("sd:/log.txt");
-	file << "FS Init!\n";
+	file << "FS Init\n";
 	file.flush();
 
 	//if (chdir("sd:/apps/darts/") != 0) GetRenderer().SetClearColor(0x00ff00ff);

@@ -37,7 +37,6 @@ Renderer::Renderer() : m_defaultTexture(&defaultTexture, 4, 4, false, false, WD_
 	SetupTEV();
 	SetupVtxAttribs();
 	SetupMatrices();
-	m_gui.Init();
 }
 
 Renderer::~Renderer() {
@@ -155,13 +154,11 @@ void Renderer::StartFrame()
 	ResetScissor();
 	SetupTEV();
 	UpdateActiveMatrix(WD_RENDER_STACK);
-	m_gui.StartFrame();
 	m_frameStarted = true;
 }
 
 void Renderer::EndFrame()
 {
-	m_gui.RenderUI();
 	m_frameStarted = false;
 	SwapBuffers();
 }

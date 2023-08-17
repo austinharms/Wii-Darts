@@ -1,8 +1,9 @@
 #ifndef DARTS_ENGINE_CORE_H_
 #define DARTS_ENGINE_CORE_H_
 #include "Core.h"
-#include "Renderer.h"
 #include "Input.h"
+#include "Renderer.h"
+#include "GUI.h"
 #include "Allocator.h"
 #include "RootEntity.h"
 #include <utility>
@@ -72,8 +73,9 @@ public:
 private:
 	static Engine s_engine;
 
-	Renderer m_renderer;
 	Input m_input;
+	Renderer m_renderer;
+	GUI m_GUI;
 	Allocator m_sceneAllocator;
 	Allocator m_tempAllocator;
 	RootEntity m_rootEntities[2];

@@ -249,7 +249,7 @@
     <ClCompile Include="src\engine\Allocator.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\Entity.cpp" />
-    <ClCompile Include="src\engine\ImGuiDartsImpl.cpp" />
+    <ClCompile Include="src\engine\GUI.cpp" />
     <ClCompile Include="src\engine\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\engine\Renderer.cpp" />
@@ -299,7 +299,7 @@
     <ClInclude Include="include\engine\Engine.h" />
     <ClInclude Include="include\engine\Entity.h" />
     <ClInclude Include="include\engine\imguiConfig.h" />
-    <ClInclude Include="include\engine\ImGuiDartsImpl.h" />
+    <ClInclude Include="include\engine\GUI.h" />
     <ClInclude Include="include\engine\Input.h" />
     <ClInclude Include="include\engine\Ints.h" />
     <ClInclude Include="include\MainMenuRootEntity.h" />

@@ -1,20 +1,26 @@
 #ifndef DARTS_IMGUI_IMPL_H_
 #define DARTS_IMGUI_IMPL_H_
 #include "TextureHandle.h"
+#include "imgui.h"
 
-class ImGuiDartsImpl {
+namespace gui = ImGui;
+
+class Engine;
+class GUI {
 public:
-	ImGuiDartsImpl();
-	~ImGuiDartsImpl();
+	~GUI();
+
+private:
+	friend class Engine;
+
+	TextureHandle m_fontAtlasTexture;
+	bool m_init;
+	bool m_buildFontAtlas;
+
+	GUI();
 	void Init();
 	void UpdateFontAtlas();
 	void StartFrame();
 	void RenderUI();
-	TextureHandle* GetFontAtlasTexture();
-
-private:
-	TextureHandle m_fontAtlasTexture;
-	bool m_init;
-	bool m_buildFontAtlas;
 };
 #endif // !DARTS_IMGUI_IMPL_H_
