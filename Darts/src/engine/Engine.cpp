@@ -15,7 +15,7 @@ void WiiResetCallback(u32 irq, void* ctx) { Engine::Quit(); }
 void WiiPowerCallback() { Engine::Quit(); }
 void WiimotePowerCallback(int32_t chan) { Engine::Quit(); }
 
-Engine::Engine() : m_sceneAllocator(10000000), m_tempAllocator(10000000) {
+Engine::Engine() : m_sceneAllocator(40000000), m_tempAllocator(10000000) {
 	m_quit = true;
 	m_switchRootEntity = false;
 	m_activeRootEntity = 0;
