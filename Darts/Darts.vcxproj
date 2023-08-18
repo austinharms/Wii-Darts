@@ -253,7 +253,7 @@
     <ClCompile Include="src\engine\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\engine\Renderer.cpp" />
-    <ClCompile Include="src\engine\RenderMesh.cpp" />
+    <ClCompile Include="src\engine\RenderMeshHandle.cpp" />
     <ClCompile Include="src\TestRectEntity.cpp" />
     <ClCompile Include="src\engine\TextureHandle.cpp" />
     <ClCompile Include="src\engine\Transform.cpp" />
@@ -304,7 +304,7 @@
     <ClInclude Include="include\engine\Ints.h" />
     <ClInclude Include="include\MainMenuRootEntity.h" />
     <ClInclude Include="include\engine\Renderer.h" />
-    <ClInclude Include="include\engine\RenderMesh.h" />
+    <ClInclude Include="include\engine\RenderMeshHandle.h" />
     <ClInclude Include="include\engine\RootEntity.h" />
     <ClInclude Include="include\TestRectEntity.h" />
     <ClInclude Include="include\engine\TextureHandle.h" />

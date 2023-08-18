@@ -8,6 +8,11 @@
 #include <ogc/lwp_watchdog.h>
 #include <gccore.h>
 #include <wiiuse/wpad.h>
+#include <ogc/system.h>
+#include <stdio.h>
+
+// Prevent the use of mem2 as we use that for scene and temp allocators
+u32 MALLOC_MEM2 = 0;
 
 Engine Engine::s_engine;
 
@@ -15,7 +20,7 @@ void WiiResetCallback(u32 irq, void* ctx) { Engine::Quit(); }
 void WiiPowerCallback() { Engine::Quit(); }
 void WiimotePowerCallback(int32_t chan) { Engine::Quit(); }
 
-Engine::Engine() : m_sceneAllocator(0), m_tempAllocator(0) {
+Engine::Engine() {
 	m_quit = true;
 	m_switchRootEntity = false;
 	m_activeRootEntity = 0;
@@ -114,14 +119,18 @@ float Engine::GetDelta()
 }
  
 void Engine::Init() {
-	new(&m_sceneAllocator) Allocator(30000000);
-	new(&m_tempAllocator) Allocator(10000000);
 	SetupFS();
 	settime((uint64_t)0);
+	if (!SetupAllocators()) {
+		Engine::Log("Failed to setup allocators");
+		Engine::Quit();
+		// the reset of setup depends on the allocators, so abort setup
+		exit(1);
+	}
+
 	m_renderer.Init();
 	m_input.Init();
 	m_GUI.Init();
-	m_GUI.UpdateFontAtlas();
 	SYS_SetResetCallback(WiiResetCallback);
 	SYS_SetPowerCallback(WiiPowerCallback);
 	WPAD_SetPowerButtonCallback(WiimotePowerCallback);
@@ -148,6 +157,7 @@ void Engine::InternalStart()
 			m_activeRootEntity ^= 0x01;
 			m_sceneAllocator.ClearAllocations();
 			AlignSceneTailAllocator();
+			m_GUI.UpdateFontAtlas();
 			m_rootEntities[m_activeRootEntity].Load();
 			m_renderer.Enable();
 			m_tempAllocator.ClearAllocations();
@@ -193,4 +203,27 @@ void Engine::SetupFS()
 
 	//if (chdir("sd:/apps/darts/") != 0) GetRenderer().SetClearColor(0x00ff00ff);
 	//if ((_cwd = getcwd(nullptr, 0)) == nullptr) Logger::fatal("Failed to get working directory");
+}
+
+WD_NODISCARD bool Engine::SetupAllocators()
+{
+	void* startOfMem2 = ((uint8_t*)SYS_GetArena2Lo());
+	// Discard an extra 100000 bytes on the top of mem2 as this seems to cause errors when written to
+	void* endOfMem2 = ((uint8_t*)SYS_GetArena2Hi()) - 100000;
+
+	if ((size_t)endOfMem2 - (size_t)startOfMem2 < 20000000) {
+		Engine::Log("Not enough memory, less then 20MB of mem2");
+		return false;
+	}
+
+	// Use 8MB for temp storage and the rest for scene mem
+	size_t tempAllocatorSize = 8000000;
+	void* tempEnd = (void*)(((uint8_t*)startOfMem2) + tempAllocatorSize);
+	m_tempAllocator.Init(startOfMem2, tempEnd);
+	m_sceneAllocator.Init(tempEnd, endOfMem2);
+	char* buf = (char*)m_tempAllocator.Allocate(256);
+	sprintf(buf, "Allocated Allocators\n\tMEM2:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tTemp:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tScene:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X", (size_t)endOfMem2 - (size_t)startOfMem2, (size_t)startOfMem2, (size_t)endOfMem2, m_tempAllocator.GetStackSize(), (size_t)startOfMem2, (size_t)tempEnd, m_sceneAllocator.GetStackSize(), (size_t)tempEnd, (size_t)endOfMem2);
+	Engine::Log(buf);
+	m_tempAllocator.ClearAllocations();
+	return true;
 }

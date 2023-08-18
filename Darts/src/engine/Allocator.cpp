@@ -1,16 +1,20 @@
 #include "engine/Allocator.h"
-#include <malloc.h>
 
-Allocator::Allocator(size_t stackSize) {
-	if (stackSize == 0) return;
-	m_stackStart = malloc(stackSize);
-	m_stackEnd = (void*)(((uint8_t*)m_stackStart) + stackSize);
-	m_stackHead = m_stackStart;
-	m_stackTail = m_stackEnd;
+Allocator::Allocator() {
+	m_stackStart = nullptr;
+	m_stackEnd = nullptr;
+	m_stackHead = nullptr;
+	m_stackTail = nullptr;
 }
 
-Allocator::~Allocator() {
-	if (m_stackStart) free(m_stackStart);
+Allocator::~Allocator() {}
+
+void Allocator::Init(void* start, void* end)
+{
+	m_stackStart = start;
+	m_stackEnd = end;
+	m_stackHead = start;
+	m_stackEnd = end;
 }
 
 bool Allocator::GetStackValid() const

@@ -92,5 +92,6 @@ private:
 	// Ensures allocations make from the tail of the scene allocator are 32 byte aligned
 	void AlignSceneTailAllocator();
 	void SetupFS();
+	WD_NODISCARD bool SetupAllocators();
 };
 #endif // !DARTS_ENGINE_CORE_H_

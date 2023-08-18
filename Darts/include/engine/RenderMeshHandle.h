@@ -14,13 +14,15 @@ enum RenderMeshFormatBits : RenderMeshFormat
 	RMF_HAS_INDICES = 0b00001000,
 };
 
-class RenderMesh
+// Handle for render mesh data stored in memory
+// You are responsible for the lifetime of the vertex and index buffers
+class RenderMeshHandle
 {
 public:
-	// The RenderMesh will assume the buffers exist for the whole lifetime of the RenderMesh object
-	RenderMesh(RenderMeshFormat format, void* vertexData, uint16_t vertexCount, uint16_t* indexData = nullptr, uint16_t indexCount = 0);
-	~RenderMesh();
-	WD_NOCOPY(RenderMesh);
+	RenderMeshHandle();
+	~RenderMeshHandle();
+	WD_NOCOPY(RenderMeshHandle);
+	bool Init(RenderMeshFormat format, void* vertexData, uint16_t vertexCount, uint16_t* indexData = nullptr, uint16_t indexCount = 0);
 	void Render(TextureHandle* texture = nullptr);
 	WD_NODISCARD RenderMeshFormat GetFormat() const;
 	WD_NODISCARD const void* GetVertexBuffer() const;
@@ -30,10 +32,12 @@ public:
 	WD_NODISCARD bool GetValid() const;
 
 private:
-	const uint16_t* m_indexData;
-	const void* m_vertexData;
-	const uint16_t m_indexCount;
-	const uint16_t m_vertexCount;
-	const RenderMeshFormat m_format;
+	uint16_t* m_indexData;
+	void* m_vertexData;
+	uint16_t m_indexCount;
+	uint16_t m_vertexCount;
+	RenderMeshFormat m_format;
+
+	void Reset();
 };
 #endif // !DARTS_RENDER_MESH_H_

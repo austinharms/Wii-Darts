@@ -15,7 +15,6 @@ private:
 
 	TextureHandle m_fontAtlasTexture;
 	bool m_init;
-	bool m_buildFontAtlas;
 
 	GUI();
 	void Init();

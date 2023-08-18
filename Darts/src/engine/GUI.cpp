@@ -1,9 +1,8 @@
 #include "engine/GUI.h"
 #include "imgui.h"
-#include "engine/RenderMesh.h"
+#include "engine/RenderMeshHandle.h"
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
-#include <new>
 #include <stdio.h>
 #include <cassert>
 
@@ -12,11 +11,10 @@ void ImGuiAssertCallback(const char* msg) {
 	assert(false);
 }
 
-GUI::GUI() : m_fontAtlasTexture(nullptr, 0, 0)
+GUI::GUI()
 {
 	IMGUI_CHECKVERSION();
 	m_init = false;
-	m_buildFontAtlas = false;
 }
 
 GUI::~GUI()
@@ -49,7 +47,6 @@ void GUI::Init() {
 
 void GUI::UpdateFontAtlas()
 {
-	m_fontAtlasTexture.~TextureHandle();
 	uint32_t* pixelData = nullptr;
 	int w, h;
 	ImGuiIO& io = ImGui::GetIO();
@@ -65,22 +62,25 @@ void GUI::UpdateFontAtlas()
 	if (!io.Fonts->TexReady) {
 		Engine::Log("Failed to build font atlas");
 		Engine::Quit();
+		return;
 	}
 
 	io.Fonts->GetTexDataAsRGBA32((unsigned char**)&pixelData, &w, &h);
-	new((void*)&m_fontAtlasTexture) TextureHandle(pixelData, w, h, false, true, WD_PIXEL_RGBA8);
+	size_t pixelBufferSize = w * h * 4;
+	void* textureBuffer = Engine::AllocateAlignedSceneMem(pixelBufferSize);
+	if (!textureBuffer) Engine::Log("Failed to allocate texture atlas mem");
+	TextureHandle::ConvertRGBA8PixelData((uint8_t*)textureBuffer, pixelData, w, h);
+	io.Fonts->ClearTexData();
+	m_fontAtlasTexture.Init(textureBuffer, w, h, false, true);
 	io.Fonts->SetTexID(&m_fontAtlasTexture);
 	io.FontGlobalScale = 0.5;
-	char* buf = (char*)Engine::AllocateTempMem(512);
+	char* buf = (char*)Engine::AllocateTempMem(64);
 	sprintf(buf, "Updated Font Atlas, Size %i X %i", w, h);
 	Engine::Log(buf);
-	m_buildFontAtlas = true;
 }
 
 void GUI::StartFrame()
 {
-	if (!m_buildFontAtlas) 	UpdateFontAtlas();
-
 	ImGuiIO& io = ImGui::GetIO();
 	Input& input = Engine::GetInput();
 
@@ -112,6 +112,7 @@ void GUI::RenderUI()
 	ImGui::Render();
 	Renderer& renderer = Engine::GetRenderer();
 	ImDrawData* drawData = ImGui::GetDrawData();
+	RenderMeshHandle mesh;
 	renderer.ResetScissor();
 	for (int n = 0; n < drawData->CmdListsCount; n++)
 	{
@@ -140,10 +141,9 @@ void GUI::RenderUI()
 					continue;
 
 				renderer.SetScissor(clipRect.x, clipRect.y, clipRect.z - clipRect.x, clipRect.w - clipRect.y);
-				RenderMesh mesh(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_COLOR | RMF_HAS_VERTEX_UVS | RMF_HAS_INDICES, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size, &(cmdList->IdxBuffer.Data[pcmd->IdxOffset]), pcmd->ElemCount);
+				mesh.Init(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_COLOR | RMF_HAS_VERTEX_UVS | RMF_HAS_INDICES, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size, &(cmdList->IdxBuffer.Data[pcmd->IdxOffset]), pcmd->ElemCount);
 				renderer.DrawRenderMesh(mesh, (TextureHandle*)(pcmd->GetTexID()), WD_RENDER_UI);
 			}
 		}
 	}
 }
-

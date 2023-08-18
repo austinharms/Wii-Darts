@@ -7,7 +7,7 @@
 #include <ogc/gu.h>
 
 class Engine;
-class RenderMesh;
+class RenderMeshHandle;
 
 enum WdRenderModeEnum
 {
@@ -36,7 +36,7 @@ public:
 	void PushTransform(const Transform& t);
 	void PushIdentityTransform();
 	void PopTransform();
-	void DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture = nullptr, WdRenderModeEnum mode = WD_RENDER_STACK);
+	void DrawRenderMesh(const RenderMeshHandle& mesh, TextureHandle* texture = nullptr, WdRenderModeEnum mode = WD_RENDER_STACK);
 
 private:
 	friend class Engine;
@@ -44,6 +44,7 @@ private:
 	GXRModeObj* m_videoMode;
 	void* m_videoFIFO;
 	void* m_framebuffers[2];
+	void* m_defaultTextureData;
 	float m_fov;
 	float m_nearPlane;
 	float m_farPlane;
@@ -81,8 +82,8 @@ private:
 	void SetupMatrices();
 	void UpdatePerspectiveProjectionMatrix();
 	void UpdateActiveMatrix(WdRenderModeEnum mode);
-	void DrawIndexedMesh(const RenderMesh& mesh);
-	void DrawNonIndexedMesh(const RenderMesh& mesh);
+	void DrawIndexedMesh(const RenderMeshHandle& mesh);
+	void DrawNonIndexedMesh(const RenderMeshHandle& mesh);
 
 };
 #endif // !DARTS_ENGINE_CORE_H_

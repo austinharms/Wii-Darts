@@ -2,12 +2,16 @@
 #define DARTS_ALLOCATOR_H_
 #include "Ints.h"
 
+// A stack like allocator for allocating blocks of memory
+// Note the head and/or tail must be cleared to "free" any block of memory
 class Allocator
 {
 public:
-	Allocator(size_t stackSize);
+	Allocator();
 	~Allocator();
 
+	// Allocates memory between start and end (inclusive, exclusive)
+	void Init(void* start, void* end);
 	bool GetStackValid() const;
 	size_t GetStackUsed() const;
 	size_t GetStackSize() const;

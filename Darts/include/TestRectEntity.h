@@ -2,7 +2,7 @@
 #define DARTS_TEST_RECT_ENTITY_H_
 #include "engine/Core.h"
 #include "engine/Entity.h"
-#include "engine/RenderMesh.h"
+#include "engine/RenderMeshHandle.h"
 
 class TestRectEntity : public Entity
 {
@@ -11,9 +11,10 @@ public:
 	virtual ~TestRectEntity();
 
 protected:
+	void OnLoad() WD_OVERRIDE;
 	void OnRender() WD_OVERRIDE;
 
 private:
-	RenderMesh m_mesh;
+	RenderMeshHandle m_mesh;
 };
 #endif // !DARTS_TEST_RECT_ENTITY_H_

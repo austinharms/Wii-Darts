@@ -45,7 +45,7 @@
     <ClCompile Include="src\engine\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\RenderMesh.cpp">
+    <ClCompile Include="src\engine\RenderMeshHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TestRectEntity.cpp">
@@ -227,7 +227,7 @@
     <ClInclude Include="include\engine\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\RenderMesh.h">
+    <ClInclude Include="include\engine\RenderMeshHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MainMenuRootEntity.h">

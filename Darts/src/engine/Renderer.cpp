@@ -1,5 +1,6 @@
 #include "engine/Renderer.h"
-#include "engine/RenderMesh.h"
+#include "engine/RenderMeshHandle.h"
+#include "engine/Engine.h"
 #include <ogc/video.h>
 #include <ogc/system.h>
 #include <gctypes.h>
@@ -9,20 +10,10 @@
 #include <gctypes.h>
 #include <malloc.h>
 #include <cstring>
-#include <new>
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
-uint32_t defaultTexture[16] = {
-	0xffffffff,0xffffffff,0xffffffff,0xffffffff,
-	0xffffffff,0xffffffff,0xffffffff,0xffffffff,
-	0xffffffff,0xffffffff,0xffffffff,0xffffffff,
-	0xffffffff,0xffffffff,0xffffffff,0xffffffff
-};
-
-Renderer::Renderer() : m_defaultTexture(nullptr, 0, 0) {
-
-}
+Renderer::Renderer() { }
 
 Renderer::~Renderer() {
 	if (m_init) {
@@ -34,6 +25,7 @@ Renderer::~Renderer() {
 		free(MEM_K1_TO_K0(m_framebuffers[0]));
 		free(MEM_K1_TO_K0(m_framebuffers[1]));
 		free(m_videoFIFO);
+		free(m_defaultTextureData);
 	}
 }
 
@@ -55,7 +47,15 @@ void Renderer::Init() {
 	SetupTEV();
 	SetupVtxAttribs();
 	SetupMatrices();
-	new(&m_defaultTexture) TextureHandle(&defaultTexture, 4, 4, false, false, WD_PIXEL_ARGB4X4);
+	m_defaultTextureData = memalign(32, 64);
+	if (!m_defaultTextureData) {
+		Engine::Log("Failed to allocate default texture");
+		Engine::Quit();
+		return;
+	}
+
+	memset(m_defaultTextureData, 0xff, 64);
+	m_defaultTexture.Init(m_defaultTextureData, 4, 4, true, false);
 	m_init = true;
 }
 
@@ -123,15 +123,11 @@ void Renderer::PopTransform()
 	--m_transformStackIndex;
 }
 
-void Renderer::DrawRenderMesh(const RenderMesh& mesh, TextureHandle* texture, WdRenderModeEnum mode)
+void Renderer::DrawRenderMesh(const RenderMeshHandle& mesh, TextureHandle* texture, WdRenderModeEnum mode)
 {
 	if (!m_frameStarted || !mesh.GetValid()) return;
-	if (!texture) {
+	if (!texture || !texture->Bind())
 		m_defaultTexture.Bind();
-	}
-	else {
-		texture->Bind();
-	}
 
 	UpdateActiveMatrix(mode);
 	if (mesh.GetFormat() & RMF_HAS_INDICES) {
@@ -220,7 +216,7 @@ void Renderer::UpdateActiveMatrix(WdRenderModeEnum mode)
 	}
 }
 
-void Renderer::DrawIndexedMesh(const RenderMesh& mesh)
+void Renderer::DrawIndexedMesh(const RenderMeshHandle& mesh)
 {
 	const float* vertexData = (float*)mesh.GetVertexBuffer();
 	const uint16_t* indexData = mesh.GetIndexBuffer();
@@ -271,7 +267,7 @@ void Renderer::DrawIndexedMesh(const RenderMesh& mesh)
 	GX_End();
 }
 
-void Renderer::DrawNonIndexedMesh(const RenderMesh& mesh)
+void Renderer::DrawNonIndexedMesh(const RenderMeshHandle& mesh)
 {
 	const float* vertexItr = (float*)mesh.GetVertexBuffer();
 	uint16_t primCount = mesh.GetVertexCount();
@@ -302,7 +298,7 @@ void Renderer::DrawNonIndexedMesh(const RenderMesh& mesh)
 			vertexItr += 2;
 		}
 		else {
-			GX_TexCoord2f32(0.5f, 0.5f);
+			GX_TexCoord2f32(0.0f, 0.0f);
 		}
 	}
 

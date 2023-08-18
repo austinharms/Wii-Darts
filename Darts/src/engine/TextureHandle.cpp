@@ -2,63 +2,7 @@
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
 #include <ogc/cache.h>
-#include <malloc.h>
 #include <cstring>
-
-TextureHandle::TextureHandle(const void* pixels, uint16_t width, uint16_t height, bool repeat, bool antialias, WDPixelFormatEnum srcFormat) {
-	if (!pixels || width == 0 || height == 0) return;
-	size_t size = (size_t)width * (size_t)height * 4;
-	void* pixelData = memalign(32, size);
-	GX_InitTexObjUserData(&m_textureHandle, pixelData);
-	if (!pixelData) return;
-
-	if (srcFormat == WD_PIXEL_ARGB4X4) {
-		memcpy(pixelData, pixels, size);
-	}
-	else {
-		ConvertRGBA8PixelData((uint8_t*)pixelData, (uint32_t*)pixels, width, height);
-	}
-
-	DCFlushRange(pixelData, size);
-	if (repeat) {
-		GX_InitTexObj(&m_textureHandle, pixelData, width, height, GX_TF_RGBA8, GX_REPEAT, GX_REPEAT, GX_FALSE);
-	}
-	else
-	{
-		GX_InitTexObj(&m_textureHandle, pixelData, width, height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
-	}
-
-	GXRModeObj& mode = Engine::GetRenderer().GetVideoMode();
-	if (antialias) {
-		GX_SetCopyFilter(mode.aa, mode.sample_pattern, GX_TRUE, mode.vfilter);
-	}
-	else
-	{
-		GX_InitTexObjLOD(&m_textureHandle, GX_NEAR, GX_NEAR, 0.0f, 0.0f, 0.0f, 0, 0, GX_ANISO_1);
-		GX_SetCopyFilter(GX_FALSE, mode.sample_pattern, GX_FALSE, mode.vfilter);
-	}
-
-	GX_InvalidateTexAll();
-	GX_InitTexObjUserData(&m_textureHandle, pixelData);
-}
-
-TextureHandle::~TextureHandle() {
-	void* pixelData = GX_GetTexObjUserData(&m_textureHandle);
-	if (pixelData) free(pixelData);
-	GX_InitTexObjUserData(&m_textureHandle, nullptr);
-}
-
-bool TextureHandle::Bind(uint8_t slot)
-{
-	void* pixelData = GX_GetTexObjUserData(&m_textureHandle);
-	if (pixelData) {
-		GX_LoadTexObj(&m_textureHandle, GX_TEXMAP0 + slot);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
 
 void TextureHandle::ConvertRGBA8PixelData(uint8_t* dst, uint32_t* src, uint16_t width, uint16_t height)
 {
@@ -71,4 +15,52 @@ void TextureHandle::ConvertRGBA8PixelData(uint8_t* dst, uint32_t* src, uint16_t 
 			*((uint16_t*)(dst + offset + 32)) = (uint16_t)(srcPixel >> 8);
 		}
 	}
+}
+
+TextureHandle::TextureHandle() {
+	memset(&m_textureHandle, 0, sizeof(GXTexObj));
+}
+
+TextureHandle::~TextureHandle() {
+	memset(&m_textureHandle, 0, sizeof(GXTexObj));
+}
+
+bool TextureHandle::Init(void* pixels, uint16_t width, uint16_t height, bool repeat, bool antialias) {
+	memset(&m_textureHandle, 0, sizeof(GXTexObj));
+	if (!pixels || width == 0 || height == 0) return false;
+	size_t size = (size_t)width * (size_t)height * 4;
+	DCFlushRange(pixels, size);
+	if (repeat) {
+		GX_InitTexObj(&m_textureHandle, pixels, width, height, GX_TF_RGBA8, GX_REPEAT, GX_REPEAT, GX_FALSE);
+	}
+	else
+	{
+		GX_InitTexObj(&m_textureHandle, pixels, width, height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
+	}
+
+	GXRModeObj& mode = Engine::GetRenderer().GetVideoMode();
+	if (antialias) {
+		GX_SetCopyFilter(mode.aa, mode.sample_pattern, GX_TRUE, mode.vfilter);
+	}
+	else
+	{
+		GX_InitTexObjLOD(&m_textureHandle, GX_NEAR, GX_NEAR, 0.0f, 0.0f, 0.0f, 0, 0, GX_ANISO_1);
+		GX_SetCopyFilter(GX_FALSE, mode.sample_pattern, GX_FALSE, mode.vfilter);
+	}
+
+	GX_InitTexObjUserData(&m_textureHandle, pixels);
+	GX_InvalidateTexAll();
+	return true;
+}
+
+WD_NODISCARD bool TextureHandle::GetValid()
+{
+	return GX_GetTexObjUserData(&m_textureHandle) != nullptr;
+}
+
+bool TextureHandle::Bind(uint8_t slot)
+{
+	bool valid = GetValid();
+	if (valid) GX_LoadTexObj(&m_textureHandle, slot);
+	return valid;
 }
