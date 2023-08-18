@@ -60,6 +60,8 @@ public:
 
 	static float GetDelta();
 
+	static void GetMainArgs(int* argc, char*** argv);
+
 	template <class RootEntityT, typename ...Args>
 	static void SetRootEntity(Args&&... args) {
 		WD_STATIC_ASSERT(sizeof(RootEntityT) == sizeof(RootEntity), "Engine::SetRootEntity RootEntityT size was not that of RootEntity");
@@ -67,7 +69,7 @@ public:
 		s_engine.m_switchRootEntity = true;
 	}
 
-	static void Start();
+	static void Start(int argc, char** argv);
 	static void Quit();
 
 private:
@@ -79,6 +81,8 @@ private:
 	Allocator m_sceneAllocator;
 	Allocator m_tempAllocator;
 	RootEntity m_rootEntities[2];
+	int m_mainArgCount;
+	char** m_mainArgValues;
 	float m_delta;
 	uint8_t m_activeRootEntity;
 	bool m_quit;
@@ -86,7 +90,7 @@ private:
 
 	Engine();
 	void Init();
-	void InternalStart();
+	void InternalStart(int argc, char** argv);
 	void InternalQuit();
 	// Must be called after the scene allocator is reset
 	// Ensures allocations make from the tail of the scene allocator are 32 byte aligned

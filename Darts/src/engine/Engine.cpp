@@ -63,9 +63,9 @@ WD_NODISCARD void* Engine::AllocateTempMem(size_t size, bool keepLastAllocation)
 	return s_engine.m_tempAllocator.AllocateTail(size);
 }
 
-void Engine::Start()
+void Engine::Start(int argc, char** argv)
 {
-	s_engine.InternalStart();
+	s_engine.InternalStart(argc, argv);
 }
 
 void Engine::Quit()
@@ -117,6 +117,12 @@ float Engine::GetDelta()
 {
 	return s_engine.m_delta;
 }
+
+void Engine::GetMainArgs(int* argc, char*** argv)
+{
+	if (argc) *argc = s_engine.m_mainArgCount;
+	if (argv) *argv = s_engine.m_mainArgValues;
+}
  
 void Engine::Init() {
 	SetupFS();
@@ -137,8 +143,11 @@ void Engine::Init() {
 	Log("Engine Init");
 }
 
-void Engine::InternalStart()
+void Engine::InternalStart(int argc, char** argv)
 {
+	m_mainArgCount = argc;
+	m_mainArgValues = argv;
+
 	// If the default root entity has not changed don't start
 	if (!m_switchRootEntity) return;
 	m_quit = false;

@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv) {
 	Engine::SetRootEntity<MainMenuRoot>();
-	Engine::Start();
+	Engine::Start(argc, argv);
 	//Engine::Quit();
 	return 0;
 }
