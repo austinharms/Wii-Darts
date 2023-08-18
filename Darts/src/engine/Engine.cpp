@@ -15,13 +15,10 @@ void WiiResetCallback(u32 irq, void* ctx) { Engine::Quit(); }
 void WiiPowerCallback() { Engine::Quit(); }
 void WiimotePowerCallback(int32_t chan) { Engine::Quit(); }
 
-Engine::Engine() : m_sceneAllocator(40000000), m_tempAllocator(10000000) {
+Engine::Engine() : m_sceneAllocator(0), m_tempAllocator(0) {
 	m_quit = true;
 	m_switchRootEntity = false;
 	m_activeRootEntity = 0;
-	SYS_SetResetCallback(WiiResetCallback);
-	SYS_SetPowerCallback(WiiPowerCallback);
-	WPAD_SetPowerButtonCallback(WiimotePowerCallback);
 }
 
 Engine::~Engine() {
@@ -68,6 +65,7 @@ void Engine::Start()
 
 void Engine::Quit()
 {
+	//SYS_ResetSystem(SYS_POWEROFF_STANDBY, 0, 0);
 	s_engine.InternalQuit();
 }
 
@@ -114,18 +112,29 @@ float Engine::GetDelta()
 {
 	return s_engine.m_delta;
 }
+ 
+void Engine::Init() {
+	new(&m_sceneAllocator) Allocator(30000000);
+	new(&m_tempAllocator) Allocator(10000000);
+	SetupFS();
+	settime((uint64_t)0);
+	m_renderer.Init();
+	m_input.Init();
+	m_GUI.Init();
+	m_GUI.UpdateFontAtlas();
+	SYS_SetResetCallback(WiiResetCallback);
+	SYS_SetPowerCallback(WiiPowerCallback);
+	WPAD_SetPowerButtonCallback(WiimotePowerCallback);
+	Log("Engine Init");
+}
 
 void Engine::InternalStart()
 {
 	// If the default root entity has not changed don't start
 	if (!m_switchRootEntity) return;
 	m_quit = false;
-	SetupFS();
-	settime((uint64_t)0);
+	Init();
 	uint64_t lastDelta = gettime();
-	m_input.Init();
-	m_GUI.Init();
-	m_GUI.UpdateFontAtlas();
 	while (!m_quit) {
 		m_tempAllocator.ClearAllocations();
 		m_delta = (float)(gettime() - lastDelta) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
@@ -145,9 +154,9 @@ void Engine::InternalStart()
 		}
 
 		m_input.PollEvents();
-		m_GUI.StartFrame();
 		m_rootEntities[m_activeRootEntity].Update();
 		m_renderer.StartFrame();
+		m_GUI.StartFrame();
 		m_rootEntities[m_activeRootEntity].Render();
 		m_GUI.RenderUI();
 		m_renderer.EndFrame();

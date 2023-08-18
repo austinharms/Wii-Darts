@@ -1,8 +1,9 @@
 #include "engine/Engine.h"
 #include "MainMenuRootEntity.h"
 
-int main() {
+int main(int argc, char** argv) {
 	Engine::SetRootEntity<MainMenuRoot>();
 	Engine::Start();
+	//Engine::Quit();
 	return 0;
 }

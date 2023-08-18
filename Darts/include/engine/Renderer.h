@@ -57,10 +57,12 @@ private:
 	uint8_t m_activeFramebuffer;
 	bool m_enabled;
 	bool m_frameStarted;
+	bool m_init;
 
 	// ##### Methods called by Engine #####
 
 	Renderer();
+	void Init();
 	void Enable();
 	void Disable();
 	void StartFrame();

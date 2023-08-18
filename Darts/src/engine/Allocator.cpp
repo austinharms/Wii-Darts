@@ -2,6 +2,7 @@
 #include <malloc.h>
 
 Allocator::Allocator(size_t stackSize) {
+	if (stackSize == 0) return;
 	m_stackStart = malloc(stackSize);
 	m_stackEnd = (void*)(((uint8_t*)m_stackStart) + stackSize);
 	m_stackHead = m_stackStart;

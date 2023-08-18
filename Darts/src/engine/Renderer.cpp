@@ -9,6 +9,7 @@
 #include <gctypes.h>
 #include <malloc.h>
 #include <cstring>
+#include <new>
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
@@ -19,7 +20,24 @@ uint32_t defaultTexture[16] = {
 	0xffffffff,0xffffffff,0xffffffff,0xffffffff
 };
 
-Renderer::Renderer() : m_defaultTexture(&defaultTexture, 4, 4, false, false, WD_PIXEL_ARGB4X4) {
+Renderer::Renderer() : m_defaultTexture(nullptr, 0, 0) {
+
+}
+
+Renderer::~Renderer() {
+	if (m_init) {
+		Disable();
+		GX_SetClipMode(GX_CLIP_DISABLE);
+		GX_SetScissor(0, 0, m_videoMode->fbWidth, m_videoMode->efbHeight);
+		GX_DrawDone();
+		GX_AbortFrame();
+		free(MEM_K1_TO_K0(m_framebuffers[0]));
+		free(MEM_K1_TO_K0(m_framebuffers[1]));
+		free(m_videoFIFO);
+	}
+}
+
+void Renderer::Init() {
 	m_videoMode = nullptr;
 	m_videoFIFO = nullptr;
 	m_framebuffers[0] = nullptr;
@@ -37,17 +55,8 @@ Renderer::Renderer() : m_defaultTexture(&defaultTexture, 4, 4, false, false, WD_
 	SetupTEV();
 	SetupVtxAttribs();
 	SetupMatrices();
-}
-
-Renderer::~Renderer() {
-	Disable();
-	GX_SetClipMode(GX_CLIP_DISABLE);
-	GX_SetScissor(0, 0, m_videoMode->fbWidth, m_videoMode->efbHeight);
-	GX_DrawDone();
-	GX_AbortFrame();
-	free(MEM_K1_TO_K0(m_framebuffers[0]));
-	free(MEM_K1_TO_K0(m_framebuffers[1]));
-	free(m_videoFIFO);
+	new(&m_defaultTexture) TextureHandle(&defaultTexture, 4, 4, false, false, WD_PIXEL_ARGB4X4);
+	m_init = true;
 }
 
 GXRModeObj& Renderer::GetVideoMode()

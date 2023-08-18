@@ -24,5 +24,5 @@ TestRectEntity::~TestRectEntity()
 
 void TestRectEntity::OnRender() {
 	gui::ShowDemoWindow();
-	//m_mesh.Render();
+	m_mesh.Render();
 }

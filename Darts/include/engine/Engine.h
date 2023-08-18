@@ -85,6 +85,7 @@ private:
 	bool m_switchRootEntity;
 
 	Engine();
+	void Init();
 	void InternalStart();
 	void InternalQuit();
 	// Must be called after the scene allocator is reset

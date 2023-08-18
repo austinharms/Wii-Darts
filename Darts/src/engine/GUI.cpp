@@ -68,7 +68,6 @@ void GUI::UpdateFontAtlas()
 	}
 
 	io.Fonts->GetTexDataAsRGBA32((unsigned char**)&pixelData, &w, &h);
-	int pixelCount = w * h;
 	new((void*)&m_fontAtlasTexture) TextureHandle(pixelData, w, h, false, true, WD_PIXEL_RGBA8);
 	io.Fonts->SetTexID(&m_fontAtlasTexture);
 	io.FontGlobalScale = 0.5;
