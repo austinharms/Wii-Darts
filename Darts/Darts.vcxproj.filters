@@ -192,6 +192,12 @@
     <ClCompile Include="src\engine\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\AssetLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\StackBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\engine\Engine.h">
@@ -342,6 +348,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\engine\imguiConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\AssetLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\StackBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

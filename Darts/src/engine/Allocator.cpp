@@ -72,3 +72,13 @@ void* Allocator::AllocateTail(size_t size)
 	m_stackTail = (void*)(((uint8_t*)m_stackTail) - size);
 	return m_stackTail;
 }
+
+void Allocator::RestoreHead(void* head)
+{
+	m_stackHead = head;
+}
+
+void Allocator::RestoreTail(void* tail)
+{
+	m_stackTail = tail;
+}

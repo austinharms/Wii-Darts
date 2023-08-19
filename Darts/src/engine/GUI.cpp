@@ -74,9 +74,9 @@ void GUI::UpdateFontAtlas()
 	m_fontAtlasTexture.Init(textureBuffer, w, h, false, true);
 	io.Fonts->SetTexID(&m_fontAtlasTexture);
 	io.FontGlobalScale = 0.5;
-	char* buf = (char*)Engine::AllocateTempMem(64);
-	sprintf(buf, "Updated Font Atlas, Size %i X %i", w, h);
-	Engine::Log(buf);
+	StackBuffer stackBuf(64);
+	sprintf((char*)stackBuf.buffer, "Updated Font Atlas, Size %i X %i", w, h);
+	Engine::Log((char*)stackBuf.buffer);
 }
 
 void GUI::StartFrame()

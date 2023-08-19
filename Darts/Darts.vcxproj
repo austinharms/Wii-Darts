@@ -247,10 +247,12 @@
     <ClCompile Include="imgui\misc\fonts\binary_to_compressed_c.cpp" />
     <ClCompile Include="imgui\misc\freetype\imgui_freetype.cpp" />
     <ClCompile Include="src\engine\Allocator.cpp" />
+    <ClCompile Include="src\engine\AssetLoader.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
     <ClCompile Include="src\engine\Entity.cpp" />
     <ClCompile Include="src\engine\GUI.cpp" />
     <ClCompile Include="src\engine\Input.cpp" />
+    <ClCompile Include="src\engine\StackBuffer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\engine\Renderer.cpp" />
     <ClCompile Include="src\engine\RenderMeshHandle.cpp" />
@@ -294,6 +296,7 @@
     <ClInclude Include="imgui\misc\freetype\imgui_freetype.h" />
     <ClInclude Include="imgui\misc\single_file\imgui_single_file.h" />
     <ClInclude Include="include\engine\Allocator.h" />
+    <ClInclude Include="include\engine\AssetLoader.h" />
     <ClInclude Include="include\engine\Core.h" />
     <ClInclude Include="include\engine\Defines.h" />
     <ClInclude Include="include\engine\Engine.h" />
@@ -302,6 +305,7 @@
     <ClInclude Include="include\engine\GUI.h" />
     <ClInclude Include="include\engine\Input.h" />
     <ClInclude Include="include\engine\Ints.h" />
+    <ClInclude Include="include\engine\StackBuffer.h" />
     <ClInclude Include="include\MainMenuRootEntity.h" />
     <ClInclude Include="include\engine\Renderer.h" />
     <ClInclude Include="include\engine\RenderMeshHandle.h" />

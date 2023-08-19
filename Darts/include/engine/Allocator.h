@@ -22,6 +22,8 @@ public:
 	void ClearTail();
 	void* Allocate(size_t size);
 	void* AllocateTail(size_t size);
+	void RestoreHead(void* head);
+	void RestoreTail(void* tail);
 
 private:
 	void* m_stackStart;

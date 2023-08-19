@@ -6,17 +6,9 @@
 #include "GUI.h"
 #include "Allocator.h"
 #include "RootEntity.h"
+#include "StackBuffer.h"
 #include <utility>
 #include <new>
-
-enum WDAllocatorEnum
-{
-	WD_ALLOCATOR_SCENE = 0, // Engine::AllocateSceneMem(size)
-	WD_ALLOCATOR_ALIGNED_SCENE, // Engine::AllocateAlignedSceneMem(size)
-	WD_ALLOCATOR_UPDATE_TEMP, // Engine::AllocateTempUpdateMem(size)
-	WD_ALLOCATOR_TEMP, // Engine::AllocateTempMem(size, false)
-	WD_ALLOCATOR_TEMP_KEEP // Engine::AllocateTempMem(size, true)
-};
 
 class Engine
 {
@@ -39,22 +31,8 @@ public:
 	// Allocates memory for temporary uses
 	// the allocated memory is valid until the next start of the next update 
 	// returned pointer should NOT be freed
+	// if possible a StackBuffer should be used instead of this
 	WD_NODISCARD static void* AllocateTempUpdateMem(size_t size);
-
-	// Allocates memory for very temporary use
-	// memory allocated will be invalidated by the next call to AllocateTempMem unless keepLastAllocation is true
-	// returned pointer should NOT be freed
-	WD_NODISCARD static void* AllocateTempMem(size_t size, bool keepLastAllocation = false);
-
-	// Allocates memory base on the supplied allocator enum
-	WD_NODISCARD static void* Allocate(size_t size, WDAllocatorEnum allocator);
-
-	// Reads the file and returns a buffer with the files data
-	// if fileSize is not null, sets fileSize to the size in bytes of the returned buffer
-	// Returns nullptr on error and fileSize will be unchanged
-	WD_NODISCARD static uint8_t* ReadFile(const char* filepath, size_t* fileSize = nullptr, WDAllocatorEnum allocator = WD_ALLOCATOR_TEMP_KEEP);
-
-	static void WriteFile(const char* filepath, void* buffer, size_t size);
 
 	static void Log(const char* msg);
 
@@ -73,6 +51,8 @@ public:
 	static void Quit();
 
 private:
+	friend class StackBuffer;
+
 	static Engine s_engine;
 
 	Input m_input;
@@ -97,5 +77,8 @@ private:
 	void AlignSceneTailAllocator();
 	void SetupFS();
 	WD_NODISCARD bool SetupAllocators();
+
+	static void* StackBufferAllocate(size_t size);
+	static void StackBufferRestore(const void* ptr);
 };
 #endif // !DARTS_ENGINE_CORE_H_
