@@ -2,22 +2,28 @@
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
 #include "engine/GUI.h"
+#include "engine/AssetLoader.h"
 
-float TestRectMeshData[18] = {
-	0.0f, 0.0f, 0.0f,
-	0.5f, 0.5f, 0.0f,
-	0.0f, 0.5f, 0.0f,
-	0.0f, 0.0f, 0.0f,
-	0.5f, 0.0f, 0.0f,
-	0.5f, 0.5f, 0.0f, 
+float TestRectMeshData[30] = {
+	0.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+	0.5f, 0.5f, 0.0f,  1.0f, 1.0f,
+	0.0f, 0.5f, 0.0f,  0.0f, 1.0f,
+	0.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+	0.5f, 0.0f, 0.0f,  1.0f, 0.0f,
+	0.5f, 0.5f, 0.0f,  1.0f, 1.0f,
 };
 
-TestRectEntity::TestRectEntity() {}
+TestRectEntity::TestRectEntity() { 
+	m_texture = nullptr;
+	m_mesh = nullptr;
+}
 
 TestRectEntity::~TestRectEntity() {}
 
 void TestRectEntity::OnLoad() {
-	m_mesh.Init(RMF_HAS_VERTEX_POSITION, TestRectMeshData, 6);
+	//m_mesh.Init(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_UVS, TestRectMeshData, 6);
+	m_mesh = AssetLoader::LoadMesh("./assets/dart.mesh");
+	m_texture = AssetLoader::LoadTexture("./assets/test.img");
 }
 
 void TestRectEntity::OnRender() {
@@ -29,5 +35,5 @@ void TestRectEntity::OnRender() {
 		gui::Text(argv[i]);
 	gui::End();
 	gui::ShowDemoWindow();
-	m_mesh.Render();
+	m_mesh->Render(m_texture);
 }

@@ -3,6 +3,7 @@
 #include "engine/Core.h"
 #include "engine/Entity.h"
 #include "engine/RenderMeshHandle.h"
+#include "engine/TextureHandle.h"
 
 class TestRectEntity : public Entity
 {
@@ -15,6 +16,7 @@ protected:
 	void OnRender() WD_OVERRIDE;
 
 private:
-	RenderMeshHandle m_mesh;
+	RenderMeshHandle* m_mesh;
+	TextureHandle* m_texture;
 };
 #endif // !DARTS_TEST_RECT_ENTITY_H_

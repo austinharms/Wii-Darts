@@ -18,7 +18,7 @@ include $(DEVKITPPC)/wii_rules
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	src src/engine source source/gfx imgui
-DATA		:=	assets
+DATA		:=	
 INCLUDES	:=  include imgui
 
 #---------------------------------------------------------------------------------

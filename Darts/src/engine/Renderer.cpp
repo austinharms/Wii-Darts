@@ -252,7 +252,7 @@ void Renderer::DrawIndexedMesh(const RenderMeshHandle& mesh)
 			vertexItr += 1;
 		}
 		else {
-			GX_Color1u32(0xffffffff);
+			GX_Color1u32(0xFFFFFFFF);
 		}
 
 		if (format & RMF_HAS_VERTEX_UVS) {
@@ -272,6 +272,7 @@ void Renderer::DrawNonIndexedMesh(const RenderMeshHandle& mesh)
 	const float* vertexItr = (float*)mesh.GetVertexBuffer();
 	uint16_t primCount = mesh.GetVertexCount();
 	RenderMeshFormat format = mesh.GetFormat();
+
 	GX_Begin(GX_TRIANGLES, GX_VTXFMT0, primCount);
 	for (uint16_t i = 0; i < primCount; ++i) {
 		GX_Position3f32(vertexItr[0], vertexItr[1], vertexItr[2]);
@@ -290,7 +291,7 @@ void Renderer::DrawNonIndexedMesh(const RenderMeshHandle& mesh)
 			vertexItr += 1;
 		}
 		else {
-			GX_Color1u32(0xffffffff);
+			GX_Color1u32(0xFFFFFFFF);
 		}
 
 		if (format & RMF_HAS_VERTEX_UVS) {
@@ -376,6 +377,7 @@ void Renderer::SetupGX()
 	GX_SetDispCopyGamma(GX_GM_1_0);
 	GX_SetViewport(0.0f, m_videoMode->efbHeight, m_videoMode->fbWidth, -m_videoMode->efbHeight, 0.0f, 1.0f);
 	GX_SetCullMode(GX_CULL_BACK);
+	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 	SetClearColor(0x000000ff);
@@ -435,7 +437,7 @@ void Renderer::SetupMatrices()
 	GX_LoadPosMtxImm(t.GetMatrix(), WD_RENDER_UI);
 	guOrtho(m_orthoProjection, (float)m_videoMode->efbHeight, 0, 0, (float)m_videoMode->fbWidth, 0, 1000);
 
-	guVector camPos = (guVector){ 0, 0, 1 };
+	guVector camPos = (guVector){ 0, 0, 10 };
 	guVector lookPos = (guVector){ 0, 0, 0 };
 	guVector up = (guVector){ 0, 1, 0 };
 	m_viewTransform.Reset();

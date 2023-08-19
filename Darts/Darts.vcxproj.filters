@@ -358,8 +358,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\test.png.unused">
+    <Image Include="res\test.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="res\dart.obj" />
   </ItemGroup>
 </Project>
