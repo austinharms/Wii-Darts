@@ -23,7 +23,7 @@ public:
 	~RenderMeshHandle();
 	WD_NOCOPY(RenderMeshHandle);
 	bool Init(RenderMeshFormat format, void* vertexData, uint16_t vertexCount, uint16_t* indexData = nullptr, uint16_t indexCount = 0);
-	void Render(TextureHandle* texture = nullptr);
+	void Render(TextureHandle* texture = nullptr, uint32_t color = 0xffffffff);
 	WD_NODISCARD RenderMeshFormat GetFormat() const;
 	WD_NODISCARD const void* GetVertexBuffer() const;
 	WD_NODISCARD uint16_t GetVertexCount() const;

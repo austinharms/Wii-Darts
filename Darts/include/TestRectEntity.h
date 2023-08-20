@@ -16,7 +16,7 @@ protected:
 	void OnRender() WD_OVERRIDE;
 
 private:
-	RenderMeshHandle* m_mesh;
+	RenderMeshHandle m_mesh;
 	TextureHandle* m_texture;
 };
 #endif // !DARTS_TEST_RECT_ENTITY_H_

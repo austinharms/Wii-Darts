@@ -36,7 +36,7 @@ public:
 	void PushTransform(const Transform& t);
 	void PushIdentityTransform();
 	void PopTransform();
-	void DrawRenderMesh(const RenderMeshHandle& mesh, TextureHandle* texture = nullptr, WdRenderModeEnum mode = WD_RENDER_STACK);
+	void DrawRenderMesh(const RenderMeshHandle& mesh, TextureHandle* texture = nullptr, uint32_t color = 0xffffffff, WdRenderModeEnum mode = WD_RENDER_STACK);
 
 private:
 	friend class Engine;
@@ -80,10 +80,10 @@ private:
 	void SetupTEV();
 	void SetupVtxAttribs();
 	void SetupMatrices();
+	void SetMeshColor(uint32_t color);
 	void UpdatePerspectiveProjectionMatrix();
 	void UpdateActiveMatrix(WdRenderModeEnum mode);
 	void DrawIndexedMesh(const RenderMeshHandle& mesh);
 	void DrawNonIndexedMesh(const RenderMeshHandle& mesh);
-
 };
 #endif // !DARTS_ENGINE_CORE_H_

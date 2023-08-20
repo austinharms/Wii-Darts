@@ -6,9 +6,9 @@ RenderMeshHandle::RenderMeshHandle() { Reset(); }
 
 RenderMeshHandle::~RenderMeshHandle() {}
 
-void RenderMeshHandle::Render(TextureHandle* texture)
+void RenderMeshHandle::Render(TextureHandle* texture, uint32_t color)
 {
-	Engine::GetRenderer().DrawRenderMesh(*this, texture);
+	Engine::GetRenderer().DrawRenderMesh(*this, texture, color);
 }
 
 bool RenderMeshHandle::Init(RenderMeshFormat format, void* vertexData, uint16_t vertexCount, uint16_t* indexData, uint16_t indexCount) {

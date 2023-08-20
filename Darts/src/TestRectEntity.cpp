@@ -15,14 +15,12 @@ float TestRectMeshData[30] = {
 
 TestRectEntity::TestRectEntity() { 
 	m_texture = nullptr;
-	m_mesh = nullptr;
 }
 
 TestRectEntity::~TestRectEntity() {}
 
 void TestRectEntity::OnLoad() {
-	//m_mesh.Init(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_UVS, TestRectMeshData, 6);
-	m_mesh = AssetLoader::LoadMesh("./assets/dart.mesh");
+	m_mesh.Init(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_UVS, TestRectMeshData, 6);
 	m_texture = AssetLoader::LoadTexture("./assets/test.img");
 }
 
@@ -35,5 +33,5 @@ void TestRectEntity::OnRender() {
 		gui::Text(argv[i]);
 	gui::End();
 	gui::ShowDemoWindow();
-	m_mesh->Render(m_texture);
+	m_mesh.Render(m_texture);
 }

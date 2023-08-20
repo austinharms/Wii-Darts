@@ -123,13 +123,14 @@ void Renderer::PopTransform()
 	--m_transformStackIndex;
 }
 
-void Renderer::DrawRenderMesh(const RenderMeshHandle& mesh, TextureHandle* texture, WdRenderModeEnum mode)
+void Renderer::DrawRenderMesh(const RenderMeshHandle& mesh, TextureHandle* texture, uint32_t color, WdRenderModeEnum mode)
 {
 	if (!m_frameStarted || !mesh.GetValid()) return;
 	if (!texture || !texture->Bind())
 		m_defaultTexture.Bind();
 
 	UpdateActiveMatrix(mode);
+	SetMeshColor(color);
 	if (mesh.GetFormat() & RMF_HAS_INDICES) {
 		DrawIndexedMesh(mesh);
 	}
@@ -158,6 +159,7 @@ void Renderer::StartFrame()
 	GX_LoadPosMtxImm(m_transformStack[0].GetMatrix(), WD_RENDER_STACK);
 	ResetScissor();
 	SetupTEV();
+	SetMeshColor(0xffffffff);
 	UpdateActiveMatrix(WD_RENDER_STACK);
 	m_frameStarted = true;
 }
@@ -232,7 +234,6 @@ void Renderer::DrawIndexedMesh(const RenderMeshHandle& mesh)
 		vertexStride += sizeof(uint32_t);
 
 	vertexStride /= sizeof(float);
-
 	GX_Begin(GX_TRIANGLES, GX_VTXFMT0, primCount);
 	for (uint16_t i = 0; i < primCount; ++i) {
 		const float* vertexItr = vertexData + (vertexStride * indexData[i]);
@@ -376,11 +377,13 @@ void Renderer::SetupGX()
 	GX_SetFieldMode(m_videoMode->field_rendering, ((m_videoMode->viHeight == 2 * m_videoMode->xfbHeight) ? GX_ENABLE : GX_DISABLE));
 	GX_SetDispCopyGamma(GX_GM_1_0);
 	GX_SetViewport(0.0f, m_videoMode->efbHeight, m_videoMode->fbWidth, -m_videoMode->efbHeight, 0.0f, 1.0f);
+	//GX_SetCullMode(GX_CULL_FRONT);
 	GX_SetCullMode(GX_CULL_BACK);
 	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 	SetClearColor(0x000000ff);
+	SetMeshColor(0xffffffff);
 }
 
 void Renderer::SetupTEV()
@@ -405,11 +408,23 @@ void Renderer::SetupTEV()
 	//GX_SetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
 	//GX_SetTevOp(GX_TEVSTAGE0, GX_BLEND);
-	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
+	//GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
 	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
 	//GX_SetTevOp(GX_TEVSTAGE0, );
 	//GX_SetTevOp(GX_TEVSTAGE1, GX_BLEND);
 	//GX_SetNumTevStages(2);
+
+	GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+	GX_SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
+	GX_SetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+	GX_SetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+
+	GX_SetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
+	GX_SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_KONST, GX_CC_CPREV, GX_CC_ZERO);
+	GX_SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_KONST, GX_CA_APREV, GX_CA_ZERO);
+	GX_SetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+	GX_SetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+	GX_SetNumTevStages(2);
 }
 
 void Renderer::SetupVtxAttribs()
@@ -437,7 +452,7 @@ void Renderer::SetupMatrices()
 	GX_LoadPosMtxImm(t.GetMatrix(), WD_RENDER_UI);
 	guOrtho(m_orthoProjection, (float)m_videoMode->efbHeight, 0, 0, (float)m_videoMode->fbWidth, 0, 1000);
 
-	guVector camPos = (guVector){ 0, 0, 10 };
+	guVector camPos = (guVector){ 0, 0, 1 };
 	guVector lookPos = (guVector){ 0, 0, 0 };
 	guVector up = (guVector){ 0, 1, 0 };
 	m_viewTransform.Reset();
@@ -447,4 +462,8 @@ void Renderer::SetupMatrices()
 
 	GX_SetCurrentMtx((uint32_t)WD_RENDER_STACK);
 	UpdateActiveMatrix(WD_RENDER_STACK);
+}
+
+void Renderer::SetMeshColor(uint32_t color) {
+	GX_SetTevKColor(GX_KCOLOR0, ((GXColor*)&color)[0]);
 }

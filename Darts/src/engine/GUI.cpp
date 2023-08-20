@@ -142,7 +142,7 @@ void GUI::RenderUI()
 
 				renderer.SetScissor(clipRect.x, clipRect.y, clipRect.z - clipRect.x, clipRect.w - clipRect.y);
 				mesh.Init(RMF_HAS_VERTEX_POSITION | RMF_HAS_VERTEX_COLOR | RMF_HAS_VERTEX_UVS | RMF_HAS_INDICES, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size, &(cmdList->IdxBuffer.Data[pcmd->IdxOffset]), pcmd->ElemCount);
-				renderer.DrawRenderMesh(mesh, (TextureHandle*)(pcmd->GetTexID()), WD_RENDER_UI);
+				renderer.DrawRenderMesh(mesh, (TextureHandle*)(pcmd->GetTexID()), 0xffffffff, WD_RENDER_UI);
 			}
 		}
 	}
