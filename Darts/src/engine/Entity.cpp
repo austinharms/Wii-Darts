@@ -59,7 +59,7 @@ void Entity::Update()
 	Entity* itr = m_childPtr;
 	while (itr)
 	{
-		m_childPtr->Update();
+		itr->Update();
 		itr = itr->m_nextChild;
 	}
 }
@@ -78,7 +78,7 @@ void Entity::Render()
 	Entity* itr = m_childPtr;
 	while (itr)
 	{
-		m_childPtr->Render();
+		itr->Render();
 		itr = itr->m_nextChild;
 	}
 }
@@ -91,7 +91,7 @@ void Entity::Load()
 	Entity* itr = m_childPtr;
 	while (itr)
 	{
-		m_childPtr->Load();
+		itr->Load();
 		itr = itr->m_nextChild;
 	}
 
@@ -107,7 +107,7 @@ void Entity::Unload()
 	Entity* itr = m_childPtr;
 	while (itr)
 	{
-		m_childPtr->Unload();
+		itr->Unload();
 		itr = itr->m_nextChild;
 	}
 
