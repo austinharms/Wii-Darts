@@ -246,6 +246,7 @@
     <ClCompile Include="imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="imgui\misc\fonts\binary_to_compressed_c.cpp" />
     <ClCompile Include="imgui\misc\freetype\imgui_freetype.cpp" />
+    <ClCompile Include="src\CameraEntity.cpp" />
     <ClCompile Include="src\DartEntity.cpp" />
     <ClCompile Include="src\engine\Allocator.cpp" />
     <ClCompile Include="src\engine\AssetLoader.cpp" />
@@ -297,6 +298,7 @@
     <ClInclude Include="imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="imgui\misc\freetype\imgui_freetype.h" />
     <ClInclude Include="imgui\misc\single_file\imgui_single_file.h" />
+    <ClInclude Include="include\CameraEntity.h" />
     <ClInclude Include="include\DartEntity.h" />
     <ClInclude Include="include\engine\Allocator.h" />
     <ClInclude Include="include\engine\AssetLoader.h" />

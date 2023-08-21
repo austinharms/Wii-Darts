@@ -16,6 +16,8 @@ void DartEntity::OnLoad() {
 }
 
 void DartEntity::OnRender() {
+	GetTransform().Rotate({ 0, 0.01f, 0 });
+	MarkTransformDirty();
 	m_dartCoreMesh->Render(nullptr, 0xedededff);
 	m_dartFinsMesh->Render(nullptr, 0x00eeffff);
 }

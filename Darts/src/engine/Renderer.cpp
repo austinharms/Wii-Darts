@@ -110,7 +110,7 @@ void Renderer::ResetScissor()
 
 void Renderer::PushTransform(const Transform& t)
 {
-	Transform::Mul(t, m_transformStack[m_transformStackIndex], m_transformStack[++m_transformStackIndex]);
+	Transform::Mul(m_transformStack[m_transformStackIndex], t, m_transformStack[++m_transformStackIndex]);
 }
 
 void Renderer::PushIdentityTransform()
