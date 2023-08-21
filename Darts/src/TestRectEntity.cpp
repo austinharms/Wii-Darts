@@ -25,13 +25,13 @@ void TestRectEntity::OnLoad() {
 }
 
 void TestRectEntity::OnRender() {
-	gui::Begin("Main Args");
+	ImGui::Begin("Main Args");
 	int argc;
 	char** argv;
 	Engine::GetMainArgs(&argc, &argv);
 	for (int i = 0; i < argc; i++)
-		gui::Text(argv[i]);
-	gui::End();
-	gui::ShowDemoWindow();
+		ImGui::Text(argv[i]);
+	ImGui::End();
+	ImGui::ShowDemoWindow();
 	m_mesh.Render(m_texture);
 }

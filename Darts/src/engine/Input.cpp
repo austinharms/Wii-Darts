@@ -18,16 +18,49 @@ void Input::Init()
 	WPAD_SetMotionPlus(WPAD_CHAN_ALL, true);
 	Engine::GetRenderer().GetFramebufferSize(&w, &h);
 	WPAD_SetVRes(WPAD_CHAN_ALL, w, h);
+	SetActiveController(0);
+	EnableInputs();
 	Engine::Log("Input Init");
 	m_init = true;
+}
+
+void Input::EnableInputs()
+{
+	m_inputDisabled = false;
+}
+
+void Input::DisableInputs()
+{
+	m_inputDisabled = true;
 }
 
 Input::~Input() {
 	if (m_init) WPAD_Shutdown();
 }
 
-bool Input::GetControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y)
+bool Input::GetIRScreenPose(float* x, float* y)
 {
+	return GetIRScreenPose(m_activeController, x, y);
+}
+
+bool Input::GetButtonDown(uint32_t button)
+{
+	return GetButtonDown(m_activeController, button);
+}
+
+bool Input::GetButtonReleased(uint32_t button)
+{
+	return GetButtonReleased(m_activeController, button);
+}
+
+bool Input::GetButtonPressed(uint32_t button)
+{
+	return GetButtonPressed(m_activeController, button);
+}
+
+bool Input::GetIRScreenPose(uint8_t controllerNumber, float* x, float* y)
+{
+	if (m_inputDisabled) return false;
 	WPADData* data = WPAD_Data(controllerNumber);
 	if (!data || !data->ir.raw_valid) return false;
 	if (x) *x = data->ir.x;
@@ -35,19 +68,32 @@ bool Input::GetControllerIRScreenPos(uint8_t controllerNumber, float* x, float* 
 	return true;
 }
 
-bool Input::GetControllerButtonDown(uint8_t controllerNumber, uint32_t button)
+bool Input::GetButtonDown(uint8_t controllerNumber, uint32_t button)
 {
+	if (m_inputDisabled) return false;
 	return WPAD_ButtonsHeld(controllerNumber) & button;;
 }
 
-bool Input::GetControllerButtonPressed(uint8_t controllerNumber, uint32_t button)
+bool Input::GetButtonReleased(uint8_t controllerNumber, uint32_t button)
 {
-	return WPAD_ButtonsDown(controllerNumber) & button;;
+	if (m_inputDisabled) return false;
+	return WPAD_ButtonsUp(controllerNumber) & button;;
 }
 
-bool Input::GetControllerButtonReleased(uint8_t controllerNumber, uint32_t button)
+bool Input::GetButtonPressed(uint8_t controllerNumber, uint32_t button)
 {
-	return WPAD_ButtonsUp(controllerNumber) & button;
+	if (m_inputDisabled) return false;
+	return WPAD_ButtonsDown(controllerNumber) & button;
+}
+
+void Input::SetActiveController(uint8_t ctrlNo)
+{
+	m_activeController = ctrlNo;
+}
+
+WD_NODISCARD uint8_t Input::GetActiveController() const
+{
+	return m_activeController;
 }
 
 void Input::PollEvents() {

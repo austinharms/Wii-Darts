@@ -134,10 +134,14 @@ void Engine::InternalStart(int argc, char** argv)
 		}
 
 		m_input.PollEvents();
+		m_GUI.ProcessEvents();
+		if (m_GUI.GetUsingInput())
+			m_input.DisableInputs();
 		m_rootEntities[m_activeRootEntity].Update();
 		m_renderer.StartFrame();
 		m_GUI.StartFrame();
 		m_rootEntities[m_activeRootEntity].Render();
+		m_input.EnableInputs();
 		m_GUI.RenderUI();
 		m_renderer.EndFrame();
 	}

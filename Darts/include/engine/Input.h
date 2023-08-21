@@ -10,19 +10,29 @@ class Input
 public:
 	~Input();
 	WD_NOCOPY(Input);
-	bool GetControllerIRScreenPos(uint8_t controllerNumber, float* x, float* y);
-	bool GetControllerButtonDown(uint8_t controllerNumber, uint32_t button);
-	bool GetControllerButtonPressed(uint8_t controllerNumber, uint32_t button);
-	bool GetControllerButtonReleased(uint8_t controllerNumber, uint32_t button);
+	bool GetIRScreenPose(float* x, float* y);
+	bool GetButtonDown(uint32_t button);
+	bool GetButtonReleased(uint32_t button);
+	bool GetButtonPressed(uint32_t button);
+	bool GetIRScreenPose(uint8_t ctrlNo, float* x, float* y);
+	bool GetButtonDown(uint8_t ctrlNo, uint32_t button);
+	bool GetButtonReleased(uint8_t ctrlNo, uint32_t button);
+	bool GetButtonPressed(uint8_t ctrlNo, uint32_t button);
+	void SetActiveController(uint8_t ctrlNo);
+	WD_NODISCARD uint8_t GetActiveController() const;
 
 private:
 	friend class Engine;
 
+	uint8_t m_activeController;
+	bool m_inputDisabled;
 	bool m_init;
 
 	Input();
 
 	void Init();
+	void EnableInputs();
+	void DisableInputs();
 	// Updates WPAD inputs
 	void PollEvents();
 };

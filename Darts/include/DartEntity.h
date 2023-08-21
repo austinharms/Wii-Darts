@@ -1,5 +1,5 @@
-#ifndef DARTS_DART_H_
-#define DARTS_DART_H_
+#ifndef DARTS_DART_ENTITY_H_
+#define DARTS_DART_ENTITY_H_
 #include "engine/Core.h"
 #include "engine/Entity.h"
 //#include "engine/TextureHandle.h"
@@ -17,4 +17,4 @@ private:
 	RenderMeshHandle* m_dartCoreMesh;
 	RenderMeshHandle* m_dartFinsMesh;
 };
-#endif // !DARTS_DART_H_
+#endif // !DARTS_DART_ENTITY_H_
