@@ -13,9 +13,12 @@
 #include <new>
 
 // Prevent the use of mem2 as we use that for scene and temp allocators
-u32 MALLOC_MEM2 = 0;
-//Engine* g_engine = nullptr;
+//u32 MALLOC_MEM2 = 0;
+#if MEM2_ENGINE_ALLOCATION
+Engine* g_engine = nullptr;
+#else
 Engine Engine::s_engine;
+#endif
 
 void WiiResetCallback(u32 irq, void* ctx) { Engine::Quit(); }
 void WiiPowerCallback() { Engine::Quit(); }
@@ -32,28 +35,33 @@ Engine::~Engine() {
 }
 
 Engine& Engine::GetEngine() {
-	//return *g_engine;
+#if MEM2_ENGINE_ALLOCATION
+	return *g_engine;
+#else
 	return s_engine;
+#endif
 }
 
 void Engine::Create(int argc, char** argv)
 {
-	//SetupFS();
-	//uint8_t* mem2Start = ((uint8_t*)SYS_GetArena2Lo());
-	//// Discard an extra 100000 bytes on the top of mem2 as this seems to cause errors when written to
-	//uint8_t* mem2End = ((uint8_t*)SYS_GetArena2Hi()) - 100000;
-	//if ((size_t)mem2End - (size_t)mem2Start < sizeof(Engine)) {
-	//	Engine::Log("Failed to create Engine, MEM2 not big enough");
-	//	exit(1);
-	//}
-
-	//SYS_SetArena2Lo(mem2Start + sizeof(Engine));
-	//g_engine = (Engine*)mem2Start;
-	//new(g_engine) Engine();
-	//Engine::Log("Engine Created");
-	//GetEngine().Init(argc, argv);
 	SetupFS();
+#if MEM2_ENGINE_ALLOCATION
+	uint8_t* mem2Start = ((uint8_t*)SYS_GetArena2Lo());
+	// Discard an extra 100000 bytes on the top of mem2 as this seems to cause errors when written to
+	uint8_t* mem2End = ((uint8_t*)SYS_GetArena2Hi()) - 100000;
+	if ((size_t)mem2End - (size_t)mem2Start < sizeof(Engine)) {
+		Engine::Log("Failed to create Engine, MEM2 not big enough");
+		exit(1);
+	}
+
+	SYS_SetArena2Lo(mem2Start + sizeof(Engine));
+	g_engine = (Engine*)mem2Start;
+	new(g_engine) Engine();
+	Engine::Log("Engine Created");
 	GetEngine().Init(argc, argv);
+#else
+	GetEngine().Init(argc, argv);
+#endif
 }
 
 void Engine::Init(int argc, char** argv) {
@@ -166,18 +174,18 @@ void Engine::InternalStart()
 		m_rootEntities[m_activeRootEntity].Render();
 		m_input.EnableInputs();
 
-		//orient_t ori;
-		//gforce_t gf;
-		//vec3w_t acc;
-		//WPAD_Orientation(0, &ori);
-		//WPAD_GForce(0, &gf);
-		//WPAD_Accel(0, &acc);
+		orient_t ori;
+		gforce_t gf;
+		vec3w_t acc;
+		WPAD_Orientation(0, &ori);
+		WPAD_GForce(0, &gf);
+		WPAD_Accel(0, &acc);
 
-		//ImGui::Begin("Wiimote Data");
-		//ImGui::Text("Orient: Pitch: %f Yaw: %f Roll: %f", ori.pitch, ori.yaw, ori.roll);
-		//ImGui::Text("GForce: X: %f Y: %f Z: %f", gf.x, gf.y, gf.z);
-		//ImGui::Text("Accel: X: %f Y: %f Z: %f", acc.x, acc.y, acc.z);
-		//ImGui::End();
+		ImGui::Begin("Wiimote Data");
+		ImGui::Text("Orient: Pitch: %f Yaw: %f Roll: %f", ori.pitch, ori.yaw, ori.roll);
+		ImGui::Text("GForce: X: %f Y: %f Z: %f", gf.x, gf.y, gf.z);
+		ImGui::Text("Accel: X: %f Y: %f Z: %f", acc.x, acc.y, acc.z);
+		ImGui::End();
 
 		m_GUI.RenderUI();
 		m_renderer.EndFrame();
@@ -233,7 +241,7 @@ WD_NODISCARD bool Engine::SetupAllocators()
 	// Use 8MB for temp allocator
 	uint8_t* tempEnd = sceneEnd + TempMemSize;
 	m_tempAllocator.Init(sceneEnd, tempEnd);
-	//SYS_SetArena2Lo(tempEnd);
+	SYS_SetArena2Lo(tempEnd);
 
 	char* buf = (char*)m_tempAllocator.Allocate(512);
 	sprintf(buf, "Allocated Engine Allocators\n\tMEM2:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tTemp:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tScene:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tMEM2 malloc:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X", (size_t)mem2End - (size_t)mem2Start, (size_t)mem2Start, (size_t)mem2End, m_tempAllocator.GetStackSize(), (size_t)sceneEnd, (size_t)tempEnd, m_sceneAllocator.GetStackSize(), (size_t)mem2Start, (size_t)sceneEnd, (size_t)mem2End - (size_t)tempEnd, (size_t)tempEnd, (size_t)mem2End);

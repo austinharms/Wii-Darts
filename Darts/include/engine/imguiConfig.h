@@ -3,6 +3,7 @@
 extern void ImGuiAssertCallback(const char* exp);
 #define IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT struct ImDrawVert { ImVec2 pos; float posZ; ImU32 col; ImVec2 uv; };
 #define IM_ASSERT(exp) do { if (!(exp)) { ImGuiAssertCallback(#exp); } } while(0)
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 // Custom color shift to make color format compatible 
 #define IM_COL32_R_SHIFT    24

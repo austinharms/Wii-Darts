@@ -3,7 +3,11 @@
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
 
-CameraEntity::CameraEntity() {}
+CameraEntity::CameraEntity() {
+	for (int i = 0; i < 6; ++i)
+		m_set[i] = 0;
+	m_set[5] = -0.2;
+}
 
 CameraEntity::~CameraEntity() {}
 

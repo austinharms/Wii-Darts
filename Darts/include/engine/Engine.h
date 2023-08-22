@@ -10,6 +10,9 @@
 #include <utility>
 #include <new>
 
+//#define MEM2_ENGINE_ALLOCATION 0
+#define MEM2_ENGINE_ALLOCATION 1
+
 class Engine
 {
 public:
@@ -54,7 +57,9 @@ public:
 private:
 	friend class StackBuffer;
 
+#if !(MEM2_ENGINE_ALLOCATION)
 	static Engine s_engine;
+#endif
 
 	Input m_input;
 	Renderer m_renderer;

@@ -218,13 +218,13 @@ void GUI::DrawCursor(const ImVec2& posTL, uint32_t color, const char* text)
 	ImVec2 cursorMax;
 	constexpr ImVec2 cursorSize(32, 32);
 	constexpr ImVec2 cursorTextOffset(12, 12);
+	const ImVec2 posBR(posTL.x + cursorSize.x, posTL.y + cursorSize.y);
 
 	font_atlas->CalcCustomRectUV(font_atlas->GetCustomRectByIndex(m_cursorBackgroundIndex), &colorMin, &colorMax);
 	font_atlas->CalcCustomRectUV(font_atlas->GetCustomRectByIndex(m_cursorForgroundIndex), &cursorMin, &cursorMax);
 	for (int n = 0; n < g.Viewports.Size; n++)
 	{
 		ImGuiViewportP* viewport = g.Viewports[n];
-		const ImVec2 posBR(posTL.x + cursorSize.x, posTL.y + cursorSize.y);
 		if (!viewport->GetMainRect().Overlaps(ImRect(posTL, posBR)))
 			continue;
 		ImDrawList* draw_list = ImGui::GetForegroundDrawList(viewport);

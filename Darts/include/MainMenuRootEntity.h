@@ -14,16 +14,16 @@ public:
 
 protected:
 	void OnLoad() WD_OVERRIDE {
-		//AddChild<RoomEntity>();
-		//AddChild<DartEntity>();
-		//AddChild<CameraEntity>();
+		AddChild<RoomEntity>();
+		AddChild<DartEntity>();
+		AddChild<CameraEntity>();
 	}
 
 	void OnRender() {
 		//ImGuiIO& io = ImGui::GetIO();
 		//ImGui::SetWindowPos(ImVec2(0, 0));
 		//ImGui::SetWindowSize(io.DisplaySize);
-		ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();
 		//ImGui::SliderFloat2("slider", (float*)m_userData, -180, 180);
 	}
 };
