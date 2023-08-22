@@ -99,3 +99,9 @@ WD_NODISCARD uint8_t Input::GetActiveController() const
 void Input::PollEvents() {
 	WPAD_ScanPads();
 }
+
+/*
+void WPAD_Orientation(int chan, struct orient_t *orient);
+void WPAD_GForce(int chan, struct gforce_t *gforce);
+void WPAD_Accel(int chan, struct vec3w_t *accel);
+*/

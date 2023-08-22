@@ -13,7 +13,7 @@ public:
 	WD_NOCOPY(RootEntity);
 
 protected:
-	uint8_t m_userData[64];
+	uint8_t m_userData[128];
 
 private:
 	friend class Engine;

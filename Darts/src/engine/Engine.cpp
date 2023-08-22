@@ -10,10 +10,11 @@
 #include <wiiuse/wpad.h>
 #include <ogc/system.h>
 #include <stdio.h>
+#include <new>
 
 // Prevent the use of mem2 as we use that for scene and temp allocators
 u32 MALLOC_MEM2 = 0;
-
+//Engine* g_engine = nullptr;
 Engine Engine::s_engine;
 
 void WiiResetCallback(u32 irq, void* ctx) { Engine::Quit(); }
@@ -30,63 +31,34 @@ Engine::~Engine() {
 
 }
 
-WD_NODISCARD Renderer& Engine::GetRenderer()
-{
-	return s_engine.m_renderer;
+Engine& Engine::GetEngine() {
+	//return *g_engine;
+	return s_engine;
 }
 
-WD_NODISCARD Input& Engine::GetInput()
+void Engine::Create(int argc, char** argv)
 {
-	return s_engine.m_input;
-}
+	//SetupFS();
+	//uint8_t* mem2Start = ((uint8_t*)SYS_GetArena2Lo());
+	//// Discard an extra 100000 bytes on the top of mem2 as this seems to cause errors when written to
+	//uint8_t* mem2End = ((uint8_t*)SYS_GetArena2Hi()) - 100000;
+	//if ((size_t)mem2End - (size_t)mem2Start < sizeof(Engine)) {
+	//	Engine::Log("Failed to create Engine, MEM2 not big enough");
+	//	exit(1);
+	//}
 
-WD_NODISCARD void* Engine::AllocateSceneMem(size_t size)
-{
-	return s_engine.m_sceneAllocator.Allocate(size);
-}
-
-WD_NODISCARD void* Engine::AllocateAlignedSceneMem(size_t size)
-{
-	// Ensure size is in 32 byte sized blocks
-	size += size % 32;
-	return s_engine.m_sceneAllocator.AllocateTail(size);
-}
-
-WD_NODISCARD void* Engine::AllocateTempUpdateMem(size_t size)
-{
-	return s_engine.m_tempAllocator.AllocateTail(size);;
-}
-
-void Engine::Start(int argc, char** argv)
-{
-	s_engine.InternalStart(argc, argv);
-}
-
-void Engine::Quit()
-{
-	s_engine.InternalQuit();
-}
-
-void Engine::Log(const char* msg)
-{
-	std::ofstream file("sd:/log.txt", std::ios_base::app);
-	file << msg << "\n";
-	file.flush();
-}
-
-float Engine::GetDelta()
-{
-	return s_engine.m_delta;
-}
-
-void Engine::GetMainArgs(int* argc, char*** argv)
-{
-	if (argc) *argc = s_engine.m_mainArgCount;
-	if (argv) *argv = s_engine.m_mainArgValues;
-}
- 
-void Engine::Init() {
+	//SYS_SetArena2Lo(mem2Start + sizeof(Engine));
+	//g_engine = (Engine*)mem2Start;
+	//new(g_engine) Engine();
+	//Engine::Log("Engine Created");
+	//GetEngine().Init(argc, argv);
 	SetupFS();
+	GetEngine().Init(argc, argv);
+}
+
+void Engine::Init(int argc, char** argv) {
+	m_mainArgCount = argc;
+	m_mainArgValues = argv;
 	settime((uint64_t)0);
 	if (!SetupAllocators()) {
 		Engine::Log("Failed to setup allocators");
@@ -104,15 +76,66 @@ void Engine::Init() {
 	Log("Engine Init");
 }
 
-void Engine::InternalStart(int argc, char** argv)
+WD_NODISCARD Renderer& Engine::GetRenderer()
 {
-	m_mainArgCount = argc;
-	m_mainArgValues = argv;
+	return GetEngine().m_renderer;
+}
 
+WD_NODISCARD Input& Engine::GetInput()
+{
+	return GetEngine().m_input;
+}
+
+WD_NODISCARD void* Engine::AllocateSceneMem(size_t size)
+{
+	return GetEngine().m_sceneAllocator.Allocate(size);
+}
+
+WD_NODISCARD void* Engine::AllocateAlignedSceneMem(size_t size)
+{
+	// Ensure size is in 32 byte sized blocks
+	size += size % 32;
+	return GetEngine().m_sceneAllocator.AllocateTail(size);
+}
+
+WD_NODISCARD void* Engine::AllocateTempUpdateMem(size_t size)
+{
+	return GetEngine().m_tempAllocator.AllocateTail(size);;
+}
+
+void Engine::Start()
+{
+	GetEngine().InternalStart();
+}
+
+void Engine::Quit()
+{
+	GetEngine().InternalQuit();
+}
+
+void Engine::Log(const char* msg)
+{
+	std::ofstream file("sd:/log.txt", std::ios_base::app);
+	file << msg << "\n";
+	file.flush();
+}
+
+float Engine::GetDelta()
+{
+	return GetEngine().m_delta;
+}
+
+void Engine::GetMainArgs(int* argc, char*** argv)
+{
+	if (argc) *argc = GetEngine().m_mainArgCount;
+	if (argv) *argv = GetEngine().m_mainArgValues;
+}
+
+void Engine::InternalStart()
+{
 	// If the default root entity has not changed don't start
 	if (!m_switchRootEntity) return;
 	m_quit = false;
-	Init();
 	uint64_t lastDelta = gettime();
 	while (!m_quit) {
 		m_tempAllocator.ClearAllocations();
@@ -142,6 +165,20 @@ void Engine::InternalStart(int argc, char** argv)
 		m_GUI.StartFrame();
 		m_rootEntities[m_activeRootEntity].Render();
 		m_input.EnableInputs();
+
+		//orient_t ori;
+		//gforce_t gf;
+		//vec3w_t acc;
+		//WPAD_Orientation(0, &ori);
+		//WPAD_GForce(0, &gf);
+		//WPAD_Accel(0, &acc);
+
+		//ImGui::Begin("Wiimote Data");
+		//ImGui::Text("Orient: Pitch: %f Yaw: %f Roll: %f", ori.pitch, ori.yaw, ori.roll);
+		//ImGui::Text("GForce: X: %f Y: %f Z: %f", gf.x, gf.y, gf.z);
+		//ImGui::Text("Accel: X: %f Y: %f Z: %f", acc.x, acc.y, acc.z);
+		//ImGui::End();
+
 		m_GUI.RenderUI();
 		m_renderer.EndFrame();
 	}
@@ -167,10 +204,7 @@ void Engine::AlignSceneTailAllocator()
 
 void Engine::SetupFS()
 {
-	if (!fatInitDefault()) {
-		GetRenderer().SetClearColor(0xff0000ff);
-	}
-
+	fatInitDefault();
 	std::ofstream file("sd:/log.txt");
 	file << "FS Init\n";
 	file.flush();
@@ -181,22 +215,28 @@ void Engine::SetupFS()
 
 WD_NODISCARD bool Engine::SetupAllocators()
 {
-	void* startOfMem2 = ((uint8_t*)SYS_GetArena2Lo());
+	constexpr size_t SceneMemSize = 32000000;
+	constexpr size_t TempMemSize = 8000000;
+	constexpr size_t RequiredMem2Size = SceneMemSize + TempMemSize;
+	uint8_t* mem2Start = ((uint8_t*)SYS_GetArena2Lo());
 	// Discard an extra 100000 bytes on the top of mem2 as this seems to cause errors when written to
-	void* endOfMem2 = ((uint8_t*)SYS_GetArena2Hi()) - 100000;
+	uint8_t* mem2End = ((uint8_t*)SYS_GetArena2Hi()) - 100000;
 
-	if ((size_t)endOfMem2 - (size_t)startOfMem2 < 20000000) {
-		Engine::Log("Not enough memory, less then 20MB of mem2");
+	if ((size_t)mem2End - (size_t)mem2Start < RequiredMem2Size) {
+		Engine::Log("Not enough memory, less then 40MB of mem2");
 		return false;
 	}
 
-	// Use 8MB for temp storage and the rest for scene mem
-	size_t tempAllocatorSize = 8000000;
-	void* tempEnd = (void*)(((uint8_t*)startOfMem2) + tempAllocatorSize);
-	m_tempAllocator.Init(startOfMem2, tempEnd);
-	m_sceneAllocator.Init(tempEnd, endOfMem2);
-	char* buf = (char*)m_tempAllocator.Allocate(256);
-	sprintf(buf, "Allocated Allocators\n\tMEM2:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tTemp:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tScene:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X", (size_t)endOfMem2 - (size_t)startOfMem2, (size_t)startOfMem2, (size_t)endOfMem2, m_tempAllocator.GetStackSize(), (size_t)startOfMem2, (size_t)tempEnd, m_sceneAllocator.GetStackSize(), (size_t)tempEnd, (size_t)endOfMem2);
+	// Use 32MB for scene allocator
+	uint8_t* sceneEnd = mem2Start + SceneMemSize;
+	m_sceneAllocator.Init(mem2Start, sceneEnd);
+	// Use 8MB for temp allocator
+	uint8_t* tempEnd = sceneEnd + TempMemSize;
+	m_tempAllocator.Init(sceneEnd, tempEnd);
+	//SYS_SetArena2Lo(tempEnd);
+
+	char* buf = (char*)m_tempAllocator.Allocate(512);
+	sprintf(buf, "Allocated Engine Allocators\n\tMEM2:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tTemp:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tScene:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X\n\tMEM2 malloc:\n\t\tSize: %i\n\t\tStart: %08X\n\t\tEnd: %08X", (size_t)mem2End - (size_t)mem2Start, (size_t)mem2Start, (size_t)mem2End, m_tempAllocator.GetStackSize(), (size_t)sceneEnd, (size_t)tempEnd, m_sceneAllocator.GetStackSize(), (size_t)mem2Start, (size_t)sceneEnd, (size_t)mem2End - (size_t)tempEnd, (size_t)tempEnd, (size_t)mem2End);
 	Engine::Log(buf);
 	m_tempAllocator.ClearAllocations();
 	return true;
@@ -204,10 +244,10 @@ WD_NODISCARD bool Engine::SetupAllocators()
 
 void* Engine::StackBufferAllocate(size_t size)
 {
-	return s_engine.m_tempAllocator.Allocate(size);
+	return GetEngine().m_tempAllocator.Allocate(size);
 }
 
 void Engine::StackBufferRestore(const void* ptr)
 {
-	if (ptr) s_engine.m_tempAllocator.RestoreHead((void*)ptr);
+	if (ptr) GetEngine().m_tempAllocator.RestoreHead((void*)ptr);
 }

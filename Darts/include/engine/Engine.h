@@ -15,6 +15,7 @@ class Engine
 public:
 	~Engine();
 	WD_NOCOPY(Engine);
+	static void Create(int argc, char** argv);
 	WD_NODISCARD static Renderer& GetRenderer();
 	WD_NODISCARD static Input& GetInput();
 
@@ -43,11 +44,11 @@ public:
 	template <class RootEntityT, typename ...Args>
 	static void SetRootEntity(Args&&... args) {
 		WD_STATIC_ASSERT(sizeof(RootEntityT) == sizeof(RootEntity), "Engine::SetRootEntity RootEntityT size was not that of RootEntity");
-		new((void*)&(s_engine.m_rootEntities[s_engine.m_activeRootEntity ^ 0x01])) RootEntityT(std::forward<Args>(args)...);
-		s_engine.m_switchRootEntity = true;
+		new((void*)&(GetEngine().m_rootEntities[GetEngine().m_activeRootEntity ^ 0x01])) RootEntityT(std::forward<Args>(args)...);
+		GetEngine().m_switchRootEntity = true;
 	}
 
-	static void Start(int argc, char** argv);
+	static void Start();
 	static void Quit();
 
 private:
@@ -68,15 +69,17 @@ private:
 	bool m_quit;
 	bool m_switchRootEntity;
 
+	static void SetupFS();
+	static Engine& GetEngine();
+
 	Engine();
-	void Init();
-	void InternalStart(int argc, char** argv);
+	void Init(int argc, char** argv);
+	bool SetupAllocators();
+	void InternalStart();
 	void InternalQuit();
 	// Must be called after the scene allocator is reset
 	// Ensures allocations make from the tail of the scene allocator are 32 byte aligned
 	void AlignSceneTailAllocator();
-	void SetupFS();
-	WD_NODISCARD bool SetupAllocators();
 
 	static void* StackBufferAllocate(size_t size);
 	static void StackBufferRestore(const void* ptr);
