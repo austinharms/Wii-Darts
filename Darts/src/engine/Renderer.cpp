@@ -91,9 +91,7 @@ void Renderer::SetClippingPlanes(float near, float far)
 void Renderer::SetClearColor(uint32_t color)
 {
 	WD_STATIC_ASSERT(sizeof(color) == sizeof(GXColor), "GX Color and uint32_t size mismatch");
-	GXColor gxColor;
-	memcpy(&gxColor, &color, sizeof(GXColor));
-	GX_SetCopyClear(gxColor, GX_MAX_Z24);
+	GX_SetCopyClear(((GXColor*)&color)[0], GX_MAX_Z24);
 }
 
 void Renderer::SetScissor(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -388,9 +386,10 @@ void Renderer::SetupGX()
 
 void Renderer::SetupTEV()
 {
-	GX_SetNumChans(1);    // colour is the same as vertex colour
+	GX_SetNumChans(2);    // colour is the same as vertex colour
 	GX_SetNumTexGens(1);  // One texture exists
 	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+	GX_SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 
 	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
 
@@ -465,5 +464,6 @@ void Renderer::SetupMatrices()
 }
 
 void Renderer::SetMeshColor(uint32_t color) {
+	WD_STATIC_ASSERT(sizeof(color) == sizeof(GXColor), "GX Color and uint32_t size mismatch");
 	GX_SetTevKColor(GX_KCOLOR0, ((GXColor*)&color)[0]);
 }
