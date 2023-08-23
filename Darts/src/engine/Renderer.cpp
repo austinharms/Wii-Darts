@@ -174,8 +174,6 @@ void Renderer::StartFrame()
 	GX_LoadPosMtxImm(m_viewTransform.GetMatrix(), WD_RENDER_VIEW);
 	GX_LoadPosMtxImm(m_transformStack[0].GetMatrix(), WD_RENDER_STACK);
 	ResetScissor();
-	//SetupTEV();
-	SetMeshColor(0xffffffff);
 	Mtx tmp;
 	guMtxCopy(m_viewTransform.GetMatrix(), m_viewNormalTransform.GetMatrix());
 	guMtxInverse(m_viewNormalTransform.GetMatrix(), tmp);
@@ -208,7 +206,6 @@ void Renderer::SwapBuffers()
 	VIDEO_Flush();
 	WaitVSync();
 	m_activeFramebuffer ^= 1;
-	//GX_InvalidateTexAll();
 }
 
 void Renderer::WaitVSync() const
@@ -419,7 +416,6 @@ void Renderer::SetupGX()
 	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
 	//GX_SetClipMode(GX_CLIP_DISABLE);
-	//GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0x00, 0x00, 0x00, 0x00 });
 	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0x30, 0x30, 0x30, 0xff });
 	GX_SetChanMatColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 	GX_SetChanAmbColor(GX_COLOR1A1, (GXColor) { 0x00, 0x00, 0x00, 0x00 });
@@ -434,26 +430,6 @@ void Renderer::SetupTEV()
 	GX_SetNumTexGens(1);  // One texture exists
 
 	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
-
-	//GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_TEXMTX0);
-	//Mtx mv;
-	//Mtx mr;
-	//guLightPerspective(mv, 45, (f32)m_videoMode->fbWidth / (f32)m_videoMode->efbHeight, 1.05F, 1.0F, 0.0F, 0.0F);
-	//guMtxTrans(mr, 0.0F, 0.0F, -1.0F);
-	//guMtxConcat(mv, mr, mv);
-	//GX_LoadTexMtxImm(mv, GX_TEXMTX0, GX_MTX3x4);
-
-	//GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
-	//GX_SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
-	//GX_SetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-	//GX_SetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-	//GX_SetTevOp(GX_TEVSTAGE0, GX_BLEND);
-	//GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
-	//GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-	//GX_SetTevOp(GX_TEVSTAGE0, );
-	//GX_SetTevOp(GX_TEVSTAGE1, GX_BLEND);
-	//GX_SetNumTevStages(2);
 
 	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 	GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
