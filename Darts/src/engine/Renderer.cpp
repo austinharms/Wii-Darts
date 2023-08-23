@@ -1,6 +1,7 @@
 #include "engine/Renderer.h"
 #include "engine/RenderMeshHandle.h"
 #include "engine/Engine.h"
+#include "engine/LightEntity.h"
 #include <ogc/video.h>
 #include <ogc/system.h>
 #include <gctypes.h>
@@ -87,6 +88,11 @@ const Transform& Renderer::GetActiveCameraTransform()
 	return m_transformStack[0];
 }
 
+const Transform& Renderer::GetActiveCameraNormalTransform()
+{
+	return m_viewNormalTransform;
+}
+
 void Renderer::SetFOV(float fov)
 {
 	m_fov = fov;
@@ -170,11 +176,17 @@ void Renderer::StartFrame()
 	ResetScissor();
 	//SetupTEV();
 	SetMeshColor(0xffffffff);
+	Mtx tmp;
+	guMtxCopy(m_viewTransform.GetMatrix(), m_viewNormalTransform.GetMatrix());
+	guMtxInverse(m_viewNormalTransform.GetMatrix(), tmp);
+	guMtxTranspose(tmp, m_viewNormalTransform.GetMatrix());
+	GX_LoadNrmMtxImm(m_viewNormalTransform.GetMatrix(), WD_RENDER_VIEW);
 	UpdateActiveMatrix(WD_RENDER_STACK);
-	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX0);
-	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX1);
-	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX2);
-	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX3);
+	for (int i = 0; i < 8; ++i) {
+		if (m_lights[i])
+			m_lights[i]->UpdateLight();
+	}
+
 	m_frameStarted = true;
 }
 
@@ -216,7 +228,16 @@ void Renderer::UpdatePerspectiveProjectionMatrix()
 
 void Renderer::UpdateActiveMatrix(WdRenderModeEnum mode)
 {
-	if (mode == WD_RENDER_STACK) GX_LoadPosMtxImm(m_transformStack[m_transformStackIndex].GetMatrix(), WD_RENDER_STACK);
+	if (mode == WD_RENDER_STACK) {
+		GX_LoadPosMtxImm(m_transformStack[m_transformStackIndex].GetMatrix(), WD_RENDER_STACK);
+		Mtx nrm;
+		Mtx tmp;
+		guMtxCopy(m_transformStack[m_transformStackIndex].GetMatrix(), nrm);
+		guMtxInverse(nrm, tmp);
+		guMtxTranspose(tmp, nrm);
+		GX_LoadNrmMtxImm(nrm, WD_RENDER_STACK);
+	}
+
 	if (mode != m_currentRenderMode) {
 		if (mode == WD_RENDER_UI) {
 			GX_LoadProjectionMtx(m_orthoProjection, GX_ORTHOGRAPHIC);
@@ -397,10 +418,11 @@ void Renderer::SetupGX()
 	GX_SetCullMode(GX_CULL_BACK);
 	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
+	//GX_SetClipMode(GX_CLIP_DISABLE);
 	//GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0x00, 0x00, 0x00, 0x00 });
 	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0x30, 0x30, 0x30, 0xff });
 	GX_SetChanMatColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
-	GX_SetChanAmbColor(GX_COLOR1A1, (GXColor) { 0x00, 0x00, 0x00, 0xff });
+	GX_SetChanAmbColor(GX_COLOR1A1, (GXColor) { 0x00, 0x00, 0x00, 0x00 });
 	GX_SetChanMatColor(GX_COLOR1A1, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 	SetClearColor(0x000000ff);
 	SetMeshColor(0xffffffff);
@@ -410,8 +432,6 @@ void Renderer::SetupTEV()
 {
 	GX_SetNumChans(2);    // colour is the same as vertex colour
 	GX_SetNumTexGens(1);  // One texture exists
-	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
-	GX_SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 
 	GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
 
@@ -435,17 +455,26 @@ void Renderer::SetupTEV()
 	//GX_SetTevOp(GX_TEVSTAGE1, GX_BLEND);
 	//GX_SetNumTevStages(2);
 
+	GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 	GX_SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
 	GX_SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
 	GX_SetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 	GX_SetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
+	GX_SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 	GX_SetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
 	GX_SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_KONST, GX_CC_CPREV, GX_CC_ZERO);
 	GX_SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_KONST, GX_CA_APREV, GX_CA_ZERO);
 	GX_SetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 	GX_SetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-	GX_SetNumTevStages(2);
+
+	GX_SetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR1A1);
+	GX_SetTevColorIn(GX_TEVSTAGE2, GX_CC_ZERO, GX_CC_RASC, GX_CC_ONE, GX_CC_CPREV);
+	GX_SetTevAlphaIn(GX_TEVSTAGE2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
+	GX_SetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+	GX_SetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
+
+	GX_SetNumTevStages(3);
 }
 
 void Renderer::SetupVtxAttribs()
@@ -469,8 +498,20 @@ void Renderer::SetupMatrices()
 {
 	Transform t;
 	GX_LoadPosMtxImm(t.GetMatrix(), WD_RENDER_IDENT);
+	Mtx nrm;
+	Mtx tmp;
+	guMtxCopy(t.GetMatrix(), nrm);
+	guMtxInverse(nrm, tmp);
+	guMtxTranspose(tmp, nrm);
+	GX_LoadNrmMtxImm(nrm, WD_RENDER_IDENT);
+
 	t.SetPosition((guVector) { 0, 0, -100 });
 	GX_LoadPosMtxImm(t.GetMatrix(), WD_RENDER_UI);
+	guMtxCopy(t.GetMatrix(), nrm);
+	guMtxInverse(nrm, tmp);
+	guMtxTranspose(tmp, nrm);
+	GX_LoadNrmMtxImm(nrm, WD_RENDER_UI);
+
 	guOrtho(m_orthoProjection, (float)m_videoMode->efbHeight, 0, 0, (float)m_videoMode->fbWidth, 0, 1000);
 
 	guVector camPos = (guVector){ 0, 0, 1 };
@@ -494,20 +535,25 @@ void Renderer::SetMeshColor(uint32_t color) {
 void Renderer::DisableLights()
 {
 	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
-	GX_SetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
+	GX_SetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
+	GX_SetNumTevStages(2);
 }
 
 void Renderer::EnableLights()
 {
-	GX_SetChanCtrl(GX_COLOR0A0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_CLAMP, GX_AF_NONE);
-	GX_SetChanCtrl(GX_COLOR1A1, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeSpecularLights, GX_DF_CLAMP, GX_AF_SPEC);
+	GX_SetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_CLAMP, GX_AF_SPOT);
+	GX_SetChanCtrl(GX_ALPHA0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_NONE, GX_AF_NONE);
+	GX_SetChanCtrl(GX_COLOR1, GX_ENABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_CLAMP, GX_AF_SPEC);
+	GX_SetChanCtrl(GX_ALPHA1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_NONE, GX_AF_NONE);
+	GX_SetNumTevStages(3);
 }
 
-uint8_t Renderer::AcquireDiffuseLightIndex() {
+uint8_t Renderer::AcquireDiffuseLightIndex(LightEntity* entity) {
 	for (int i = 0; i < 8; ++i) {
 		uint8_t idx = 1 << i;
 		if (!((m_activeDiffuseLights | m_activeSpecularLights) & idx)) {
 			m_activeDiffuseLights |= idx;
+			m_lights[i] = entity;
 			return idx;
 		}
 	}
@@ -515,11 +561,12 @@ uint8_t Renderer::AcquireDiffuseLightIndex() {
 	return 0;
 }
 
-uint8_t Renderer::AcquireSpecularLightIndex() {
+uint8_t Renderer::AcquireSpecularLightIndex(LightEntity* entity) {
 	for (int i = 0; i < 8; ++i) {
 		uint8_t idx = 1 << i;
 		if (!((m_activeDiffuseLights | m_activeSpecularLights) & idx)) {
 			m_activeSpecularLights |= idx;
+			m_lights[i] = entity;
 			return idx;
 		}
 	}
@@ -529,9 +576,11 @@ uint8_t Renderer::AcquireSpecularLightIndex() {
 
 void Renderer::ReleaseDiffuseLightIndex(uint8_t index) {
 	m_activeDiffuseLights &= ~index;
+	m_lights[index] = nullptr;
 }
 
 void Renderer::ReleaseSpecularLightIndex(uint8_t index) {
 	m_activeSpecularLights &= ~index;
+	m_lights[index] = nullptr;
 }
 

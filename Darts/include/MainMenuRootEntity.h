@@ -2,7 +2,7 @@
 #define DARTS_MAIN_MENU_ROOT_ENTITY_H_
 #include "engine/RootEntity.h"
 #include "DartEntity.h"
-#include "RoomEntity.h"
+#include "MeshEntity.h"
 #include "CameraEntity.h"
 #include "engine/LightEntity.h"
 
@@ -15,7 +15,8 @@ public:
 protected:
 	void OnLoad() WD_OVERRIDE {
 		AddChild<LightEntity>();
-		AddChild<RoomEntity>();
+		//AddChild<MeshEntity>("./assets/room.mesh", "./assets/room.img");
+		AddChild<MeshEntity>("./assets/dense_plane.mesh");
 		AddChild<DartEntity>();
 		AddChild<CameraEntity>();
 	}

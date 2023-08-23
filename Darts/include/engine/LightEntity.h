@@ -2,7 +2,10 @@
 #define DARTS_LIGHT_ENTITY_H_
 #include "Core.h"
 #include "Entity.h"
+#include "engine/RenderMeshHandle.h"
 #include <ogc/gx.h>
+
+class Renderer;
 
 class LightEntity : public Entity
 {
@@ -11,20 +14,30 @@ public:
 	virtual ~LightEntity();
 	void SetColor(const GXColor& color);
 	void SetSpecularEnabled(bool enabled);
-	void SetCutoff(float cutoff);
+	void SetProperties(float radiusDeg, float dist, float intensity);
+	// Value must be between 4 and 255
+	void SetSpecularShininess(uint8_t shine);
 	using Entity::GetTransform;
 	using Entity::MarkTransformDirty;
 
 protected:
+	void OnLoad() WD_OVERRIDE;
 	void OnUpdate() WD_OVERRIDE;
+	void OnRender() WD_OVERRIDE;
 	void OnEnable() WD_OVERRIDE;
 	void OnDisable() WD_OVERRIDE;
 
 private:
+	friend class Renderer;
+
+	RenderMeshHandle* m_mesh;
 	GXLightObj m_diffuse;
 	GXLightObj m_specular;
 	uint8_t m_diffuseIndex;
 	uint8_t m_specularIndex;
 	bool m_specularEnabled;
+	float m_set[9];
+
+	void UpdateLight();
 };
 #endif // !DARTS_LIGHT_ENTITY_H_

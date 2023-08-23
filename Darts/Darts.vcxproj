@@ -63,7 +63,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WiiLoad|Wii'">
-    <NMakeBuildCommandLine> "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets" &amp;&amp; xcopy "$(ProjectDir)assets" "$(ProjectDir)sd\assets" /q /s /e /t /y &amp;&amp; make build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine> "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets" &amp;&amp; xcopy "$(ProjectDir)assets" "$(ProjectDir)sd\assets" /s /e /y /q &amp;&amp; make build</NMakeBuildCommandLine>
     <NMakeOutput>Darts.dol</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>GEKKO;HW_RVL;IMGUI_USER_CONFIG="engine/imguiConfig.h";$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -149,7 +149,7 @@
     <NMakeForcedIncludes />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dolphin|Wii'">
-    <NMakeBuildCommandLine> "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets" &amp;&amp; xcopy "$(ProjectDir)assets" "$(ProjectDir)sd\assets" /q /s /e /t /y &amp;&amp; make build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine> "$(ProjectDir)tools\WiiAssetBuilder.exe" "$(ProjectDir)res" "$(ProjectDir)assets" &amp;&amp; xcopy "$(ProjectDir)assets" "$(ProjectDir)sd\assets" /s /e /y /q &amp;&amp; make build</NMakeBuildCommandLine>
     <NMakeOutput>Darts.dol</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>GEKKO;HW_RVL;IMGUI_USER_CONFIG="engine/imguiConfig.h";$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -259,7 +259,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\engine\Renderer.cpp" />
     <ClCompile Include="src\engine\RenderMeshHandle.cpp" />
-    <ClCompile Include="src\RoomEntity.cpp" />
+    <ClCompile Include="src\MeshEntity.cpp" />
     <ClCompile Include="src\TestRectEntity.cpp" />
     <ClCompile Include="src\engine\TextureHandle.cpp" />
     <ClCompile Include="src\engine\Transform.cpp" />
@@ -317,7 +317,7 @@
     <ClInclude Include="include\engine\Renderer.h" />
     <ClInclude Include="include\engine\RenderMeshHandle.h" />
     <ClInclude Include="include\engine\RootEntity.h" />
-    <ClInclude Include="include\RoomEntity.h" />
+    <ClInclude Include="include\MeshEntity.h" />
     <ClInclude Include="include\TestRectEntity.h" />
     <ClInclude Include="include\engine\TextureHandle.h" />
     <ClInclude Include="include\engine\Transform.h" />

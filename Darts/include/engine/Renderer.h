@@ -31,6 +31,7 @@ public:
 	void SetCameraTransform(const Transform& t);
 	const Transform& GetCameraTransform();
 	const Transform& GetActiveCameraTransform();
+	const Transform& GetActiveCameraNormalTransform();
 	void SetFOV(float fov);
 	void SetClippingPlanes(float near, float far);
 	void SetClearColor(uint32_t color);
@@ -49,11 +50,13 @@ private:
 	void* m_videoFIFO;
 	void* m_framebuffers[2];
 	void* m_defaultTextureData;
+	LightEntity* m_lights[8];
 	float m_fov;
 	float m_nearPlane;
 	float m_farPlane;
 	TextureHandle m_defaultTexture;
 	Transform m_viewTransform;
+	Transform m_viewNormalTransform;
 	Transform m_transformStack[128];
 	Mtx44 m_perspecProjection;
 	Mtx44 m_orthoProjection;
@@ -77,8 +80,8 @@ private:
 
 	// ##### Methods called by LightEntity #####
 
-	uint8_t AcquireDiffuseLightIndex();
-	uint8_t AcquireSpecularLightIndex();
+	uint8_t AcquireDiffuseLightIndex(LightEntity* entity);
+	uint8_t AcquireSpecularLightIndex(LightEntity* entity);
 	void ReleaseDiffuseLightIndex(uint8_t index);
 	void ReleaseSpecularLightIndex(uint8_t index);
 

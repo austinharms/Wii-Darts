@@ -99,6 +99,8 @@ void Entity::Render()
 		itr->Render();
 		itr = itr->m_nextChild;
 	}
+
+	Engine::GetRenderer().PopTransform();
 }
 
 void Entity::Load()
