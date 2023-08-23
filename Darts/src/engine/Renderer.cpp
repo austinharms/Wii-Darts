@@ -42,6 +42,8 @@ void Renderer::Init() {
 	m_transformStackIndex = 0;
 	m_frameStarted = false;
 	m_currentRenderMode = WD_RENDER_STACK;
+	m_activeDiffuseLights = 0;
+	m_activeSpecularLights = 0;
 	SetupVideo();
 	SetupGX();
 	SetupTEV();
@@ -73,6 +75,16 @@ void Renderer::GetFramebufferSize(uint16_t* width, uint16_t* height) const
 void Renderer::SetCameraTransform(const Transform& t)
 {
 	m_viewTransform = t;
+}
+
+const Transform& Renderer::GetCameraTransform()
+{
+	return m_viewTransform;
+}
+
+const Transform& Renderer::GetActiveCameraTransform()
+{
+	return m_transformStack[0];
 }
 
 void Renderer::SetFOV(float fov)
@@ -156,9 +168,13 @@ void Renderer::StartFrame()
 	GX_LoadPosMtxImm(m_viewTransform.GetMatrix(), WD_RENDER_VIEW);
 	GX_LoadPosMtxImm(m_transformStack[0].GetMatrix(), WD_RENDER_STACK);
 	ResetScissor();
-	SetupTEV();
+	//SetupTEV();
 	SetMeshColor(0xffffffff);
 	UpdateActiveMatrix(WD_RENDER_STACK);
+	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX0);
+	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX1);
+	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX2);
+	GX_LoadNrmMtxImm(m_transformStack[0].GetMatrix(), GX_PNMTX3);
 	m_frameStarted = true;
 }
 
@@ -205,10 +221,12 @@ void Renderer::UpdateActiveMatrix(WdRenderModeEnum mode)
 		if (mode == WD_RENDER_UI) {
 			GX_LoadProjectionMtx(m_orthoProjection, GX_ORTHOGRAPHIC);
 			GX_SetZMode(GX_FALSE, GX_LEQUAL, GX_TRUE);
+			DisableLights();
 		}
 		else if (m_currentRenderMode == WD_RENDER_UI) {
 			GX_LoadProjectionMtx(m_perspecProjection, GX_PERSPECTIVE);
 			GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+			EnableLights();
 		}
 
 		m_currentRenderMode = mode;
@@ -379,7 +397,11 @@ void Renderer::SetupGX()
 	GX_SetCullMode(GX_CULL_BACK);
 	//GX_SetCullMode(GX_CULL_NONE);
 	GX_SetClipMode(GX_CLIP_ENABLE);
-	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
+	//GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0x00, 0x00, 0x00, 0x00 });
+	GX_SetChanAmbColor(GX_COLOR0A0, (GXColor) { 0x30, 0x30, 0x30, 0xff });
+	GX_SetChanMatColor(GX_COLOR0A0, (GXColor) { 0xff, 0xff, 0xff, 0xff });
+	GX_SetChanAmbColor(GX_COLOR1A1, (GXColor) { 0x00, 0x00, 0x00, 0xff });
+	GX_SetChanMatColor(GX_COLOR1A1, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 	SetClearColor(0x000000ff);
 	SetMeshColor(0xffffffff);
 }
@@ -461,9 +483,55 @@ void Renderer::SetupMatrices()
 
 	GX_SetCurrentMtx((uint32_t)WD_RENDER_STACK);
 	UpdateActiveMatrix(WD_RENDER_STACK);
+	EnableLights();
 }
 
 void Renderer::SetMeshColor(uint32_t color) {
 	WD_STATIC_ASSERT(sizeof(color) == sizeof(GXColor), "GX Color and uint32_t size mismatch");
 	GX_SetTevKColor(GX_KCOLOR0, ((GXColor*)&color)[0]);
 }
+
+void Renderer::DisableLights()
+{
+	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
+	GX_SetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
+}
+
+void Renderer::EnableLights()
+{
+	GX_SetChanCtrl(GX_COLOR0A0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_CLAMP, GX_AF_NONE);
+	GX_SetChanCtrl(GX_COLOR1A1, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeSpecularLights, GX_DF_CLAMP, GX_AF_SPEC);
+}
+
+uint8_t Renderer::AcquireDiffuseLightIndex() {
+	for (int i = 0; i < 8; ++i) {
+		uint8_t idx = 1 << i;
+		if (!((m_activeDiffuseLights | m_activeSpecularLights) & idx)) {
+			m_activeDiffuseLights |= idx;
+			return idx;
+		}
+	}
+
+	return 0;
+}
+
+uint8_t Renderer::AcquireSpecularLightIndex() {
+	for (int i = 0; i < 8; ++i) {
+		uint8_t idx = 1 << i;
+		if (!((m_activeDiffuseLights | m_activeSpecularLights) & idx)) {
+			m_activeSpecularLights |= idx;
+			return idx;
+		}
+	}
+
+	return 0;
+}
+
+void Renderer::ReleaseDiffuseLightIndex(uint8_t index) {
+	m_activeDiffuseLights &= ~index;
+}
+
+void Renderer::ReleaseSpecularLightIndex(uint8_t index) {
+	m_activeSpecularLights &= ~index;
+}
+

@@ -38,10 +38,12 @@ void CameraEntity::OnUpdate() {
 }
 
 void CameraEntity::OnRender() {
+	ImGui::Begin("Camera");
 	ImGui::SliderAngle("Rot X", m_set, -180, 180);
 	ImGui::SliderAngle("Rot Y", m_set + 1, -180, 180);
 	ImGui::SliderAngle("Rot Z", m_set + 2, -180, 180);
 	ImGui::SliderFloat("Pos X", m_set + 3, -10, 10);
 	ImGui::SliderFloat("Pos Y", m_set + 4, -10, 10);
 	ImGui::SliderFloat("Pos Z", m_set + 5, -10, 10);
+	ImGui::End();
 }

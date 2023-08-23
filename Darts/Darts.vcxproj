@@ -254,6 +254,7 @@
     <ClCompile Include="src\engine\Entity.cpp" />
     <ClCompile Include="src\engine\GUI.cpp" />
     <ClCompile Include="src\engine\Input.cpp" />
+    <ClCompile Include="src\engine\LightEntity.cpp" />
     <ClCompile Include="src\engine\StackBuffer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\engine\Renderer.cpp" />
@@ -310,6 +311,7 @@
     <ClInclude Include="include\engine\GUI.h" />
     <ClInclude Include="include\engine\Input.h" />
     <ClInclude Include="include\engine\Ints.h" />
+    <ClInclude Include="include\engine\LightEntity.h" />
     <ClInclude Include="include\engine\StackBuffer.h" />
     <ClInclude Include="include\MainMenuRootEntity.h" />
     <ClInclude Include="include\engine\Renderer.h" />

@@ -47,6 +47,24 @@ uint16_t Entity::GetChildCount() const
 	return m_childCount;
 }
 
+void Entity::GetWorldTransform(Transform& out) const
+{
+	if (m_parent) {
+		m_parent->GetWorldTransform(out);
+	}
+	else {
+		if (m_identityTransform) {
+			out.Reset();
+		}
+		else {
+			out = m_transform;
+		}
+	}
+
+	if (!m_identityTransform)
+		Transform::Mul(out, m_transform, out);
+}
+
 void* Entity::AllocateChildMem(size_t size)
 {
 	return Engine::AllocateSceneMem(size);

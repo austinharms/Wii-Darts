@@ -8,6 +8,7 @@
 
 class Engine;
 class RenderMeshHandle;
+class LightEntity;
 
 enum WdRenderModeEnum
 {
@@ -28,6 +29,8 @@ public:
 	// width or height may be null
 	void GetFramebufferSize(uint16_t* width, uint16_t* height) const;
 	void SetCameraTransform(const Transform& t);
+	const Transform& GetCameraTransform();
+	const Transform& GetActiveCameraTransform();
 	void SetFOV(float fov);
 	void SetClippingPlanes(float near, float far);
 	void SetClearColor(uint32_t color);
@@ -40,6 +43,7 @@ public:
 
 private:
 	friend class Engine;
+	friend class LightEntity;
 
 	GXRModeObj* m_videoMode;
 	void* m_videoFIFO;
@@ -56,6 +60,8 @@ private:
 	WdRenderModeEnum m_currentRenderMode;
 	uint8_t m_transformStackIndex;
 	uint8_t m_activeFramebuffer;
+	uint8_t m_activeDiffuseLights;
+	uint8_t m_activeSpecularLights;
 	bool m_enabled;
 	bool m_frameStarted;
 	bool m_init;
@@ -69,6 +75,13 @@ private:
 	void StartFrame();
 	void EndFrame();
 
+	// ##### Methods called by LightEntity #####
+
+	uint8_t AcquireDiffuseLightIndex();
+	uint8_t AcquireSpecularLightIndex();
+	void ReleaseDiffuseLightIndex(uint8_t index);
+	void ReleaseSpecularLightIndex(uint8_t index);
+
 	// ##### Internal use methods #####
 
 	void SwapBuffers();
@@ -81,6 +94,8 @@ private:
 	void SetupVtxAttribs();
 	void SetupMatrices();
 	void SetMeshColor(uint32_t color);
+	void DisableLights();
+	void EnableLights();
 	void UpdatePerspectiveProjectionMatrix();
 	void UpdateActiveMatrix(WdRenderModeEnum mode);
 	void DrawIndexedMesh(const RenderMeshHandle& mesh);

@@ -21,6 +21,7 @@ public:
 	WD_NODISCARD Entity* GetParent() const;
 	WD_NODISCARD Entity* GetChild(size_t index) const;
 	WD_NODISCARD uint16_t GetChildCount() const;
+	void GetWorldTransform(Transform& out) const;
 
 protected:
 	virtual void OnUpdate() {}
