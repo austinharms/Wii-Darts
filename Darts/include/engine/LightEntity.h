@@ -30,7 +30,7 @@ protected:
 private:
 	friend class Renderer;
 
-	RenderMeshHandle* m_mesh;
+	//RenderMeshHandle* m_mesh;
 	GXLightObj m_diffuse;
 	GXLightObj m_specular;
 	uint8_t m_diffuseIndex;

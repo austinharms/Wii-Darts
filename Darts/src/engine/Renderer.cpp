@@ -516,16 +516,19 @@ void Renderer::DisableLights()
 {
 	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
 	GX_SetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
-	GX_SetNumTevStages(2);
+	GX_SetChanMatColor(GX_COLOR1A1, (GXColor) { 0x00, 0x00, 0x00, 0x00 });
 }
 
 void Renderer::EnableLights()
 {
-	GX_SetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_CLAMP, GX_AF_SPOT);
-	GX_SetChanCtrl(GX_ALPHA0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_NONE, GX_AF_NONE);
-	GX_SetChanCtrl(GX_COLOR1, GX_ENABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_CLAMP, GX_AF_SPEC);
-	GX_SetChanCtrl(GX_ALPHA1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_NONE, GX_AF_NONE);
-	GX_SetNumTevStages(3);
+	//GX_SetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_CLAMP, GX_AF_SPOT);
+	//GX_SetChanCtrl(GX_ALPHA0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_NONE, GX_AF_NONE);
+	//GX_SetChanCtrl(GX_COLOR1, GX_ENABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_CLAMP, GX_AF_SPEC);
+	//GX_SetChanCtrl(GX_ALPHA1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_NONE, GX_AF_NONE);
+
+	GX_SetChanCtrl(GX_COLOR0A0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, m_activeDiffuseLights, GX_DF_CLAMP, GX_AF_SPOT);
+	GX_SetChanCtrl(GX_COLOR1A1, GX_ENABLE, GX_SRC_REG, GX_SRC_REG, m_activeSpecularLights, GX_DF_CLAMP, GX_AF_SPEC);
+	GX_SetChanMatColor(GX_COLOR1A1, (GXColor) { 0xff, 0xff, 0xff, 0xff });
 }
 
 uint8_t Renderer::AcquireDiffuseLightIndex(LightEntity* entity) {
