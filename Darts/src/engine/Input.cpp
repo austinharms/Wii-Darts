@@ -4,6 +4,8 @@
 
 Input::Input() {
 	m_init = false;
+	m_activeController = 0;
+	m_inputDisabled = false;
 }
 
 void Input::Init()

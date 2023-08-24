@@ -7,6 +7,7 @@ Entity::Entity(bool enabled) {
 	m_nextChild = nullptr;
 	m_childCount = 0;
 	m_enabled = enabled;
+	m_loaded = false;
 }
 
 Entity::~Entity() {

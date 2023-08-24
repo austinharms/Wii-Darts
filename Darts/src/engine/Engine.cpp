@@ -28,6 +28,9 @@ Engine::Engine() {
 	m_quit = true;
 	m_switchRootEntity = false;
 	m_activeRootEntity = 0;
+	m_mainArgCount = 0;
+	m_mainArgValues = nullptr;
+	m_delta = 0;
 }
 
 Engine::~Engine() {

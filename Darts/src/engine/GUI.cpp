@@ -19,6 +19,8 @@ GUI::GUI()
 	IMGUI_CHECKVERSION();
 	m_init = false;
 	m_showCursors = true;
+	m_cursorForgroundIndex = 0;
+	m_cursorBackgroundIndex = 0;
 }
 
 GUI::~GUI()

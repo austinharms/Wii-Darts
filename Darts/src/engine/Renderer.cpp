@@ -14,7 +14,25 @@
 
 #define DEFAULT_FIFO_SIZE (256 * 1024)
 
-Renderer::Renderer() { }
+Renderer::Renderer() { 
+	m_videoMode = nullptr;
+	m_videoFIFO = nullptr;
+	m_framebuffers[0] = nullptr;
+	m_framebuffers[1] = nullptr;
+	for (int i = 0; i < 8; ++i)
+		m_lights[i] = nullptr;
+	m_fov = 90;
+	m_nearPlane = 0.01f;
+	m_farPlane = 100;
+	m_currentRenderMode = WD_RENDER_STACK;
+	m_transformStackIndex = 0;
+	m_activeFramebuffer = 0;
+	m_activeDiffuseLights = 0;
+	m_activeSpecularLights = 0;
+	m_enabled = false;
+	m_frameStarted = false;
+	m_init = false;
+}
 
 Renderer::~Renderer() {
 	if (m_init) {
@@ -31,20 +49,6 @@ Renderer::~Renderer() {
 }
 
 void Renderer::Init() {
-	m_videoMode = nullptr;
-	m_videoFIFO = nullptr;
-	m_framebuffers[0] = nullptr;
-	m_framebuffers[1] = nullptr;
-	m_activeFramebuffer = 0;
-	m_enabled = false;
-	m_nearPlane = 0.01f;
-	m_farPlane = 100;
-	m_fov = 90;
-	m_transformStackIndex = 0;
-	m_frameStarted = false;
-	m_currentRenderMode = WD_RENDER_STACK;
-	m_activeDiffuseLights = 0;
-	m_activeSpecularLights = 0;
 	SetupVideo();
 	SetupGX();
 	SetupTEV();

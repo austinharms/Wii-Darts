@@ -2,6 +2,7 @@
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
 #include "engine/AssetLoader.h"
+#include <cstring>
 
 LightEntity::LightEntity() {
 	m_diffuseIndex = 0;
@@ -11,6 +12,8 @@ LightEntity::LightEntity() {
 	SetColor({ 0xFF, 0x00, 0xFF, 0xFF });
 	SetProperties(90, 10, 0.99f);
 	SetSpecularShininess(50);
+	for (int i = 0; i < 6; ++i)
+		m_set[i] = 0;
 	m_set[6] = 90;
 	m_set[7] = 10;
 	m_set[8] = 0.99;
