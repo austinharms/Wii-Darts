@@ -2,7 +2,6 @@
 #define DARTS_LIGHT_ENTITY_H_
 #include "Core.h"
 #include "Entity.h"
-#include "engine/RenderMeshHandle.h"
 #include <ogc/gx.h>
 
 class Renderer;
@@ -21,22 +20,17 @@ public:
 	using Entity::MarkTransformDirty;
 
 protected:
-	void OnLoad() WD_OVERRIDE;
-	void OnUpdate() WD_OVERRIDE;
-	void OnRender() WD_OVERRIDE;
 	void OnEnable() WD_OVERRIDE;
 	void OnDisable() WD_OVERRIDE;
 
 private:
 	friend class Renderer;
 
-	//RenderMeshHandle* m_mesh;
 	GXLightObj m_diffuse;
 	GXLightObj m_specular;
 	uint8_t m_diffuseIndex;
 	uint8_t m_specularIndex;
 	bool m_specularEnabled;
-	float m_set[9];
 
 	void UpdateLight();
 };

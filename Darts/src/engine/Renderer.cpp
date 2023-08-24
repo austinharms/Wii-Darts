@@ -183,6 +183,7 @@ void Renderer::StartFrame()
 	guMtxInverse(m_viewNormalTransform.GetMatrix(), tmp);
 	guMtxTranspose(tmp, m_viewNormalTransform.GetMatrix());
 	GX_LoadNrmMtxImm(m_viewNormalTransform.GetMatrix(), WD_RENDER_VIEW);
+	GX_LoadNrmMtxImm(m_viewNormalTransform.GetMatrix(), WD_RENDER_STACK);
 	UpdateActiveMatrix(WD_RENDER_STACK);
 	for (int i = 0; i < 8; ++i) {
 		if (m_lights[i])
@@ -231,12 +232,12 @@ void Renderer::UpdateActiveMatrix(WdRenderModeEnum mode)
 {
 	if (mode == WD_RENDER_STACK) {
 		GX_LoadPosMtxImm(m_transformStack[m_transformStackIndex].GetMatrix(), WD_RENDER_STACK);
-		Mtx nrm;
-		Mtx tmp;
-		guMtxCopy(m_transformStack[m_transformStackIndex].GetMatrix(), nrm);
-		guMtxInverse(nrm, tmp);
-		guMtxTranspose(tmp, nrm);
-		GX_LoadNrmMtxImm(nrm, WD_RENDER_STACK);
+		//Mtx nrm;
+		//Mtx tmp;
+		//guMtxCopy(m_transformStack[m_transformStackIndex].GetMatrix(), nrm);
+		//guMtxInverse(nrm, tmp);
+		//guMtxTranspose(tmp, nrm);
+		//GX_LoadNrmMtxImm(nrm, WD_RENDER_STACK);
 	}
 
 	if (mode != m_currentRenderMode) {

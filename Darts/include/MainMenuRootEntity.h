@@ -14,7 +14,7 @@ public:
 
 protected:
 	void OnLoad() WD_OVERRIDE {
-		AddChild<LightEntity>();
+		AddChild<LightEntity>()->GetTransform().Translate({0,0,5});
 		//AddChild<MeshEntity>("./assets/room.mesh", "./assets/room.img");
 		AddChild<MeshEntity>("./assets/dense_plane.mesh");
 		AddChild<DartEntity>();
