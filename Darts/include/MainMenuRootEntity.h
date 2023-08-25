@@ -15,8 +15,11 @@ public:
 protected:
 	void OnLoad() WD_OVERRIDE {
 		AddChild<LightEntity>()->GetTransform().Translate({0,0,5});
-		//AddChild<MeshEntity>("./assets/room.mesh", "./assets/room.img");
-		AddChild<MeshEntity>("./assets/dense_plane.mesh");
+		AddChild<MeshEntity>("./assets/room.mesh", "./assets/room.img");
+		//AddChild<MeshEntity>("./assets/dense_plane.mesh");
+		MeshEntity* ent = AddChild<MeshEntity>("./assets/board.mesh", "./assets/board.img");
+		ent->GetTransform().Translate({ 0,0,-10 });
+		ent->MarkTransformDirty();
 		AddChild<DartEntity>();
 		AddChild<CameraEntity>();
 	}

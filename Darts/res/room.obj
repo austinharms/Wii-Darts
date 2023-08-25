@@ -1,5 +1,6 @@
 # Blender v3.1.2 OBJ File: 'room.blend'
 # www.blender.org
+# mesh flags 0x4D
 o Cube
 v 10.000000 10.000000 -10.000000
 v 10.000000 -10.000000 -10.000000

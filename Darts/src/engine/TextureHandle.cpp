@@ -43,7 +43,7 @@ bool TextureHandle::Init(void* pixels, uint16_t width, uint16_t height, bool rep
 		GX_SetCopyFilter(mode.aa, mode.sample_pattern, GX_TRUE, mode.vfilter);
 	}
 	else
-	{
+	{	
 		GX_InitTexObjLOD(&m_textureHandle, GX_NEAR, GX_NEAR, 0.0f, 0.0f, 0.0f, 0, 0, GX_ANISO_1);
 		GX_SetCopyFilter(GX_FALSE, mode.sample_pattern, GX_FALSE, mode.vfilter);
 	}

@@ -21,7 +21,7 @@ Renderer::Renderer() {
 	m_framebuffers[1] = nullptr;
 	for (int i = 0; i < 8; ++i)
 		m_lights[i] = nullptr;
-	m_fov = 90;
+	m_fov = 60;
 	m_nearPlane = 0.01f;
 	m_farPlane = 100;
 	m_currentRenderMode = WD_RENDER_STACK;
