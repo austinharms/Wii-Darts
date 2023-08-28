@@ -17,7 +17,9 @@ public:
 	// Value must be between 4 and 255
 	void SetSpecularShininess(uint8_t shine);
 	using Entity::GetTransform;
-	using Entity::MarkTransformDirty;
+	using Entity::SetTransform;
+	using Entity::Enable;
+	using Entity::Disable;
 
 protected:
 	void OnEnable() WD_OVERRIDE;

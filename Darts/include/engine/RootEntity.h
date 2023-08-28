@@ -8,7 +8,7 @@ class Engine;
 class RootEntity : public Entity
 {
 public:
-	RootEntity() : Entity(true) { Entity::m_identityTransform = false; }
+	RootEntity() : Entity(true) { }
 	virtual ~RootEntity() = default;
 	WD_NOCOPY(RootEntity);
 
@@ -18,7 +18,7 @@ protected:
 private:
 	friend class Engine;
 	using Entity::ResetTransform;
-	using Entity::UpdateTransform;
+	using Entity::SetTransform;
 	using Entity::Enable;
 	using Entity::Disable;
 	using Entity::Update;

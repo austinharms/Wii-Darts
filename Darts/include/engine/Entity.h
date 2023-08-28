@@ -16,7 +16,6 @@ public:
 	WD_NOCOPY(Entity);
 
 	WD_NODISCARD const Transform& GetTransform() const;
-	WD_NODISCARD bool HasIdentityTransform() const;
 	WD_NODISCARD bool GetEnabled() const;
 	WD_NODISCARD Entity* GetParent() const;
 	WD_NODISCARD Entity* GetChild(size_t index) const;
@@ -30,12 +29,10 @@ protected:
 	virtual void OnUnload() {}
 	virtual void OnEnable() {}
 	virtual void OnDisable() {}
-	void UpdateTransform(const Transform& t);
+	void SetTransform(const Transform& t);
 	void ResetTransform();
 	void Disable();
 	void Enable();
-	void MarkTransformDirty();
-	// If the returned Transform is changed you should call MarkTransformDirty
 	WD_NODISCARD Transform& GetTransform();
 
 	template <class EntityT, typename ...Args>
@@ -55,7 +52,6 @@ private:
 	Entity* m_childPtr;
 	Entity* m_nextChild;
 	uint16_t m_childCount;
-	bool m_identityTransform;
 	bool m_enabled;
 	bool m_loaded;
 

@@ -8,12 +8,15 @@ class CameraEntity : public Entity
 public:
 	CameraEntity();
 	virtual ~CameraEntity();
+	using Entity::GetTransform;
+	using Entity::SetTransform;
+	using Entity::Enable;
+	using Entity::Disable;
 
 protected:
 	void OnUpdate() WD_OVERRIDE;
-	void OnRender() WD_OVERRIDE;
 
 private:
-	float m_set[6];
+
 };
 #endif // !DARTS_CAMERA_ENTITY_H_

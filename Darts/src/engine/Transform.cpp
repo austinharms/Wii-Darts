@@ -88,10 +88,35 @@ guVector Transform::GetRight() const
 void Transform::LookAt(const guVector& target, const guVector& up)
 {
 	guVector pos = GetPosition();
+	guVector dir;
+	guVector right;
+	guVector upDir;
+	dir.x = pos.x - target.x;
+	dir.y = pos.y - target.y;
+	dir.z = pos.z - target.z;
+
 	Reset();
-	//guVector upPos = pos;
-	//guVecAdd((guVector*)&up, &upPos, &upPos);
-	guLookAt(m_matrix, &pos, &const_cast<guVector&>(up), (guVector*)&target);
+	guVecNormalize(&dir);
+	guVecCross((guVector*)&up, &dir, &right);
+	guVecNormalize(&right);
+	guVecCross(&dir, &right, &upDir);
+	m_matrix[0][0] = right.x;
+	m_matrix[0][1] = right.y;
+	m_matrix[0][2] = right.z;
+	m_matrix[0][3] = pos.x;
+	m_matrix[1][0] = upDir.x;
+	m_matrix[1][1] = upDir.y;
+	m_matrix[1][2] = upDir.z;
+	m_matrix[1][3] = pos.y;
+	m_matrix[2][0] = dir.x;
+	m_matrix[2][1] = dir.y;
+	m_matrix[2][2] = dir.z;
+	m_matrix[2][3] = pos.z;
+
+	//Reset();
+	////guVector upPos = pos;
+	////guVecAdd((guVector*)&up, &upPos, &upPos);
+	//guLookAt(m_matrix, &pos, &const_cast<guVector&>(up), (guVector*)&target);
 }
 
 Transform Transform::operator*(const Transform& other) const

@@ -205,6 +205,9 @@ void Renderer::SwapBuffers()
 	GX_SetAlphaCompare(GX_GREATER, 0, GX_AOP_AND, GX_ALWAYS, 0);
 	GX_SetAlphaUpdate(GX_TRUE);
 	GX_SetColorUpdate(GX_TRUE);
+	//GX_CopyTex();
+	//GX_SetTexCopySrc();
+	//GX_SetTexCopyDst();
 	GX_CopyDisp(m_framebuffers[m_activeFramebuffer], GX_TRUE);
 	GX_DrawDone();
 	VIDEO_SetNextFramebuffer(m_framebuffers[m_activeFramebuffer]);
@@ -499,8 +502,7 @@ void Renderer::SetupMatrices()
 	guVector lookPos = (guVector){ 0, 0, 0 };
 	guVector up = (guVector){ 0, 1, 0 };
 	m_viewTransform.Reset();
-	m_viewTransform.SetPosition(camPos);
-	m_viewTransform.LookAt(lookPos, up);
+	guLookAt(m_viewTransform.GetMatrix(), &camPos, &up, &lookPos);
 	UpdatePerspectiveProjectionMatrix();
 
 	GX_SetCurrentMtx((uint32_t)WD_RENDER_STACK);
