@@ -51,6 +51,7 @@ void LightEntity::UpdateLight()
 	Renderer& renderer = Engine::GetRenderer();
 	guVector pos = GetTransform().GetPosition();
 	guVector normDir = GetTransform().GetForward();
+	guVecScale(&normDir, &normDir, -1);
 	guVecNormalize(&normDir);
 	guVector dir = normDir;
 	guVecMultiply(const_cast<Mtx&>(renderer.GetActiveCameraTransform().GetMatrix()), &pos, &pos);

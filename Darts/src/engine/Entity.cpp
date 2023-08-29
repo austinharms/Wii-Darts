@@ -47,12 +47,11 @@ void Entity::GetWorldTransform(Transform& out) const
 {
 	if (m_parent) {
 		m_parent->GetWorldTransform(out);
+		Transform::Mul(out, m_transform, out);
 	}
 	else {
 		out = m_transform;
 	}
-
-	Transform::Mul(out, m_transform, out);
 }
 
 void* Entity::AllocateChildMem(size_t size)

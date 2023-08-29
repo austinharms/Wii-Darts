@@ -77,17 +77,17 @@ guVector Transform::GetPosition() const
 
 guVector Transform::GetForward() const
 {
-	return { -m_matrix[0][2], -m_matrix[1][2], -m_matrix[2][2] };
+	return { m_matrix[2][0], m_matrix[2][1], m_matrix[2][2] };
 }
 
 guVector Transform::GetUp() const
 {
-	return { m_matrix[0][1], m_matrix[1][1], m_matrix[2][1] };
+	return { m_matrix[1][0], m_matrix[1][1], m_matrix[1][2] };
 }
 
 guVector Transform::GetRight() const
 {
-	return { -m_matrix[0][0], -m_matrix[1][0], -m_matrix[2][0] };
+	return { m_matrix[0][0], m_matrix[0][1], m_matrix[0][2] };
 }
 
 void Transform::LookAt(const guVector& target, const guVector& up)
@@ -96,15 +96,14 @@ void Transform::LookAt(const guVector& target, const guVector& up)
 	guVector dir;
 	guVector right;
 	guVector upDir;
-	dir.x = pos.x - target.x;
-	dir.y = pos.y - target.y;
-	dir.z = pos.z - target.z;
+	guVecSub(&pos, (guVector*)&target, &dir);
 
-	Reset();
 	guVecNormalize(&dir);
 	guVecCross((guVector*)&up, &dir, &right);
 	guVecNormalize(&right);
 	guVecCross(&dir, &right, &upDir);
+	//guVecScale(&upDir, &upDir, -1);
+	guVecNormalize(&upDir);
 	m_matrix[0][0] = right.x;
 	m_matrix[0][1] = right.y;
 	m_matrix[0][2] = right.z;
