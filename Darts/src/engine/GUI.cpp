@@ -131,7 +131,7 @@ void GUI::StartFrame()
 
 void GUI::RenderUI()
 {
-	if (m_showCursors) DrawCursors();
+	if (m_showCursors || GetUsingInput()) DrawCursors();
 	ImGui::Render();
 	Renderer& renderer = Engine::GetRenderer();
 	ImDrawData* drawData = ImGui::GetDrawData();

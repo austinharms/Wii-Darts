@@ -21,6 +21,7 @@ public:
 	static void Create(int argc, char** argv);
 	WD_NODISCARD static Renderer& GetRenderer();
 	WD_NODISCARD static Input& GetInput();
+	WD_NODISCARD static GUI& GetGUI();
 
 	// Allocates memory for scene use
 	// this memory will be reset when a new RootEntity is loaded

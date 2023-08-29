@@ -100,14 +100,12 @@ const Transform& Renderer::GetActiveCameraNormalTransform()
 void Renderer::SetFOV(float fov)
 {
 	m_fov = fov;
-	UpdatePerspectiveProjectionMatrix();
 }
 
 void Renderer::SetClippingPlanes(float near, float far)
 {
 	m_nearPlane = near;
 	m_farPlane = far;
-	UpdatePerspectiveProjectionMatrix();
 }
 
 void Renderer::SetClearColor(uint32_t color)
@@ -173,6 +171,7 @@ void Renderer::Disable()
 
 void Renderer::StartFrame()
 {
+	UpdatePerspectiveProjectionMatrix();
 	m_transformStackIndex = 0;
 	m_transformStack[0] = m_viewTransform;
 	GX_LoadPosMtxImm(m_viewTransform.GetMatrix(), WD_RENDER_VIEW);

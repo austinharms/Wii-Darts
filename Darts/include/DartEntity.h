@@ -10,11 +10,18 @@ class DartEntity : public Entity
 public:
 	DartEntity();
 	virtual ~DartEntity();
+	void Throw(const guVector& velocity);
+	using Entity::GetTransform;
+
+protected:
 	void OnLoad() WD_OVERRIDE;
 	void OnRender() WD_OVERRIDE;
+	void OnUpdate() WD_OVERRIDE;
 
 private:
 	RenderMeshHandle* m_dartCoreMesh;
 	RenderMeshHandle* m_dartFinsMesh;
+	guVector m_velocity;
+	bool m_sim;
 };
 #endif // !DARTS_DART_ENTITY_H_

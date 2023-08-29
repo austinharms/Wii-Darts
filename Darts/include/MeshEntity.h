@@ -11,7 +11,9 @@ public:
 	MeshEntity(const char* meshFilepath, const char* textureFilepath = nullptr);
 	virtual ~MeshEntity();
 	using Entity::GetTransform;
-	using Entity::MarkTransformDirty;
+	using Entity::SetTransform;
+	using Entity::Enable;
+	using Entity::Disable;
 
 protected:
 	void OnLoad() WD_OVERRIDE;

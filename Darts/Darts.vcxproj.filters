@@ -210,6 +210,15 @@
     <ClCompile Include="src\MeshEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MainMenuRoot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUICameraEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PracticeRoot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\engine\Engine.h">
@@ -248,7 +257,7 @@
     <ClInclude Include="include\engine\RenderMeshHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MainMenuRootEntity.h">
+    <ClInclude Include="include\MainMenuRoot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\TestRectEntity.h">
@@ -378,6 +387,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MeshEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GUICameraEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PracticeRoot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
