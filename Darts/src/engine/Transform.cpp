@@ -65,6 +65,11 @@ void Transform::SetPosition(const guVector& position)
 	m_matrix[2][3] = position.z;
 }
 
+void Transform::Rotate(const guVector& axis, float amount)
+{
+	guMtxRotAxisRad(m_matrix, (guVector*)&axis, amount);
+}
+
 guVector Transform::GetPosition() const
 {
 	return { m_matrix[0][3], m_matrix[1][3], m_matrix[2][3] };

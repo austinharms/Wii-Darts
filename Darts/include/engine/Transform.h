@@ -31,6 +31,9 @@ public:
 	// set the Transform position
 	void SetPosition(const guVector& vector);
 
+	// Rotates around the axis by amount rads
+	void Rotate(const guVector& axis, float amount);
+
 	guVector GetPosition() const;
 
 	guVector GetForward() const;

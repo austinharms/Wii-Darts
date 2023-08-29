@@ -13,6 +13,12 @@
 struct PracticeRoot::SceneData {
 	float m_speeds[3];
 	DartEntity* m_dart;
+
+	SceneData() {
+		m_speeds[0] = 0;
+		m_speeds[1] = -9;
+		m_speeds[2] = -10;
+	}
 };
 
 PracticeRoot::PracticeRoot() {
@@ -42,11 +48,11 @@ void PracticeRoot::OnLoad() {
 		LightEntity* roomLight = AddChild<LightEntity>();
 		Transform& roomLightTransform = roomLight->GetTransform();
 		roomLightTransform.Reset();
-		roomLightTransform.SetPosition({ 0,0,5 });
+		roomLightTransform.SetPosition({ 0,0,10 });
 		roomLightTransform.LookAt({ 0,0,0 }, { 0,1,0 });
 		roomLight->SetColor({ 0xff, 0xff, 0xff, 0xff });
 		roomLight->SetSpecularEnabled(false);
-		roomLight->SetProperties(8, 30, 0.99);
+		roomLight->SetProperties(5, 30, 0.99);
 	}
 
 	// Setup Meshes 

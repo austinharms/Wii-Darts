@@ -22,6 +22,7 @@ private:
 	RenderMeshHandle* m_dartCoreMesh;
 	RenderMeshHandle* m_dartFinsMesh;
 	guVector m_velocity;
+	float m_rot;
 	bool m_sim;
 };
 #endif // !DARTS_DART_ENTITY_H_
