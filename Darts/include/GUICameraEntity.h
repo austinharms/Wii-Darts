@@ -1,7 +1,7 @@
 #ifndef DARTS_GUI_CAMREA_ENTITY_H_
 #define DARTS_GUI_CAMREA_ENTITY_H_
 #include "engine/Core.h"
-#include "CameraEntity.h"
+#include "engine/CameraEntity.h"
 
 class GUICameraEntity : public CameraEntity
 {

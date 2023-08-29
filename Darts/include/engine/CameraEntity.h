@@ -3,6 +3,10 @@
 #include "engine/Core.h"
 #include "engine/Entity.h"
 
+#ifndef WD_DEBUG_CAMERA_MTX
+#define WD_DEBUG_CAMERA_MTX 0
+#endif // !WD_DEBUG_CAMERA_MTX
+
 class CameraEntity : public Entity
 {
 public:
@@ -21,6 +25,9 @@ public:
 
 protected:
 	void OnUpdate() WD_OVERRIDE;
+#if WD_DEBUG_CAMERA_MTX
+	void OnRender() WD_OVERRIDE;
+#endif
 
 private:
 	float m_fov;

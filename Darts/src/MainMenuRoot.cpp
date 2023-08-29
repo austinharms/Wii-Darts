@@ -1,7 +1,7 @@
 #include "MainMenuRoot.h"
 #include "DartEntity.h"
 #include "MeshEntity.h"
-#include "CameraEntity.h"
+#include "engine/CameraEntity.h"
 #include "engine/LightEntity.h"
 #include "engine/GUI.h"
 #include "DartEntity.h"
@@ -38,7 +38,6 @@ void MainMenuRoot::OnLoad() {
 	{
 		LightEntity* roomLight = AddChild<LightEntity>();
 		Transform& roomLightTransform = roomLight->GetTransform();
-		roomLightTransform.Reset();
 		roomLightTransform.SetPosition({ 0,0,5 });
 		roomLightTransform.LookAt({ 0,0,0 }, { 0,1,0 });
 		roomLight->SetColor({ 0xff, 0xff, 0xff, 0xff });
@@ -51,6 +50,7 @@ void MainMenuRoot::OnLoad() {
 	AddChild<MeshEntity>("./assets/board.mesh", "./assets/board.img");
 	Transform& cameraTransform = AddChild<CameraEntity>()->GetTransform();
 	cameraTransform.SetPosition({ 0,0,1.5f });
+	cameraTransform.LookAt({ 0,0,0 }, { 0,1,0 });
 }
 
 void MainMenuRoot::OnRender() {
@@ -67,6 +67,7 @@ void MainMenuRoot::OnRender() {
 	ImGui::BeginDisabled();
 	ImGui::Button("Play");
 	ImGui::EndDisabled();
+	if (ImGui::Button("Quit")) Engine::Quit();
 	ImGui::End();
 }
 

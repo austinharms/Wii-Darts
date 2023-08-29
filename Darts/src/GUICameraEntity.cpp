@@ -28,4 +28,6 @@ void GUICameraEntity::OnRender() {
 	ImGui::SliderFloat("Pos Y", m_set + 4, -10, 10);
 	ImGui::SliderFloat("Pos Z", m_set + 5, -10, 10);
 	ImGui::End();
+
+	Super::OnRender();
 }
