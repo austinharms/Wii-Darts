@@ -181,20 +181,6 @@ void Engine::InternalStart()
 		m_GUI.StartFrame();
 		m_rootEntities[m_activeRootEntity].Render();
 		m_input.EnableInputs();
-
-		//orient_t ori;
-		//gforce_t gf;
-		//vec3w_t acc;
-		//WPAD_Orientation(0, &ori);
-		//WPAD_GForce(0, &gf);
-		//WPAD_Accel(0, &acc);
-
-		//ImGui::Begin("Wiimote Data");
-		//ImGui::Text("Orient: Pitch: %f Yaw: %f Roll: %f", ori.pitch, ori.yaw, ori.roll);
-		//ImGui::Text("GForce: X: %f Y: %f Z: %f", gf.x, gf.y, gf.z);
-		//ImGui::Text("Accel: X: %f Y: %f Z: %f", acc.x, acc.y, acc.z);
-		//ImGui::End();
-
 		m_GUI.RenderUI();
 		m_renderer.EndFrame();
 	}

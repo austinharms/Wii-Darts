@@ -1,6 +1,7 @@
 #include "engine/Input.h"
 #include "engine/Engine.h"
 #include "engine/Renderer.h"
+#include <ogc/gu.h>
 
 Input::Input() {
 	m_init = false;
@@ -60,6 +61,16 @@ bool Input::GetButtonPressed(uint32_t button)
 	return GetButtonPressed(m_activeController, button);
 }
 
+bool Input::GetOrientation(guVector& out)
+{
+	return GetOrientation(m_activeController, out);
+}
+
+bool Input::GetAccel(guVector& out)
+{
+	return GetAccel(m_activeController, out);;
+}
+
 bool Input::GetIRScreenPose(uint8_t controllerNumber, float* x, float* y)
 {
 	if (m_inputDisabled) return false;
@@ -86,6 +97,26 @@ bool Input::GetButtonPressed(uint8_t controllerNumber, uint32_t button)
 {
 	if (m_inputDisabled) return false;
 	return WPAD_ButtonsDown(controllerNumber) & button;
+}
+
+bool Input::GetOrientation(uint8_t ctrlNo, guVector& out)
+{
+	orient_t ori;
+	WPAD_Orientation(ctrlNo, &ori);
+	out.x = ori.pitch;
+	out.y = ori.yaw;
+	out.z = ori.roll;
+	return true;
+}
+
+bool Input::GetAccel(uint8_t ctrlNo, guVector& out)
+{
+	gforce_t gf;
+	WPAD_GForce(ctrlNo, &gf);
+	out.x = gf.x;
+	out.y = gf.y;
+	out.z = gf.z;
+	return true;
 }
 
 void Input::SetActiveController(uint8_t ctrlNo)

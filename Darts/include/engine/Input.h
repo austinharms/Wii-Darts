@@ -14,10 +14,14 @@ public:
 	bool GetButtonDown(uint32_t button);
 	bool GetButtonReleased(uint32_t button);
 	bool GetButtonPressed(uint32_t button);
+	bool GetOrientation(guVector& out);
+	bool GetAccel(guVector& out);
 	bool GetIRScreenPose(uint8_t ctrlNo, float* x, float* y);
 	bool GetButtonDown(uint8_t ctrlNo, uint32_t button);
 	bool GetButtonReleased(uint8_t ctrlNo, uint32_t button);
 	bool GetButtonPressed(uint8_t ctrlNo, uint32_t button);
+	bool GetOrientation(uint8_t ctrlNo, guVector& out);
+	bool GetAccel(uint8_t ctrlNo, guVector& out);
 	void SetActiveController(uint8_t ctrlNo);
 	WD_NODISCARD uint8_t GetActiveController() const;
 
