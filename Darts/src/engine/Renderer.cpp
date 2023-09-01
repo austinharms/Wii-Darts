@@ -247,11 +247,13 @@ void Renderer::UpdateActiveMatrix(WdRenderModeEnum mode)
 			GX_LoadProjectionMtx(m_orthoProjection, GX_ORTHOGRAPHIC);
 			GX_SetZMode(GX_FALSE, GX_LEQUAL, GX_TRUE);
 			DisableLights();
+			GX_SetCullMode(GX_CULL_NONE);
 		}
 		else if (m_currentRenderMode == WD_RENDER_UI) {
 			GX_LoadProjectionMtx(m_perspecProjection, GX_PERSPECTIVE);
 			GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 			EnableLights();
+			GX_SetCullMode(GX_CULL_BACK);
 		}
 
 		m_currentRenderMode = mode;

@@ -12,6 +12,8 @@ public:
 	virtual ~DartEntity();
 	void Throw(const guVector& velocity);
 	using Entity::GetTransform;
+	using Entity::Enable;
+	using Entity::Disable;
 
 protected:
 	void OnLoad() WD_OVERRIDE;

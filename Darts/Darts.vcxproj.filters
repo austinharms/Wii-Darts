@@ -201,7 +201,7 @@
     <ClCompile Include="src\DartEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CameraEntity.cpp">
+    <ClCompile Include="src\engine\CameraEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\LightEntity.cpp">
@@ -217,6 +217,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\PracticeRoot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DartThrowUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -380,7 +383,7 @@
     <ClInclude Include="include\DartEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CameraEntity.h">
+    <ClInclude Include="include\engine\CameraEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\engine\LightEntity.h">
@@ -393,6 +396,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PracticeRoot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DartThrowUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MtxDebugEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\moreFMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

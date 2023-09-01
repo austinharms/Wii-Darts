@@ -246,8 +246,9 @@
     <ClCompile Include="imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="imgui\misc\fonts\binary_to_compressed_c.cpp" />
     <ClCompile Include="imgui\misc\freetype\imgui_freetype.cpp" />
-    <ClCompile Include="src\CameraEntity.cpp" />
+    <ClCompile Include="src\engine\CameraEntity.cpp" />
     <ClCompile Include="src\DartEntity.cpp" />
+    <ClCompile Include="src\DartThrowUI.cpp" />
     <ClCompile Include="src\engine\Allocator.cpp" />
     <ClCompile Include="src\engine\AssetLoader.cpp" />
     <ClCompile Include="src\engine\Engine.cpp" />
@@ -302,8 +303,9 @@
     <ClInclude Include="imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="imgui\misc\freetype\imgui_freetype.h" />
     <ClInclude Include="imgui\misc\single_file\imgui_single_file.h" />
-    <ClInclude Include="include\CameraEntity.h" />
+    <ClInclude Include="include\engine\CameraEntity.h" />
     <ClInclude Include="include\DartEntity.h" />
+    <ClInclude Include="include\DartThrowUI.h" />
     <ClInclude Include="include\engine\Allocator.h" />
     <ClInclude Include="include\engine\AssetLoader.h" />
     <ClInclude Include="include\engine\Core.h" />
@@ -315,6 +317,7 @@
     <ClInclude Include="include\engine\Input.h" />
     <ClInclude Include="include\engine\Ints.h" />
     <ClInclude Include="include\engine\LightEntity.h" />
+    <ClInclude Include="include\engine\moreFMath.h" />
     <ClInclude Include="include\engine\StackBuffer.h" />
     <ClInclude Include="include\GUICameraEntity.h" />
     <ClInclude Include="include\MainMenuRoot.h" />
@@ -322,6 +325,7 @@
     <ClInclude Include="include\engine\RenderMeshHandle.h" />
     <ClInclude Include="include\engine\RootEntity.h" />
     <ClInclude Include="include\MeshEntity.h" />
+    <ClInclude Include="include\MtxDebugEntity.h" />
     <ClInclude Include="include\PracticeRoot.h" />
     <ClInclude Include="include\TestRectEntity.h" />
     <ClInclude Include="include\engine\TextureHandle.h" />

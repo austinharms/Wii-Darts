@@ -11,7 +11,6 @@ public:
 protected:
 	void OnLoad() WD_OVERRIDE;
 	void OnUpdate() WD_OVERRIDE;
-	void OnRender() WD_OVERRIDE;
 	void OnUnload() WD_OVERRIDE;
 
 private:

@@ -1,25 +1,39 @@
 #include "PracticeRoot.h"
-#include "DartEntity.h"
-#include "MeshEntity.h"
-#include "engine/LightEntity.h"
-#include "GUICameraEntity.h"
-#include "engine/GUI.h"
-#include "DartEntity.h"
-#include "MainMenuRoot.h"
-#include "engine/Input.h"
 #include "engine/Engine.h"
+#include "engine/Input.h"
+#include "engine/LightEntity.h"
+#include "engine/CameraEntity.h"
+#include "engine/moreFMath.h"
+#include "MeshEntity.h"
+#include "DartEntity.h"
+#include "DartThrowUI.h"
+#include "MainMenuRoot.h"
 #include <new>
 
 struct PracticeRoot::SceneData {
-	float m_speeds[3];
-	DartEntity* m_dart;
+	DartEntity* darts[3];
+	DartThrowUI* throwUI;
+	CameraEntity* camera;
+	uint8_t activeDart;
+	bool camFollowDart;
 
 	SceneData() {
-		m_speeds[0] = 0;
-		m_speeds[1] = -9;
-		m_speeds[2] = -10;
+		darts[0] = nullptr;
+		darts[1] = nullptr;
+		darts[2] = nullptr;
+		throwUI = nullptr;
+		camera = nullptr;
+		activeDart = 2;
+		camFollowDart = false;
 	}
 };
+
+// TODO Fix input mapping to use appropriate values
+void mapNormalThrowVector(const guVector& accel, guVector& outVector) {
+	outVector.x = map(clamp(accel.x, -2, 2), -2, 2, -1, 1);
+	outVector.y = map(clamp(accel.y, 1, 5), 1, 5, -1, 1);
+	outVector.z = ((1 - (outVector.x * outVector.x)) + (outVector.y * outVector.y)) - 1;
+}
 
 PracticeRoot::PracticeRoot() {
 	WD_STATIC_ASSERT(sizeof(PracticeRoot::SceneData) <= sizeof(m_userData), "PracticeRoot::SceneData too big");
@@ -31,6 +45,7 @@ PracticeRoot::~PracticeRoot() {
 }
 
 void PracticeRoot::OnLoad() {
+	SceneData& data = GetData();
 	Engine::GetGUI().ShowCursors(false);
 	// Setup lighting
 	{
@@ -55,31 +70,74 @@ void PracticeRoot::OnLoad() {
 		roomLight->SetProperties(5, 30, 0.99);
 	}
 
+	// Setup main camera
+	data.camera = AddChild<CameraEntity>();
+
 	// Setup Meshes 
 	AddChild<MeshEntity>("./assets/dense_plane.mesh", "./assets/room.img");
 	AddChild<MeshEntity>("./assets/board.mesh", "./assets/board.img");
-	GetData().m_dart = AddChild<DartEntity>();
-	Transform& cameraTransform = AddChild<GUICameraEntity>()->GetTransform();
-	cameraTransform.SetPosition({ 0,0,2.37f });
-}
-
-void PracticeRoot::OnRender() {
-	SceneData& data = GetData();
-	ImGui::Begin("Dart");
-	ImGui::DragFloat3("Speed", data.m_speeds, 0.01f, -100, 100);
-	if (ImGui::Button("Throw")) {
-		data.m_dart->GetTransform().Reset();
-		data.m_dart->GetTransform().Translate({ 0,0,5 });
-		guVector v = { data.m_speeds[0], data.m_speeds[1], data.m_speeds[2] };
-		data.m_dart->Throw(v);
+	for (int i = 0; i < 3; ++i) {
+		data.darts[i] = AddChild<DartEntity>();
+		//data.darts[i]->Disable();
 	}
 
-	ImGui::End();
+	// Add this at the end so the dart cam overrides all previous cameras
+	data.throwUI = AddChild<DartThrowUI>();
+	//data.throwUI->Disable();
 }
 
 void PracticeRoot::OnUpdate() {
-	if (Engine::GetInput().GetButtonPressed(WPAD_BUTTON_HOME))
+	SceneData& data = GetData();
+	Input& input = Engine::GetInput();
+
+	guVector accel;
+	guVector ori;
+	input.GetAccel(accel);
+	input.GetOrientation(ori);
+
+	Transform& dartTransform = data.darts[data.activeDart]->GetTransform();
+	if (input.GetButtonPressed(WPAD_BUTTON_B)) {
+		if (++data.activeDart >= 3) data.activeDart = 0;
+		DartEntity* dart = data.darts[data.activeDart];
+		dart->Enable();
+		data.camFollowDart = false;
+		dartTransform = dart->GetTransform();
+		dartTransform.Reset();
+		dartTransform.SetPosition({ 0,0,2.37f });
+		dartTransform.LookAt({ 0, 0, 0 }, { 0, 1, 0 });
+	}
+	else if (input.GetButtonDown(WPAD_BUTTON_B)) {
+		guVector nVec;
+		mapNormalThrowVector(accel, nVec);
+		data.throwUI->SetThrowPower(nVec.z, nVec.x);
+	}
+	else if (input.GetButtonReleased(WPAD_BUTTON_B)) {
+		DartEntity* dart = data.darts[data.activeDart];
+		guVector nVec;
+		mapNormalThrowVector(accel, nVec);
+		data.throwUI->SetThrowPower(nVec.z, nVec.x);
+		dart->Throw({ nVec.x, nVec.y * 3, -(10 + (nVec.z * 5)) });
+		data.camFollowDart = true;
+	}
+
+	Transform& camTransform = data.camera->GetTransform();
+	if (data.camFollowDart) {
+		camTransform.SetPosition({ 2,0,3 });
+		camTransform.LookAt({ 0,0,-1 }, { 0,1,0 });
+		camTransform.LookAt(dartTransform.GetPosition(), { 0,1,0 });
+		data.camera->SetFOV(map(clamp(dartTransform.GetPosition().z, 0, 2), 0, 2, 8, 60));
+	}
+	else {
+		camTransform.SetPosition({ 0,0,2.37f });
+		camTransform.LookAt({ 0,0,0 }, { 0,1,0 });
+		data.camera->SetFOV(60);
+	}
+
+	if (Engine::GetInput().GetButtonPressed(WPAD_BUTTON_HOME)) {
 		Engine::SetRootEntity<MainMenuRoot>();
+		Engine::Quit();
+		return;
+	}
 }
 
 void PracticeRoot::OnUnload() {

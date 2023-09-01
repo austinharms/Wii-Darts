@@ -16,7 +16,6 @@ DartEntity::~DartEntity() {
 void DartEntity::Throw(const guVector& velocity)
 {
 	m_velocity = velocity;
-	m_velocity.y += 9.807;
 	m_rot = 0;
 	m_sim = true;
 }
@@ -37,14 +36,15 @@ void DartEntity::OnUpdate() {
 		Transform& t = GetTransform();
 		guVector pos = t.GetPosition();
 		guVector newPos;
+		m_velocity.y += 9.807f * Engine::GetDelta();
 		guVecScale(&m_velocity, &newPos, Engine::GetDelta());
 		guVecAdd(&newPos, &pos, &pos);
 		guVecAdd(&pos, &newPos, &newPos);
 		t.LookAt(newPos, { 0,1,0 });
 		m_rot += -15 * Engine::GetDelta();
 		t.Rotate(t.GetForward(), m_rot);
-		if (pos.z <= 0.05f) {
-			pos.z = 0.05f;
+		if (pos.z <= 0.1f) {
+			pos.z = 0.1f;
 			m_sim = false;
 		}
 
