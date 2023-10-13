@@ -1,4 +1,5 @@
 # Wii Darts
+## This project is not and will not be maintained
 A proof of concept darts game for the Wii  
 This project is simply some code I wrote to play with the Wii and see how it works  
 Contains basic gameplay mechanics and placeholder models  
